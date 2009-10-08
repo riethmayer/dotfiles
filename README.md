@@ -6,7 +6,7 @@ This is my dot-file way.
 
     git clone http://github.com/riethmayer/dotfiles/
     cd dotfiles
-    rake install
+    rake install # TODO add rake task
     
 ## Environment ##
 
@@ -15,3 +15,4 @@ I'm on Mac OS X and I just changed to zsh 6 months ago. So there may be some iss
 ## Features ##
 
 Hmm let's see and summarize here.
+
