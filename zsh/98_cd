@@ -1,0 +1,7 @@
+# where have we been?
+DIRSTACKSIZE=8
+setopt autopushd pushdminus pushdsilent pushdtohome
+alias dh='dirs -v'
+
+# cd for the lazy
+setopt auto_cd
