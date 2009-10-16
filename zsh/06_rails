@@ -1,5 +1,0 @@
-alias sc='./script/console --debugger'
-alias ss='./script/server -u
-alias cleanup="rake tmp:clear && rake log:clear"'
-alias work="cd /Users/Jan/Sites/aps/svn_apps/trunk"
-alias sc="script/console --debugger"
