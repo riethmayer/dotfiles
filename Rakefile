@@ -13,11 +13,10 @@ end
 desc "Install the dotfiles to the current user's home directory"
 task :install do
   include InstallHelper
-  override = dotfile_update?
-  setup_shell(override)
+  setup_backupdir
   dotfiles.each do |file|
-    back_up file unless override
-    link_to(file,override)
+    back_up file
+    link_to file # deletes file if existing!
   end
 end
 # ===========
@@ -26,66 +25,50 @@ end
 module InstallHelper
   # directories to install (relative path in project)
   def dotfiles
-    ["ruby/autotest", "ruby/irbrc"]
+    %w(ruby/autotest ruby/irbrc ruby/gemrc)
   end
   #####################################################################
   # if it's an update, we overwrite config-files, to keep all configs
   # up 2 date. Files that existed prior to this dotfiles will be moved
   # to the '.pre_dotfile_install' directory.
   #####################################################################
-  def dotfile_update?
-    dirname = File.join(ENV['HOME'], ".pre_dotfile_install")
-    unless File.exist?(dirname)
-      sh %{mkdir "#{dirname}"} do |ok,res|
+  def setup_backupdir
+    unless File.exist?(backupdir)
+      sh %{mkdir "#{backupdir}"} do |ok,res|
         unless ok
-          say("Failed creating #{dirname} (status = #{res.exitstatus})")
+          say("Failed creating #{backupdir} (status = #{res.exitstatus})")
         end
       end
-      false
-    else
-      true
     end
   end
   #####################################################################
   def back_up(file)
-    f = File.join(ENV['HOME'], ".#{ split_all(file).last }")
-    backup_dir = File.join(ENV['HOME'], ".pre_dotfile_install")
-    if File.exist?(f)
-      sh %{mv "#{ f }" "#{backup_dir}"} do |ok,res|
+    f = split_all(file).last
+    target = File.join(ENV['HOME'], ".#{ f }")
+    if File.exist?(target)
+      nf = "#{Time.now.strftime("%Y%m%d%k%M%S")}-#{f}"
+      sh %{mv "#{ target }" "#{File.join(backupdir,nf)}"} do |ok,res|
         unless ok
-          say("Failed to backup #{ f } (status = #{ res.exitstatus })")
+          say("Failed to backup .#{ f } (status = #{ res.exitstatus })")
         end
       end
     else
-      say("#{ f } didn't exist yet")
+      say(".#{ f } didn't exist yet")
     end
   end
   #####################################################################
-  def link_to(file,override)
+  # deletes file
+  def link_to(file)
     f = split_all(file).last
     from_dir = File.join(Rake.original_dir,file)
-    to_dir   = File.join(ENV['HOME'],".#{f}")
-    if File.exist?(to_dir)
-      if override
-        sh %{rm "#{ to_dir }"}
-        safe_ln(from_dir,to_dir)
-      end
-    else
-      safe_ln(from_dir,to_dir)
-    end
-  end
-  #####################################################################
-  def setup_shell(override)
-    from_dir = File.join(Rake.original_dir,"zsh")
-    home = ENV['HOME']
-    %w(zshenv zshrc).each do |file|
-      from = File.join(from_dir,file)
-      to = File.join(home,file)
-      sh %{source "#{from}" > "#{to}"}
-    end
+    target   = File.join(ENV['HOME'],".#{f}")
+    safe_ln(from_dir,target)
   end
   #####################################################################
   def say(what)
     puts("Info: #{what.to_s}.")
+  end
+  def backupdir
+    @@backupdir ||= File.join(ENV['HOME'], ".pre_dotfile_install")
   end
 end
