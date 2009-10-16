@@ -1,27 +1,56 @@
+# ===========
+# = Configs =
+# ===========
+ARGV.concat [ "--readline", "--prompt-mode", "simple" ]
+# History
+require 'irb/ext/save-history'
+IRB.conf[:SAVE_HISTORY] = 100
+IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
+IRB.conf[:PROMPT_MODE]  = :SIMPLE
+
+%w[irb/completion rubygems looksee/shortcuts wirble].each do |gem|
+  begin
+    require gem
+  rescue LoadError
+  end
+end
+
 # print SQL to STDOUT
 if ENV.include?('RAILS_ENV') && !Object.const_defined?('RAILS_DEFAULT_LOGGER')
   require 'logger'
   RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
 end
 
-# Autocomplete
-require 'irb/completion'
+# =======================
+# = Convenience methods =
+# =======================
 
-# Prompt behavior
-ARGV.concat [ "--readline", "--prompt-mode", "simple" ]
-
-# History
-require 'irb/ext/save-history'
-IRB.conf[:SAVE_HISTORY] = 100
-IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
-
-# Easily print methods local to an object's class
+# Simple regular expression helper
+# show_regexp - stolen from the pickaxe
+def show_regexp(a, re)
+  if a =~ re
+    "#{$`}<<#{$&}>>#{$'}"
+  else
+    "no match"
+  end
+end
+# Convenience method on Regexp so you can do
+# /an/.show_match("banana")
+class Regexp
+  def show_match(a)
+    show_regexp(a, self)
+  end
+end
+# Nice sql helper from defunkt
+def sql(query)
+  ActiveRecord::Base.connection.select_all(query)
+end
+# Easily print methods local to an object's class seen at ryanb
 class Object
   def local_methods
     (methods - Object.instance_methods).sort
   end
 end
-
 # Hirb
 if ENV['RAILS_ENV']
   module CallHirbWhenReady
@@ -37,6 +66,5 @@ if ENV['RAILS_ENV']
     end
   end
 end
-
 Object.send :extend, CallHirbWhenReady
 end

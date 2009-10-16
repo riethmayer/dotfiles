@@ -14,6 +14,7 @@ desc "Install the dotfiles to the current user's home directory"
 task :install do
   include InstallHelper
   override = dotfile_update?
+  setup_shell(override)
   dotfiles.each do |file|
     back_up file unless override
     link_to(file,override)
@@ -25,7 +26,7 @@ end
 module InstallHelper
   # directories to install (relative path in project)
   def dotfiles
-    ["zsh/zshrc", "zsh/zshenv", "ruby/autotest", "ruby/irbrc"]
+    ["ruby/autotest", "ruby/irbrc"]
   end
   #####################################################################
   # if it's an update, we overwrite config-files, to keep all configs
@@ -71,6 +72,16 @@ module InstallHelper
       end
     else
       safe_ln(from_dir,to_dir)
+    end
+  end
+  #####################################################################
+  def setup_shell(override)
+    from_dir = File.join(Rake.original_dir,"zsh")
+    home = ENV['HOME']
+    %w(zshenv zshrc).each do |file|
+      from = File.join(from_dir,file)
+      to = File.join(home,file)
+      sh %{source "#{from}" > "#{to}"}
     end
   end
   #####################################################################
