@@ -21,7 +21,7 @@ end
 # ===========
 task :install do
   include InstallHelper
-  setup_backupdir
+  setup_backupdir unless File.exist?(backupdir)
   DOTFILES.each do |file|
     back_up file
     link_to file # deletes file if existing!
@@ -32,11 +32,9 @@ end
 # ===========
 module InstallHelper
   def setup_backupdir
-    unless File.exist?(backupdir)
-      sh %{mkdir "#{backupdir}"} do |ok,res|
-        unless ok
-          say("Failed creating #{backupdir} (status = #{res.exitstatus})")
-        end
+    sh %{mkdir "#{backupdir}"} do |ok,res|
+      unless ok
+        say("Failed creating #{backupdir} (status = #{res.exitstatus})")
       end
     end
   end
