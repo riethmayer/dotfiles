@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java" deleted="false" description="creates a singleton sceleton" enabled="true" name="singleton">private static ${field} singleton;
+public static ${field} getInstance(){
+	if(singleton == null) singleton = new ${field};
+	return singleton;
+}
+private ${field}{
+
+}
+</template></templates>

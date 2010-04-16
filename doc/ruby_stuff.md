@@ -1,3 +1,13 @@
+# Install ruby itself
+
+    sudo aptitude install ruby
+
+# Install basic rubygems
+Download rubygems at http://rubyforge.org/frs/?group_id=126
+
+    sudo aptitude install rdoc
+    cd rubygems
+
 # gemcutter
 
     sudo gem update --system
@@ -6,7 +16,7 @@
 
 # ruby version manager
 
-    gem install rvm
+    sudo gem install rvm
     rvm-install
 
 (follow prompts)
