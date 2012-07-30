@@ -1,3 +1,75 @@
 # shell settings
-# prompt
 
+RESTORE='\033[0m'
+
+RED='\033[00;31m'
+GREEN='\033[00;32m'
+YELLOW='\033[00;33m'
+BLUE='\033[00;34m'
+PURPLE='\033[00;35m'
+CYAN='\033[00;36m'
+LIGHTGRAY='\033[00;37m'
+
+LRED='\033[01;31m'
+LGREEN='\033[01;32m'
+LYELLOW='\033[01;33m'
+LBLUE='\033[01;34m'
+LPURPLE='\033[01;35m'
+LCYAN='\033[01;36m'
+WHITE='\033[01;37m'
+
+if [[ -x `which git` ]]; then
+
+  alias g=git
+  function git_branch_name () {
+    git branch 2> /dev/null | grep '^\*' | sed 's/^\*\ //'
+  }
+  function git_dirty () {
+    git status 2> /dev/null | grep "nothing to commit (working directory clean)"
+    echo $?
+  }
+  function git_need_to_push() {
+    if pushtime=$(echo $1 | grep 'Your branch is ahead' 2> /dev/null); then
+      echo "^"
+    fi
+  }
+  function git_prompt() {
+    gstatus="$(git status 2> /dev/null)"
+
+    branch=$(echo "$gstatus" | head -1 | sed 's/^# On branch //')
+    dirty=$(echo "$gstatus" | sed 's/^#.*$//' | tail -2 | grep 'nothing to commit (working directory clean)'; echo $?)
+    if [[ x$branch != x ]]; then
+      push_status=$(git_need_to_push "$gstatus 2> /dev/null")
+      if [[ $dirty = 1 ]]; then
+        echo -e "${RESTORE}${RED}${branch}${RESTORE}$push_status"
+      else
+        echo -e "${RESTORE}${GREEN}${branch}${RESTORE}$push_status"
+      fi
+    fi
+  }
+  function git_scoreboard () {
+    git log | grep '^Author' | sort | uniq -ci | sort -r
+  }
+  function git_track () {
+    branch=$(git_branch_name)
+    git config branch.$branch.remote origin
+    git config branch.$branch.merge refs/heads/$branch
+    echo "tracking origin/$tracking"
+  }
+  function github_init () {
+    git config branch.$(git_branch_name).remote origin
+    git config branch.$(git_branch_name).merge refs/heads/$(git_branch_name)
+  }
+
+  function github_url () {
+    git config remote.origin.url | sed -En 's/git(@|:\/\/)github.com(:|\/)(.+)\/(.+).git/https:\/\/github.com\/\3\/\4/p'
+  }
+
+  # Seems to be the best OS X jump-to-github alias from http://tinyurl.com/2mtncf
+  function github_go () {
+    open $(github_url)
+  }
+
+fi
+
+PS1="\$(git_prompt)> "

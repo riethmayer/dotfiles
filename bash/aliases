@@ -3,11 +3,13 @@ alias bake="bundle exec rake"
 alias cuc="bundle exec cucumber"
 alias s="bundle exec rspec"
 
-alias e="emacsclient -t --no-wait"
-alias ec="emacsclient -c --no-wait"
+alias e="emacsclient -t"
+alias ec="emacsclient -t --no-wait"
 alias emacs='open -a /Applications/Emacs.app "$1"'
 
+alias egrep="egrep --color"
 alias g="egrep -r"
+alias rgrep="ack --color -a"
 
 alias bb="cd /Users/riethmayer/Projects/bonusbox/core"
 alias auth="cd /Users/riethmayer/Projects/bonusbox/bonusboxme_auth"
