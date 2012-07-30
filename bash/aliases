@@ -13,3 +13,29 @@ alias rgrep="ack --color -a"
 
 alias bb="cd /Users/riethmayer/Projects/bonusbox/core"
 alias auth="cd /Users/riethmayer/Projects/bonusbox/bonusboxme_auth"
+
+
+if [[ -x `which git` ]]; then
+  function git_scoreboard () {
+    git log | grep '^Author' | sort | uniq -ci | sort -r
+  }
+  function git_track () {
+    branch=$(git_branch_name)
+    git config branch.$branch.remote origin
+    git config branch.$branch.merge refs/heads/$branch
+    echo "tracking origin/$tracking"
+  }
+  function github_init () {
+    git config branch.$(git_branch_name).remote origin
+    git config branch.$(git_branch_name).merge refs/heads/$(git_branch_name)
+  }
+
+  function github_url () {
+    git config remote.origin.url | sed -En 's/git(@|:\/\/)github.com(:|\/)(.+)\/(.+).git/https:\/\/github.com\/\3\/\4/p'
+  }
+
+  # Seems to be the best OS X jump-to-github alias from http://tinyurl.com/2mtncf
+  function github_go () {
+    open $(github_url)
+  }
+fi
