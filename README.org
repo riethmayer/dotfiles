@@ -1,0 +1,9 @@
+# dotfiles
+
+* gemrc
+* bash
+  * env
+  * config
+  * alias
+* git
+* emacs
