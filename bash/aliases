@@ -1,0 +1,13 @@
+alias be="bundle exec"
+alias bake="bundle exec rake"
+alias cuc="bundle exec cucumber"
+alias s="bundle exec rspec"
+
+alias e="emacsclient -t --no-wait"
+alias ec="emacsclient -c --no-wait"
+alias emacs='open -a /Applications/Emacs.app "$1"'
+
+alias g="egrep -r"
+
+alias bb="cd /Users/riethmayer/Projects/bonusbox/core"
+alias auth="cd /Users/riethmayer/Projects/bonusbox/bonusboxme_auth"

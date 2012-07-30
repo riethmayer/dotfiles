@@ -1,0 +1,5 @@
+# env values used by other scripts and applications
+export PATH=$PATH:$HOME/bin:$HOME/.rvm/bin
+export TERM=xterm-256color
+export CC=/usr/bin/gcc-4.2
+export EDITOR="emacsclient -t --no-wait"
