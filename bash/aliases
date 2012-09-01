@@ -2,6 +2,7 @@ alias be="bundle exec"
 alias bake="bundle exec rake"
 alias cuc="bundle exec cucumber"
 alias s="bundle exec rspec"
+alias g="bundle exec guard start"
 
 alias e="emacsclient -t"
 alias ec="emacsclient -t --no-wait"
