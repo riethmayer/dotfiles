@@ -2,9 +2,9 @@ alias be="bundle exec"
 alias bake="bundle exec rake"
 alias cuc="bundle exec cucumber"
 alias s="bundle exec rspec"
-alias g="bundle exec guard start"
+alias gs="bundle exec guard -i"
 
-alias e="emacsclient -t"
+alias e="emacsclient -c -n"
 alias ec="emacsclient -t --no-wait"
 alias emacs='open -a /Applications/Emacs.app "$1"'
 
@@ -18,6 +18,10 @@ alias auth="cd /Users/riethmayer/Projects/bonusbox/bonusboxme_auth"
 alias gup="git smart-pull"
 alias gm="git smart-merge"
 alias gl="git smart-log"
+
+alias restart_couch="launchctl stop org.apache.couchdb"
+alias start_couch="launchctl load -w ~/Library/LaunchAgents/org.apache.couchdb.plist"
+alias stop_couch="launchctl unload ~/Library/LaunchAgents/org.apache.couchdb.plist"
 
 if [[ -x `which git` ]]; then
   function git_scoreboard () {
