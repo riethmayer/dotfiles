@@ -1,0 +1,17 @@
+export rvm_trust_rvmrcs_flag=1
+
+alias b="bundle"
+alias bu="bundle update"
+alias rs="rails s"
+alias rc="rails c"
+alias r="rake"
+alias be="bundle exec"
+alias bake="bundle exec rake"
+alias cuc="bundle exec cucumber"
+alias s="rspec"
+alias gs="bundle exec guard -i"
+
+alias bb="cd /Users/riethmayer/Projects/bonusbox/core"
+alias auth="cd /Users/riethmayer/Projects/bonusbox/bonusboxme_auth"
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
