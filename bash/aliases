@@ -1,11 +1,6 @@
 alias e="emacsclient -c -n"
 alias ec="emacsclient -t --no-wait"
-alias emacs='open -a /Applications/Emacs.app "$1"'
 alias dns="ec /etc/hosts; dscacheutil -flushcache"
 alias egrep="egrep --color"
 alias g="egrep -r"
 alias rgrep="ack --color -a"
-
-alias restart_couch="launchctl stop org.apache.couchdb"
-alias start_couch="launchctl load -w ~/Library/LaunchAgents/org.apache.couchdb.plist"
-alias stop_couch="launchctl unload ~/Library/LaunchAgents/org.apache.couchdb.plist"
