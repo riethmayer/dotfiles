@@ -1,17 +1,17 @@
-if [ -f /usr/local/etc/bash_completion.d/git-prompt.sh ]; then
-    . /usr/local/etc/bash_completion.d/git-prompt.sh
+if [ -f /opt/boxen/homebrew/share/git-core/contrib/completion/git-prompt.sh ]; then
+   source /opt/boxen/homebrew/share/git-core/contrib/completion/git-prompt.sh
 fi
 
 # loading source files
-if [ -f `brew --prefix`/etc/bash_completion ]; then
-  . `brew --prefix`/etc/bash_completion
-fi
+#if [ -f `brew --prefix`/etc/bash_completion ]; then
+#  source `brew --prefix`/etc/bash_completion
+#fi
 
 alias gup="git smart-pull"
 alias gm="git smart-merge"
 alias gl="git smart-log"
 
-source /usr/local/etc/bash_completion.d/git-completion.bash
+
 
 if [[ -x `which git` ]]; then
   function git_scoreboard {
