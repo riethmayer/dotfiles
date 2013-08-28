@@ -4,3 +4,5 @@ export TERM=xterm-256color
 export EDITOR="emacs"
 export ZEUS_GUARD=true
 export PARALLEL=true
+export PROJECT_BASE=$HOME/bonusbox/projects
+export ORGANIZATION_GITHUB_LOGIN="bonusboxme"

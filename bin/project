@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+require 'English'
+
+PROJECT_NAME = ARGV.first
+PROJECT_BASE = ENV['PROJECT_BASE'] || File.join(ENV['HOME'],'bonusbox', 'projects')
+PROJECT_ROOT = File.join(PROJECT_BASE,PROJECT_NAME)
+GIT_BASE     = ENV['ORGANIZATION_GITHUB_LOGIN'] || ENV['BOXEN_GITHUB_LOGIN'] || 'bonusboxme'
+
+def goto_project_root
+  Dir.chdir PROJECT_ROOT
+  puts "going to #{PROJECT_ROOT}"
+end
+
+def create_project_root
+  puts "#{PROJECT_BASE}/#{PROJECT_NAME} doesn't exist, yet."
+  Dir.chdir PROJECT_BASE
+  system "git clone git@github.com:#{GIT_BASE}/#{PROJECT_NAME}.git"
+  $CHILD_STATUS.success?
+end
+
+if File.exists?(PROJECT_ROOT)
+  goto_project_root
+else
+  create_project_root && goto_project_root
+end
+
+exec 'bash' # replaces the ruby process with bash to change the directory
