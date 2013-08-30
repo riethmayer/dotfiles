@@ -6,5 +6,4 @@ source $DOTFILES/bash/config
 source $DOTFILES/bash/git
 source $DOTFILES/bash/ruby
 [ -f $HOME/.aws_bonusbox ] && source $HOME/.aws_bonusbox
-# added by travis gem
-source /Users/riethmayer/.travis/travis.sh
+[ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
