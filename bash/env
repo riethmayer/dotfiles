@@ -6,3 +6,4 @@ export ZEUS_GUARD=true
 export PARALLEL=true
 export PROJECT_BASE=$HOME/bonusbox/projects
 export ORGANIZATION_GITHUB_LOGIN="bonusboxme"
+export AWS_ENV="production"
