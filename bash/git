@@ -9,6 +9,9 @@ fi
 alias gup="git smart-pull"
 alias gm="git smart-merge"
 alias gl="git smart-log"
+alias gad="git add -A"
+alias gc="git commit"
+alias gst="git status"
 
 if [[ -x `which git` ]]; then
   function git_scoreboard {
@@ -24,13 +27,3 @@ if [[ -x `which git` ]]; then
     open $(github_url)
   }
 fi
-
-function gc {
-    message=""
-    for word in "$@"
-    do
-        message+="$word "
-    done
-    echo "git commit -u -m \"$message\""
-    git commit -u -m "$message"
-}
