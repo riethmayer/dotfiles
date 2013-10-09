@@ -1,0 +1,25 @@
+
+[push]
+default = current
+
+[alias]
+co = checkout
+st = status
+br = branch
+who = shortlog -s --
+df = diff
+ci = commit
+lg = log -p
+
+[user]
+name = Jan Riethmayer
+email = jan@riethmayer.de
+
+[hub]
+protocol = https
+
+[core]
+excludesfile = /opt/boxen/config/git/gitignore
+
+[credential]
+helper = /opt/boxen/bin/boxen-git-credential
