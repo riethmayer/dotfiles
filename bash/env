@@ -7,3 +7,5 @@ export PARALLEL=true
 export PROJECT_BASE=$HOME/bonusbox/projects
 export ORGANIZATION_GITHUB_LOGIN="bonusboxme"
 export AWS_ENV="production"
+export BOXEN_REDIS_PORT="6379"
+export BOXEN_REDIS_URL="redis://127.0.0.1:6379/"
