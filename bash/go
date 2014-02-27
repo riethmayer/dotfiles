@@ -1,4 +1,4 @@
 export GOPATH=$HOME/.gocode
 mkdir -p $GOPATH
 echo "1.1.1" > $HOME/.go-version
-
+export PATH=$HOME/.gocode/bin:$PATH
