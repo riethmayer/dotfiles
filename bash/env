@@ -1,11 +1,67 @@
-# env values used by other scripts and applications
-export PATH=$HOME/.rbenv/bin:$HOME/packer:/usr/local/bin:$PATH:$HOME/bin
+# shell prompt setup
+__git_ps1 ()
+{
+    local b="$(git symbolic-ref HEAD 2>/dev/null)";
+    if [ -n "$b" ]; then
+        printf " (%s)" "${b##refs/heads/}";
+    fi
+}
+
+export PS1='\u\[\e[01;37m\]:`[[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "\[\e[31m\]" || echo "\[\e[32m\]"`$(__git_ps1 "(%s)\[\e[00m\]")\[\e[00m\]\$ '
+
+# basic setup
+export PATH=$HOME/bin:/usr/local/bin:$PATH:$HOME/packer
 export TERM=xterm-256color
 export EDITOR="emacs"
-export ZEUS_GUARD=true
-export PARALLEL=true
-export PROJECT_BASE=$HOME/bonusbox/projects
-export ORGANIZATION_GITHUB_LOGIN="bonusboxme"
+
+# link dotfiles
+for config in tmux.conf gemrc gitconfig; do
+    [ ! -f $HOME/.$config ] && ln -s $DOTFILES_DIR/$config $HOME/.$config
+done
+
+# homebrew
+if [ -f /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash ]; then
+   source /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash
+fi
+
+if [ -f /opt/boxen/homebrew/share/git-core/contrib/completion/git-prompt.sh ]; then
+   source /opt/boxen/homebrew/share/git-core/contrib/completion/git-prompt.sh
+fi
+
+# git
+if [[ -x `which git` ]]; then
+  function git_scoreboard {
+    git log | grep '^Author' | sort | uniq -ci | sort -r
+  }
+
+  function github_url {
+    git config remote.origin.url | sed -En 's/git(@|:\/\/)github.com(:|\/)(.+)\/(.+).git/https:\/\/github.com\/\3\/\4/p'
+  }
+
+  function github_go {
+    open $(github_url)
+  }
+fi
+
+# travis
+[ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
+
+# bonusbox
 export AWS_ENV="production"
-export BOXEN_REDIS_PORT="6379"
-export BOXEN_REDIS_URL="redis://127.0.0.1:6379/"
+export ORGANIZATION_GITHUB_LOGIN="bonusboxme"
+export PROJECT_BASE=$HOME/bonusbox/projects
+mkdir -p $PROJECT_BASE
+[ -f $HOME/.aws_bonusbox ] && source $HOME/.aws_bonusbox
+[ -d $PROJECT_BASE/bb ] && eval "$($PROJECT_BASE/bb/bin/bb init -)"
+export PATH=$PATH:$HOME/.bi_tools/tools
+
+# ruby
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
+# go
+export GOPATH=$HOME/.gocode
+mkdir -p $GOPATH/bin
+export PATH=$HOME/.gocode/bin:$PATH
+echo "1.1.1" > $HOME/.go-version
+[ -f $CHGO_ROOT/share/chgo/chgo.sh ] && source $CHGO_ROOT/share/chgo/chgo.sh
