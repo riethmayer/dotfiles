@@ -1,7 +1,31 @@
-alias dns="ec /etc/hosts; dscacheutil -flushcache"
-alias egrep="egrep --color"
-alias g="egrep -r"
-alias rgrep="ack --color -a"
+# $DOTFILES_DIR/bin
 alias p="project"
 alias bb_port_forward="sudo ipfw add forward 127.0.0.1,3000 tcp from any to any 80 in"
 alias h="common_cmd.sh"
+
+# 
+alias dns="ec /etc/hosts; dscacheutil -flushcache"
+alias egrep="egrep --color"
+alias rgrep="ack --color -a"
+
+# git
+alias gup="git smart-pull"
+alias gm="git smart-merge"
+alias gl="git smart-log"
+alias gad="git add -A"
+alias gc="git commit"
+alias gst="git status"
+
+# ruby
+export rvm_trust_rvmrcs_flag=1
+alias b="bundle"
+alias bu="bundle update"
+alias rs="rails s"
+alias rc="rails c"
+alias r="rake"
+alias be="bundle exec"
+alias bake="bundle exec rake"
+alias cuc="bundle exec cucumber"
+alias s="rspec"
+alias gs="bundle exec guard -i"
+
