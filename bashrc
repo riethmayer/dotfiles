@@ -9,3 +9,5 @@ source $DOTFILES/bash/bi_tools
 [ -f $HOME/.aws_bonusbox ] && source $HOME/.aws_bonusbox
 # added by travis gem
 [ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
+eval "$(/Users/riethmayer/bonusbox/projects/bb/bin/bb init -)"
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
