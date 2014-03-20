@@ -18,6 +18,7 @@ export EDITOR="emacs"
 for config in tmux.conf gemrc gitconfig; do
     [ ! -f $HOME/.$config ] && ln -s $DOTFILES_DIR/$config $HOME/.$config
 done
+[ ! -d $HOME/bin ] && ln -s $DOTFILES_DIR/bin $HOME/bin
 
 # homebrew
 if [ -f /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash ]; then
