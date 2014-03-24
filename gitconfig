@@ -17,9 +17,3 @@ email = jan@riethmayer.de
 
 [hub]
 protocol = https
-
-[core]
-excludesfile = /opt/boxen/config/git/gitignore
-
-[credential]
-helper = /opt/boxen/bin/boxen-git-credential
