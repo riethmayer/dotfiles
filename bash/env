@@ -65,6 +65,7 @@ export GOPATH=$HOME/.gocode
 mkdir -p $GOPATH/bin
 export PATH=$HOME/.gocode/bin:$PATH
 echo "1.1.1" > $HOME/.go-version
+export CHGO_ROOT=$DOTFILES_DIR/chgo
 [ -f $CHGO_ROOT/share/chgo/chgo.sh ] && source $CHGO_ROOT/share/chgo/chgo.sh
 
 # python
