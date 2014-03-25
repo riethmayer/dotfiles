@@ -1,3 +1,4 @@
+# -*- mode: shell-script -*-
 # $DOTFILES_DIR/bin
 alias p="project"
 alias bb_port_forward="sudo ipfw add forward 127.0.0.1,3000 tcp from any to any 80 in"

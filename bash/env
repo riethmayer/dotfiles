@@ -1,3 +1,4 @@
+# -*- mode: shell-script -*-
 # shell prompt setup
 function __git_ps1()
 {
