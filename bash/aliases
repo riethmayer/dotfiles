@@ -1,9 +1,7 @@
 # -*- mode: shell-script -*-
 # $DOTFILES_DIR/bin
-alias p="project"
 alias bb_port_forward="sudo ipfw add forward 127.0.0.1,3000 tcp from any to any 80 in"
 alias h="common_cmd.sh"
-
 alias dns="ec /etc/hosts; dscacheutil -flushcache"
 alias egrep="egrep --color"
 alias rgrep="ack --color -a"
