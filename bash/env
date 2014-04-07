@@ -22,6 +22,7 @@ done
 [ ! -d $HOME/bin ] && ln -s $DOTFILES_DIR/bin $HOME/bin
 
 # homebrew
+export PATH=/usr/local/sbin:$PATH
 if [ -f /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash ]; then
    source /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash
 fi
@@ -71,6 +72,3 @@ export PATH=$HOME/.gocode/bin:$PATH
 echo "1.1.1" > $HOME/.go-version
 export CHGO_ROOT=$DOTFILES_DIR/chgo
 [ -f $CHGO_ROOT/share/chgo/chgo.sh ] && source $CHGO_ROOT/share/chgo/chgo.sh
-
-# python
-export PATH=/usr/local/share/python:$PATH
