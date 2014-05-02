@@ -46,8 +46,14 @@ if [[ -x `which git` ]]; then
   }
 fi
 
+# me
+export GITHUB_LOGIN="riethmayer"
+[ ! -d $HOME/src/secret ] && echo "downloading secret" && pp secret
+source $HOME/src/secret/environment.sh
+
 # travis
 [ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
+
 
 # bonusbox
 export AWS_ENV="production"

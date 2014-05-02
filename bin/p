@@ -1,3 +1,4 @@
+# -*- mode: shell-script -*-
 #!/usr/bin/env bash
 
 PROJECT_NAME="$1"
