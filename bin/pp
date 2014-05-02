@@ -1,0 +1,10 @@
+# -*- mode: shell-script -*-
+#!/usr/bin/env bash
+
+PROJECT_NAME="$1"
+PROJECT_HOME="$HOME/src"
+PROJECT_ROOT="${PROJECT_HOME}/$PROJECT_NAME"
+
+[ ! -d $PROJECT_ROOT ] && cd $PROJECT_HOME && git clone "git@github.com:riethmayer/$PROJECT_NAME.git"
+
+cd $PROJECT_ROOT
