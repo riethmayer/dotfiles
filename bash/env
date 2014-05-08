@@ -24,13 +24,6 @@ done
 
 # homebrew
 export PATH=/usr/local/sbin:$PATH
-if [ -f /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash ]; then
-   source /opt/boxen/homebrew/etc/bash_completion.d/git-completion.bash
-fi
-
-if [ -f /opt/boxen/homebrew/share/git-core/contrib/completion/git-prompt.sh ]; then
-   source /opt/boxen/homebrew/share/git-core/contrib/completion/git-prompt.sh
-fi
 
 # git
 if [[ -x `which git` ]]; then
