@@ -1,4 +1,5 @@
 # -*- mode: shell-script -*-
+
 # shell prompt setup
 function __git_ps1()
 {
@@ -10,46 +11,35 @@ function __git_ps1()
 
 export PS1='\u\[\e[01;37m\]:`[[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "\[\e[31m\]" || echo "\[\e[32m\]"`$(__git_ps1 "(%s)\[\e[00m\]")\[\e[00m\]\$ '
 
-# basic setup
-export PATH=$HOME/bin:/usr/local/bin:$PATH:$HOME/packer
+
+# basic setup of my machine
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 export TERM=xterm-256color
 export GITHUB_LOGIN="riethmayer"
 export EDITOR="emacs"
 
-# link dotfiles
+
+# link dotfiles from my project to the root of my machine if they're
+# not present. So files always are in place.
 for config in tmux.conf gemrc gitconfig; do
     [ ! -f $HOME/.$config ] && ln -s $DOTFILES_DIR/$config $HOME/.$config
 done
 [ ! -d $HOME/bin ] && ln -s $DOTFILES_DIR/bin $HOME/bin
 
-# homebrew
+# prioritize homebrew installed bins
 export PATH=/usr/local/sbin:$PATH
 
-# git
-if [[ -x `which git` ]]; then
-  function git_scoreboard {
-    git log | grep '^Author' | sort | uniq -ci | sort -r
-  }
 
-  function github_url {
-    git config remote.origin.url | sed -En 's/git(@|:\/\/)github.com(:|\/)(.+)\/(.+).git/https:\/\/github.com\/\3\/\4/p'
-  }
-
-  function github_go {
-    open $(github_url)
-  }
-fi
-
-# me
-export GITHUB_LOGIN="riethmayer"
+# me secretz
 [ ! -d $HOME/src/secret ] && echo "downloading secret" && pp secret
 source $HOME/src/secret/environment.sh
 
-# travis
+
+# travis setup
 [ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
 
 
-# bonusbox
+# bonusbox specific setup for deployment and bb
 export AWS_ENV="production"
 export ORGANIZATION_GITHUB_LOGIN="bonusboxme"
 export PROJECT_BASE=$HOME/bonusbox/projects
@@ -67,7 +57,8 @@ BI_PATH=$PROJECT_BASE/bi
 export BONUSBOX_BI_PATH=$BI_PATH
 
 # ruby
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+## Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 # go
