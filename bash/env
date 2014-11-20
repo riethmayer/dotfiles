@@ -17,7 +17,7 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 export TERM=xterm-256color
 export GITHUB_LOGIN="riethmayer"
 export EDITOR="emacs"
-
+export ALTERNATE_EDITOR=""
 
 # link dotfiles from my project to the root of my machine if they're
 # not present. So files always are in place.
