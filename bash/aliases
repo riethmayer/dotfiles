@@ -25,5 +25,7 @@ alias be="bundle exec"
 alias bake="bundle exec rake"
 alias cuc="bundle exec cucumber"
 alias s="rspec"
-alias gs="bundle exec guard -i"
+alias gs="bundle exec guard start"
 
+# emacs
+alias e="emacsclient -a '' -c"
