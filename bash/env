@@ -1,5 +1,8 @@
 # -*- mode: shell-script -*-
 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
 # shell prompt setup
 function __git_ps1()
 {
@@ -49,6 +52,7 @@ mkdir -p $PROJECT_BASE
 AMI_PATH=$PROJECT_BASE/ami_builder
 [ ! -d $AMI_PATH ] && p ami_builder
 export EC2_BONUSBOX_KEY=$AMI_PATH/config/ec2_bonusbox.pem
+
 export PATH=$PATH:$HOME/.bi_tools/tools
 
 ## bonusbox bi path
