@@ -30,8 +30,10 @@ done
 [ ! -d $HOME/bin ] && ln -s $DOTFILES_DIR/bin $HOME/bin
 
 # prioritize homebrew installed bins
-export PATH=/usr/local/sbin:$PATH
-
+export ANSIBLE_PATH=$HOME/src/ansible
+export PATH=$ANSIBLE_PATH/bin:/usr/local/sbin:$PATH
+export PYTHONPATH=$ANSIBLE_PATH/github/ansible/lib:$PYTHONPATH
+export MANPATH=$ANSIBLE_PATH/github/ansible/docs/man:$MANPATH
 
 # me secretz
 [ ! -d $HOME/src/secret ] && echo "downloading secret" && pp secret
