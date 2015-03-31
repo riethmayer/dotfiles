@@ -25,29 +25,19 @@ export ORGANIZATION_GITHUB_LOGIN="bonusboxme"
 
 ## for linking GH stuff
 export GITHUB_PROJECTS_PATH=$HOME/github
-mkdir -p $GITHUB_PROJECTS_PATH
 
 ## for bonusbox stuff
 export PROJECT_BASE=$HOME/bonusbox/projects
-mkdir -p $PROJECT_BASE
 
 # PATH setup
 ## homebrew
 export PATH="/usr/local/sbin:$PATH"
 
 ## my scripts
-[ ! -d $HOME/bin ] && ln -s $DOTFILES_DIR/bin $HOME/bin
 export PATH=$HOME/bin:$PATH
 
-# link dotfiles from my project to the root of my machine if they're
-# not present. So files always are in place.
-for config in tmux.conf gemrc gitconfig; do
-    [ ! -f $HOME/.$config ] && ln -s $DOTFILES_DIR/$config $HOME/.$config
-done
-
 # me secretz
-[ ! -d $HOME/src/secret ] && echo "downloading secret" && pp secret
-source $HOME/src/secret/environment.sh
+[ ! -d $HOME/src/secret ] && source $HOME/src/secret/environment.sh
 
 ## bonusbox projects
 export PATH=$PROJECT_BASE/bb/bin:$PATH
@@ -55,10 +45,6 @@ export PATH=$PROJECT_BASE/bb/bin:$PATH
 
 # travis setup
 [ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
-
-#AMI_PATH=$PROJECT_BASE/ami_builder
-#[ ! -d $AMI_PATH ] && p ami_builder
-#export EC2_BONUSBOX_KEY=$AMI_PATH/config/ec2_bonusbox.pem
 
 ## ANSIBLE
 export PATH=$GITHUB_PROJECTS_PATH/ansible/bin:$PATH
