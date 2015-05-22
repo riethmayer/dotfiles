@@ -28,7 +28,6 @@ export GITHUB_PROJECTS_PATH=$HOME/github
 
 ## for bonusbox stuff
 export PROJECT_BASE=$HOME/bonusbox/projects
-
 # PATH setup
 ## homebrew
 export PATH="/usr/local/sbin:$PATH"
@@ -43,6 +42,7 @@ export PATH=$HOME/bin:$PATH
 export PATH=$PROJECT_BASE/bb/bin:$PATH
 [ -d $PROJECT_BASE/bb ] && eval "$($PROJECT_BASE/bb/bin/bb init -)"
 
+[ -d $PROJECT_BASE/bb ] && source $PROJECT_BASE/bb/credentials.sh
 # travis setup
 [ -f $HOME/.travis ] && source $HOME/.travis/travis.sh
 
