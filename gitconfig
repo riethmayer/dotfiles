@@ -17,3 +17,9 @@ email = jan@riethmayer.de
 
 [hub]
 protocol = https
+[color]
+	ui = true
+[core]
+	autocrlf = input
+[pull]
+	rebase = true
