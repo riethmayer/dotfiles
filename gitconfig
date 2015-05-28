@@ -9,7 +9,8 @@ br = branch
 who = shortlog -s --
 df = diff
 ci = commit
-lg = log -p
+	lg = log --oneline --decorate --all --graph
+	s = status -s
 
 [user]
 name = Jan Riethmayer
@@ -23,3 +24,5 @@ protocol = https
 	autocrlf = input
 [pull]
 	rebase = true
+[rerere]
+	enabled = true
