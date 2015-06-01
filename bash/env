@@ -51,6 +51,9 @@ export PATH=$GITHUB_PROJECTS_PATH/ansible/bin:$PATH
 export PYTHONPATH=$GITHUB_PROJECTS_PATH/ansible/lib:$PYTHONPATH
 export MANPATH=$GITHUB_PROJECTS_PATH/ansible/docs/man:$MANPATH
 
+## NPM
+export PATH=/usr/local/share/npm/bin:$PATH
+
 ## RVM needs to be at the end or it complaints
 export PATH="$PATH:$HOME/.rvm/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
