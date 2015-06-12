@@ -1,22 +1,5 @@
 # -*- mode: shell-script -*-
-
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-
-# shell prompt setup
-function __git_ps1()
-{
-    local b="$(git symbolic-ref HEAD 2>/dev/null)";
-    if [ -n "$b" ]; then
-        printf " (%s)" "${b##refs/heads/}";
-    fi
-}
-export PS1='\W \u\[\e[01;37m\]:`[[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "\[\e[31m\]" || echo "\[\e[32m\]"`$(__git_ps1 "(%s)\[\e[00m\]")\[\e[00m\]\$ '
-
-# EDITOR + terminal setup
-export TERM=xterm-256color
-export EDITOR="emacs"
-export ALTERNATE_EDITOR=""
+export DOTFILES_DIR=$HOME/src/dotfiles
 
 # Global variables
 export GITHUB_LOGIN="riethmayer"
@@ -28,7 +11,7 @@ export GITHUB_PROJECTS_PATH=$HOME/github
 
 ## for bonusbox stuff
 export PROJECT_BASE=$HOME/bonusbox/projects
-# PATH setup
+
 ## homebrew
 export PATH="/usr/local/sbin:$PATH"
 
@@ -56,4 +39,3 @@ export PATH=/usr/local/share/npm/bin:$PATH
 
 ## RVM needs to be at the end or it complaints
 export PATH="$PATH:$HOME/.rvm/bin"
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"

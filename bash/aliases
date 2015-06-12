@@ -7,8 +7,6 @@ alias egrep="egrep --color"
 alias rgrep="ack --color -a"
 
 # git
-alias gup="git smart-pull"
-alias gm="git smart-merge"
 alias git="hub"
 
 # ruby

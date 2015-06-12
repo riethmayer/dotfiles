@@ -1,0 +1,28 @@
+# -*- mode: shell-script -*-
+export DOTFILES_DIR=$HOME/src/dotfiles
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export HISTFILESIZE=10000
+export HISTSIZE=10000
+export PROMPT_COMMAND='history -a'
+shopt -s histappend
+
+# shell prompt setup
+function __git_ps1()
+{
+    local b="$(git symbolic-ref HEAD 2>/dev/null)";
+    if [ -n "$b" ]; then
+        printf " (%s)" "${b##refs/heads/}";
+    fi
+}
+
+export PS1='\W \u\[\e[01;37m\]:`[[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "\[\e[31m\]" || echo "\[\e[32m\]"`$(__git_ps1 "(%s)\[\e[00m\]")\[\e[00m\]\$ '
+
+# EDITOR + terminal setup
+export TERM=xterm-256color
+export EDITOR="emacs"
+export ALTERNATE_EDITOR=""
+
+# source aliases
+source $DOTFILES_DIR/bash/aliases
