@@ -24,3 +24,8 @@ alias gs="bundle exec guard start"
 
 # emacs
 alias e="emacsclient -a '' -c"
+
+# db
+alias pqcore='psql -h localhost -p 35432 -U postgres -d core_production --pset="footer=off" -f'
+alias pqretailers='psql -h localhost -p 35432 -U postgres -d retailers_production --pset="footer=off" -f'
+alias pqtickets='psql -h localhost -p 35432 -U postgres -d tickets_production --pset="footer=off" -f'
