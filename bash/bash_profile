@@ -37,7 +37,7 @@ export GITHUB_PROJECTS_PATH=$HOME/github
 
 ## for bonusbox stuff
 export PROJECT_BASE=$HOME/bonusbox/projects
-
+export BONUSBOX_BI_PATH=$PROJECT_BASE/bi
 ## homebrew
 export PATH="/usr/local/sbin:$PATH"
 
@@ -65,3 +65,4 @@ export PATH=/usr/local/share/npm/bin:$PATH
 
 ## RVM needs to be at the end or it complaints
 export PATH="$PATH:$HOME/.rvm/bin"
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
