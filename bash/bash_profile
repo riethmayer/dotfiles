@@ -66,3 +66,6 @@ export PATH=/usr/local/share/npm/bin:$PATH
 ## RVM needs to be at the end or it complaints
 export PATH="$PATH:$HOME/.rvm/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+
+# load docker environment
+# eval "$(docker-machine env dev)"

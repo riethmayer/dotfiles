@@ -29,3 +29,8 @@ alias e="emacsclient -a '' -c"
 alias pqcore='psql -h localhost -p 35432 -U postgres -d core_production --pset="footer=off" -f'
 alias pqretailers='psql -h localhost -p 35432 -U postgres -d retailers_production --pset="footer=off" -f'
 alias pqtickets='psql -h localhost -p 35432 -U postgres -d tickets_production --pset="footer=off" -f'
+
+# docker
+
+alias dm=docker-machine
+alias dc=docker-compose
