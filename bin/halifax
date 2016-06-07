@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+a,b,c = ARGV
+pw = ENV["ANOTHER_SECRET"]
+puts [a,b,c].map { |i| i.to_i - 1 }.map { |pos|
+  pw[pos]
+}.join(" ")
+
