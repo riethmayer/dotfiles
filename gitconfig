@@ -21,7 +21,7 @@ protocol = https
 [color]
 	ui = true
 [core]
-	autocrlf = input
+	autocrlf = true
 [pull]
 	rebase = true
 [rerere]
