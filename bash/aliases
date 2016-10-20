@@ -34,3 +34,7 @@ alias pqtickets='psql -h localhost -p 35432 -U postgres -d tickets_production --
 
 alias dm=docker-machine
 alias dc=docker-compose
+
+# kubernetes
+alias kd="kubectl --namespace=deis"
+alias ks="kubectl --namespace=solar"

@@ -69,9 +69,6 @@ export PATH=/usr/local/share/npm/bin:$PATH
 export PATH="$PATH:$HOME/.rvm/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
-# load docker environment
-# eval "$(docker-machine env dev)"
-
 # Java
 export JAVA_HOME=$(/usr/libexec/java_home)
 
