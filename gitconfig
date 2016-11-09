@@ -1,4 +1,3 @@
-
 [push]
 default = current
 
@@ -22,7 +21,7 @@ email = jan@riethmayer.de
 [color]
 	ui = true
 [core]
-	autocrlf = true
+	autocrlf = input
 [pull]
 	rebase = true
 [rerere]
