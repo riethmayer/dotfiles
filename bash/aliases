@@ -37,4 +37,3 @@ alias dc=docker-compose
 
 # kubernetes
 alias kd="kubectl --namespace=deis"
-alias ks="kubectl --namespace=solar"

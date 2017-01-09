@@ -71,7 +71,3 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 # Java
 export JAVA_HOME=$(/usr/libexec/java_home)
-
-# Solar for school setup
-
-eval "$(/Users/riethmayer/solar/solar-cloud/solar/bin/solar init -)"
