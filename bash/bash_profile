@@ -40,7 +40,7 @@ export GITHUB_PROJECTS_PATH=$HOME/github
 export PROJECT_BASE=$HOME/bonusbox/projects
 export BONUSBOX_BI_PATH=$PROJECT_BASE/bi
 ## homebrew
-export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
 
 ## my scripts
 export PATH=$HOME/bin:$PATH
