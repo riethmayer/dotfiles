@@ -64,6 +64,8 @@ export MANPATH=$GITHUB_PROJECTS_PATH/ansible/docs/man:$MANPATH
 ## NPM
 export PATH=/usr/local/share/npm/bin:$PATH
 
+## Yarn
+export PATH="$PATH:`yarn global bin`"
 ## RVM needs to be at the end or it complaints
 export PATH="$PATH:$HOME/.rvm/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
