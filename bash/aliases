@@ -37,3 +37,8 @@ alias dc=docker-compose
 
 # kubernetes
 alias kd="kubectl --namespace=deis"
+
+# jq
+
+alias jq="jq -C"
+alias less="less -R"
