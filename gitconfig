@@ -11,6 +11,8 @@ default = current
   lg = log --oneline --decorate --all --graph
   s = status -s
   g = grep --extended-regexp --break --heading --line-number
+  up = !git fetch origin && git rebase origin/master
+  down = !git checkout master && git merge @{1} --ff-only
 
 [user]
 name = Jan Riethmayer

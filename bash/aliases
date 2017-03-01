@@ -23,7 +23,7 @@ alias s="rspec"
 alias gs="bundle exec guard start"
 
 # emacs
-alias e="emacsclient -a '' -c"
+alias e="TERM=xterm-256color emacsclient -a '' -c"
 
 # db
 alias pqcore='psql -h localhost -p 35432 -U postgres -d core_production --pset="footer=off" -f'
