@@ -72,3 +72,7 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 # Java
 export JAVA_HOME=$(/usr/libexec/java_home)
+
+# openssl
+export LDFLAGS=-L/usr/local/opt/openssl/lib
+export CPPFLAGS=-I/usr/local/opt/openssl/include
