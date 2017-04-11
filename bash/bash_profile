@@ -66,13 +66,18 @@ export PATH=/usr/local/share/npm/bin:$PATH
 
 ## Yarn
 export PATH="$PATH:`yarn global bin`"
+
 ## RVM needs to be at the end or it complaints
-export PATH="$PATH:$HOME/.rvm/bin"
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+# export PATH="$PATH:$HOME/.rvm/bin"
+# [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+
+# RBENV
+eval "$(rbenv init -)"
 
 # Java
 export JAVA_HOME=$(/usr/libexec/java_home)
 
-# openssl
-export LDFLAGS=-L/usr/local/opt/openssl/lib
-export CPPFLAGS=-I/usr/local/opt/openssl/include
+# openssl (don't export by default)
+export PATH="/usr/local/opt/openssl/bin:$PATH"
+export CPPFLAGS="-I/usr/local/opt/openssl/include -I/usr/local/opt/readline/include"
+export LDFLAGS="-L/usr/local/opt/openssl/lib -L/usr/local/opt/readline/lib"
