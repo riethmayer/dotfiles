@@ -81,3 +81,19 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 export CPPFLAGS="-I/usr/local/opt/openssl/include -I/usr/local/opt/readline/include"
 export LDFLAGS="-L/usr/local/opt/openssl/lib -L/usr/local/opt/readline/lib"
+
+
+export PATH="/usr/local/opt/erlang@19/bin:$PATH"
+
+# raspberry
+export MIX_TARGET=rpi3
+
+. $HOME/.asdf/asdf.sh
+
+. $HOME/.asdf/completions/asdf.bash
+
+export GRAPHVIZ_DOT=/usr/local/bin/graphviz/dot 
+
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
