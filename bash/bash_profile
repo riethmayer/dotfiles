@@ -89,7 +89,6 @@ export PATH="/usr/local/opt/erlang@19/bin:$PATH"
 export MIX_TARGET=rpi3
 
 . $HOME/.asdf/asdf.sh
-
 . $HOME/.asdf/completions/asdf.bash
 
 export GRAPHVIZ_DOT=/usr/local/bin/graphviz/dot 

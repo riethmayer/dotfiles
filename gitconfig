@@ -29,3 +29,6 @@ email = jan@riethmayer.de
 	rebase = true
 [rerere]
 	enabled = true
+[github]
+	user = riethmayer
+	oauth-token = 5f98cfe8552f4a1110c5d80608081472c2a29b55
