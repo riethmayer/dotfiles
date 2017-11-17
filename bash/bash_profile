@@ -96,3 +96,4 @@ export GRAPHVIZ_DOT=/usr/local/bin/graphviz/dot
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
+eval "$($HOME/.zen/bin/zen init -)"
