@@ -1,0 +1,6 @@
+#!/usr/bash
+
+cd ~/Projects/zencargo/ocean
+source .env
+docker-compose up -d # docker-compose down
+bundle exec foreman start
