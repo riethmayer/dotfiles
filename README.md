@@ -22,3 +22,6 @@ Link your config files: (this is managed for me via ansible)
     ln -s $DOTFILES_DIR/bash/profile $HOME/.profile
     ln -s $DOTFILES_DIR/bash/bash_profile $HOME/.bash_profile
 
+## FZF
+
+https://github.com/junegunn/fzf#using-homebrew-or-linuxbrew
