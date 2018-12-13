@@ -39,8 +39,17 @@ export GITHUB_PROJECTS_PATH=$HOME/github
 ## for bonusbox stuff
 export PROJECT_BASE=$HOME/bonusbox/projects
 export BONUSBOX_BI_PATH=$PROJECT_BASE/bi
+
+# Node path before brew
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 ## homebrew
 export PATH="/usr/local/sbin:/usr/local/bin:$PATH"
+
+## python
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 
 ## my scripts
 export PATH=$HOME/bin:$PATH
@@ -60,12 +69,6 @@ export PATH=$PROJECT_BASE/bb/bin:$PATH
 export PATH=$GITHUB_PROJECTS_PATH/ansible/bin:$PATH
 export PYTHONPATH=$GITHUB_PROJECTS_PATH/ansible/lib:$PYTHONPATH
 export MANPATH=$GITHUB_PROJECTS_PATH/ansible/docs/man:$MANPATH
-
-## NPM
-export PATH=/usr/local/share/npm/bin:$PATH
-
-## Yarn
-export PATH="$PATH:`yarn global bin`"
 
 ## RVM needs to be at the end or it complaints
 # export PATH="$PATH:$HOME/.rvm/bin"
