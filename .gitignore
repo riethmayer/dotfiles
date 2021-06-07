@@ -5,3 +5,4 @@
 /bin/kubectl
 /bin/phantomjs
 /bin/production_tunnel
+/bash/.*
