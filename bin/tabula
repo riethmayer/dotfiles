@@ -1,3 +1,0 @@
-#!/bin/bash
-set -e
-(cd ${HOME}/github/tabula/bin && ./tabula $@)

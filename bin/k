@@ -1,5 +1,0 @@
-# -*- mode: shell-script -*-
-#!/usr/bin/env bash
-
-PATTERN="$1"
-ps aux | grep $PATTERN | grep -v grep | awk '{print $2}' | xargs -I '{}' kill -9 '{}'

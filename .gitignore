@@ -1,8 +1,0 @@
-/.DS_Store
-/bin/terraform*
-/bin/deis*
-/bin/helmc
-/bin/kubectl
-/bin/phantomjs
-/bin/production_tunnel
-/bash/.*
