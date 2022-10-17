@@ -1,3 +1,0 @@
-#!/bin/bash
-
-/usr/bin/ssh -n -N -v -Snone -lec2-user -L10001:ocean-staging.cuj455nlvvuz.eu-west-1.rds.amazonaws.com:5432 -p22 ocean.eu-west-1.elasticbeanstalk.com -o"PreferredAuthentications publickey" -o"IdentityFile ~/.ssh/id_rsa" -o"NumberOfPasswordPrompts 1"
