@@ -148,5 +148,11 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 alias dc="docker-compose"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/jan/.google-cloud-sdk/path.zsh.inc' ]; then . '/Users/jan/.google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/jan/.google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/jan/.google-cloud-sdk/completion.zsh.inc'; fi
 export GOPATH="$(go env GOPATH)"
 export PATH="${PATH}:${GOPATH}/bin"
