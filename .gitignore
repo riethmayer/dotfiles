@@ -1,0 +1,6 @@
+.DS_Store
+
+# Java
+/bin/apache-maven*
+/bin/google-java-format*
+
