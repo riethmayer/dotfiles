@@ -7,10 +7,10 @@ Dotfiles utilising GNU stow.
 
 Clone the dotfiles repository to your target dotfiles directory.
 
-    git clone git@github.com:riethmayer/dotfiles $HOME/.dotfiles
-    cd ~/.dotfiles
+    git clone git@github.com:riethmayer/dotfiles $HOME/dotfiles
+    cd ~/dotfiles
     make install
 
 # Acknowledgmenets
 
-Thanks to @andrzejsliwa and @sevos for the inspiration
+Thanks to @andrzejsliwa and @sevos for the inspiration.
