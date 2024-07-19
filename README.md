@@ -1,19 +1,16 @@
 # dotfiles
 
-Simple dotfiles file.
+Dotfiles utilising GNU stow.
+
 
 ## Installation
 
 Clone the dotfiles repository to your target dotfiles directory.
 
     git clone git@github.com:riethmayer/dotfiles $HOME/.dotfiles
-    export DOTFILES_DIR=$HOME/.dotfiles
+    cd ~/.dotfiles
+    make install
 
-Link your config files: (this is managed for me via ansible)
+# Acknowledgmenets
 
-    # YMMV
-    ln -s $DOTFILES_DIR/gemrc $HOME/.gemrc
-    ln -s $DOTFILES_DIR/tmux.conf $HOME/.tmux.conf
-    ln -s $DOTFILES_DIR/gitconfig $HOME/.gitconfig
-    ln -s $DOTFILES_DIR/zshrc $HOME/.zshrc
-    ln -s $DOTFILES_DIR/Rprofile $HOME/.Rprofile
+Thanks to @andrzejsliwa and @sevos for the inspiration
