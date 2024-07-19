@@ -120,8 +120,6 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-# ASDF
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # NVM
 export NVM_DIR="$HOME/.nvm"

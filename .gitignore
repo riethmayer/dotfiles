@@ -1,6 +1,6 @@
 .DS_Store
 
 # Java
-/bin/apache-maven*
-/bin/google-java-format*
+/stow/scripts/bin/apache-maven*
+/stow/scripts/bin/google-java-format*
 
