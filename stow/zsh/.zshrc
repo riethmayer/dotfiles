@@ -2,8 +2,7 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-# export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+export PATH=$HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -12,7 +11,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zshki is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="random"
+ZSH_THEME="peepcode"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -87,11 +86,11 @@ export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:${MANPATH}"
 export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='nvim'
+else
+  export EDITOR='nvim'
+fi
 
 # Compilation flags
 export ARCHFLAGS="-arch arm64"
@@ -146,11 +145,27 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 alias dc="docker-compose"
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/jan/.google-cloud-sdk/path.zsh.inc' ]; then . '/Users/jan/.google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/jan/.google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/jan/.google-cloud-sdk/completion.zsh.inc'; fi
 export GOPATH="$(go env GOPATH)"
 export PATH="${PATH}:${GOPATH}/bin"
+
+PATH=~/.console-ninja/.bin:$PATH
+
+# Tmux
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_DATA_HOME=$HOME/.local/share
+export XDG_STXDG_DAATE_HOME=$HOME/.local/state
+export XDG_CAXDG_DACHE_HOME=$HOME/.cache
+export TMUX_PLUGIN_MANAGER_PATH=$HOME/.tmux/plugins
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/janriethmayer/.google-cloud-sdk/path.zsh.inc' ]; then . '/Users/janriethmayer/.google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/janriethmayer/.google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/janriethmayer/.google-cloud-sdk/completion.zsh.inc'; fi
+
+# MVN - Maven
+
+export M2_HOME=$HOME/bin/apache-maven-3.9.6
+export PATH=$M2_HOME/bin:$PATH
+
+
