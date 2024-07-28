@@ -192,4 +192,7 @@ export FZF_ALT_C_OPTS="
   --preview 'tree -C {}'"
 source <(fzf --zsh)
 
+# Vim stuff
+
+alias vim="nvim"
 
