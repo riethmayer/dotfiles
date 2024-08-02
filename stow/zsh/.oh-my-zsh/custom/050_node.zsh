@@ -14,6 +14,8 @@ if ! command -v node &> /dev/null; then
   volta install node
 fi
 
+export VOLTA_FEATURE_PNPM=1
+
 if ! command -v pnpm &> /dev/null; then
   echo "Installing pnpm..."
   volta install pnpm
