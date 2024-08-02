@@ -13,7 +13,7 @@ default = current
   g = grep --extended-regexp --break --heading --line-number
   up = !git fetch origin && git rebase origin/master
   down = !git checkout master && git merge @{1} --ff-only
-  score = !git log --pretty=format:%an | sort | uniq -ci | sort -r | head -n30
+  score = !git log --pretty=format:%an | sort | uniq -ci | sort -r
   find-change = "!f() { git log --reverse --patch --pickaxe-all -S \"$1\" ; }; f"
   hide   = update-index --assume-unchanged
   unhide = update-index --no-assume-unchanged
