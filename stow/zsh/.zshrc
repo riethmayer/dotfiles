@@ -85,114 +85,17 @@ export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:${MANPATH}"
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nvim'
-else
-  export EDITOR='nvim'
-fi
-
 # Compilation flags
 export ARCHFLAGS="-arch arm64"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.# For a full list of active aliases, run `alias`.
 #
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('$HOME/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]; then
-        . "$HOME/miniforge3/etc/profile.d/conda.sh"
-    else
-        export PATH="/$HOME/miniforge3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
 
-
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-## LLVM
-export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
-export CXXFLAGS="-I/opt/homebrew/opt/llvm/include"
-export CFLAGS="-I/opt/homebrew/opt/llvm/include"
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-
-# docker
-
-export PATH=$HOME/.docker/bin/:$PATH
-
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-# pnpm end
-# bun completions
-[ -s "/$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-alias dc="docker-compose"
-export GOPATH="$(go env GOPATH)"
-export PATH="${PATH}:${GOPATH}/bin"
-
-PATH=~/.console-ninja/.bin:$PATH
-
-# Tmux
-export XDG_CONFIG_HOME=$HOME/.config
-export XDG_DATA_HOME=$HOME/.local/share
-export XDG_STXDG_DAATE_HOME=$HOME/.local/state
-export XDG_CAXDG_DACHE_HOME=$HOME/.cache
-export TMUX_PLUGIN_MANAGER_PATH=$HOME/.tmux/plugins
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/janriethmayer/.google-cloud-sdk/path.zsh.inc' ]; then . '/Users/janriethmayer/.google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/janriethmayer/.google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/janriethmayer/.google-cloud-sdk/completion.zsh.inc'; fi
-
-# MVN - Maven
-
-export M2_HOME=$HOME/bin/apache-maven-3.9.6
-export PATH=$M2_HOME/bin:$PATH
-
-# Fuzzy Finder (see https://www.youtube.com/watch?v=qgG5Jhi_Els)
-# Find files: CMD+t
-# Change directory: OPT+c
-# https://github.com/junegunn/fzf?tab=readme-ov-file#examples
-export FZF_DEFAULT_OPTS='--height 50% --tmux bottom,40% --layout reverse --border top'
-# Preview file content using bat
-export FZF_CTRL_T_OPTS="
-  --walker-skip .git,node_modules,target
-  --preview 'bat -n --color=always {}'
-  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
-# CTRL-Y to copy the command into clipboard using pbcopy
-export FZF_CTRL_R_OPTS="
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
-  --color header:italic
-  --header 'Press CTRL-Y to copy command into clipboard'"
-# Print tree structure in the preview window
-export FZF_ALT_C_OPTS="
-  --walker-skip .git,node_modules,target
-  --preview 'tree -C {}'"
-source <(fzf --zsh)
-
-# Vim stuff
-
-alias vim="nvim"
+# Everything that comes after this line should be moved to dotfiles/stow/zsh
 
