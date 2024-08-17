@@ -73,7 +73,7 @@ ZSH_THEME="peepcode"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git asdf)
+plugins=(git asdf colored-man-pages)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -99,3 +99,7 @@ export ARCHFLAGS="-arch arm64"
 
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
 
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"
