@@ -99,7 +99,3 @@ export ARCHFLAGS="-arch arm64"
 
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
 
-
-. "$HOME/.atuin/bin/env"
-
-eval "$(atuin init zsh)"
