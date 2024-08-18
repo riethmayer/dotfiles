@@ -26,7 +26,7 @@
 # auto_sync = true
 
 ## enable or disable automatic update checks
-update_check = true
+# update_check = true
 
 ## address of the sync server
 # sync_address = "https://api.atuin.sh"
@@ -38,15 +38,15 @@ update_check = true
 
 ## which search mode to use
 ## possible values: prefix, fulltext, fuzzy, skim
-search_mode = "fuzzy"
+# search_mode = "fuzzy"
 
 ## which filter mode to use
 ## possible values: global, host, session, directory
-filter_mode = "global"
+# filter_mode = "global"
 
 ## With workspace filtering enabled, Atuin will filter for commands executed
 ## in any directory within a git repository tree (default: false)
-workspaces = true
+# workspaces = false
 
 ## which filter mode to use when atuin is invoked from a shell up-key binding
 ## the accepted values are identical to those of "filter_mode"
@@ -131,7 +131,7 @@ workspaces = true
 ## 3. Slack oauth tokens (bot, user)
 ## 4. Slack webhooks
 ## 5. Stripe live/test keys
-secrets_filter = true
+# secrets_filter = true
 
 ## Defaults to true. If enabled, upon hitting enter Atuin will immediately execute the command. Press tab to return to the shell and edit.
 # This applies for new installs. Old installs will keep the old behaviour unless configured otherwise.
@@ -143,7 +143,7 @@ enter_accept = true
 ## keybinding is defined.  If this is set to "emacs", "vim-insert", or
 ## "vim-normal", the startup keymap mode in the Atuin search is forced to be
 ## the specified one.
-keymap_mode = "vim-insert"
+# keymap_mode = "auto"
 
 ## Cursor style in each keymap mode.  If specified, the cursor style is changed
 ## in entering the cursor shape.  Available values are "default" and
@@ -196,7 +196,7 @@ keymap_mode = "vim-insert"
 
 [keys]
 # Defaults to true. If disabled, using the up/down key won't exit the TUI when scrolled past the first/last entry.
-scroll_exits = false
+# scroll_exits = false
 
 [sync]
 # Enable sync v2 by default
