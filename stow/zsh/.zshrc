@@ -11,7 +11,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zshki is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="peepcode"
+ZSH_THEME=""
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -95,7 +95,13 @@ export ARCHFLAGS="-arch arm64"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+#
 
+ZSHRC_D="$ZSH_CUSTOM/zshrc.d"
 
+for file in $ZSHRC_D/*.zsh; do
+    source $file
+done
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
 
+source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
