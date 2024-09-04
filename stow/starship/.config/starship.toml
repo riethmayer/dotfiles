@@ -19,6 +19,12 @@
 #   """
 
 [gcloud]
-# format = 'on [$symbol$account(@$domain)(\($project\))]($style) '
-format = '[$symbol$project]($style)'
-style = 'bold yellow'
+format = '' # on [$symbol$account(@$domain)(\($project\))]($style) '
+# format = '[$symbol$project]($style)'
+# style = 'bold yellow'
+#
+[nodejs]
+format = ''
+
+[docker_context]
+format = ""

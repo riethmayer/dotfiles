@@ -19,4 +19,7 @@ export FZF_ALT_C_OPTS="
   --preview 'tree -C {}'"
 source <(fzf --zsh)
 
+if [[ -f $HOME/src/fzf-git.sh/fzf-git.sh ]]; then
+  source $HOME/src/fzf-git.sh/fzf-git.sh
+fi
 
