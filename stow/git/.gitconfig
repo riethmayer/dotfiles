@@ -1,6 +1,6 @@
 [push]
-default = current
-
+  default = current
+  autoSetupRemote = true
 [alias]
   co = checkout
   st = status
@@ -17,21 +17,26 @@ default = current
   find-change = "!f() { git log --reverse --patch --pickaxe-all -S \"$1\" ; }; f"
   hide   = update-index --assume-unchanged
   unhide = update-index --no-assume-unchanged
-
+  undo = reset --soft HEAD^
 [user]
-name = Jan Riethmayer
-email = jan@riethmayer.de
-
+  name = Jan Riethmayer
+  email = jan@riethmayer.de
 [hub]
   protocol = https
 [color]
 	ui = true
 [core]
-	autocrlf = input
+  autocrlf = input
+  line-numbers = true
+  pager = delta
 [pull]
 	rebase = true
 [rerere]
 	enabled = true
 [init]
 	defaultBranch = main
+[commit]
+  # gpgsign = true
+[gpg]
+  # program = /opt/homebrew/bin/gpg
 
