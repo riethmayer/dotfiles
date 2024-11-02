@@ -1,0 +1,5 @@
+direnv 2.35.0
+golang 1.20.5
+zoxide 0.9.6
+python 3.12.6
+ruby 3.3.5
