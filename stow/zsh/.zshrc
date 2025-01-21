@@ -105,3 +105,9 @@ done
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
 
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+
+# Added by Windsurf
+export PATH="/Users/janriethmayer/.codeium/windsurf/bin:$PATH"
+
+# Added by Windsurf
+export PATH="/Users/janriethmayer/.codeium/windsurf/bin:$PATH"
