@@ -21,6 +21,7 @@
 [user]
   name = Jan Riethmayer
   email = jan@riethmayer.de
+	signingkey = 404F29E4EB65CF7EA100957DCAE7D5F3F5A7C6F7
 [hub]
   protocol = https
 [color]
@@ -36,7 +37,7 @@
 [init]
 	defaultBranch = main
 [commit]
-  gpgsign = true
+	gpgsign = true
 [gpg]
   program = /opt/homebrew/bin/gpg
 

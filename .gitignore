@@ -4,3 +4,20 @@
 /stow/scripts/bin/apache-maven*
 /stow/scripts/bin/google-java-format*
 
+# ASDF
+stow/asdf/.asdf/installs/
+stow/asdf/.asdf/plugins/
+stow/asdf/.asdf/repository/
+stow/asdf/.asdf/shims/
+stow/asdf/.asdf/tmp/
+
+# Accidental keys
+private.key
+public.key
+
+# GPG
+.gnupg/
+
+# Windsurf
+/stow/windsurf/.codeium/windsurf/bin/*
+!/stow/windsurf/.codeium/windsurf/bin/.keep
