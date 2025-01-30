@@ -36,10 +36,5 @@ ZSHRC_D="$ZSH_CUSTOM/zshrc.d"
 for file in $ZSHRC_D/*.zsh; do
     source $file
 done
+
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
-
-source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
-
-# Added by Windsurf
-export PATH="$HOME/.codeium/windsurf/bin:$PATH"
-
