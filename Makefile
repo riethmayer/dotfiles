@@ -33,5 +33,20 @@ bootstrap_stage1:
 update: ## update the sources
 	./update_sources.sh
 
-.PHONY: help install install-adopt delete bootstrap bootstrap_stage1 update default
+.PHONY: help install install-adopt delete bootstrap bootstrap_stage1 update default nvim tmux gpg
+
+tmux:
+	@echo "Setting up tmux..."
+	@chmod +x stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+	@./stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+
+gpg:
+	@echo "Setting up gpg..."
+	@chmod +x stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+	@./stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+
+nvim:
+	@echo "Setting up neovim..."
+	@chmod +x stow/bootstrap/.system-bootstrap.d/003_nvim.sh
+	@./stow/bootstrap/.system-bootstrap.d/003_nvim.sh
 
