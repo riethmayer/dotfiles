@@ -7,9 +7,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME=""
 
-plugins=(git asdf colored-man-pages)
-
-source $ZSH/oh-my-zsh.sh
+plugins=(git colored-man-pages)
 
 # User configuration
 
@@ -31,10 +29,12 @@ export ARCHFLAGS="-arch arm64"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 
-ZSHRC_D="$ZSH_CUSTOM/zshrc.d"
+# Source all zsh configuration files
+ZSHRC_D="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 
-for file in $ZSHRC_D/*.zsh; do
-    source $file
+# Source base configuration files (ensures OMZ core loads early)
+for file in "$ZSHRC_D/"*.zsh; do
+    source "$file"
 done
 
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
