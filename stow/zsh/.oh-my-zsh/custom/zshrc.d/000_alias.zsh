@@ -17,3 +17,6 @@ export LESSOPEN='| p() { chroma --fail "$1" || cat "$1"; }; p "%s"'
 
 alias nerdfonts='fc-list : family | grep Nerd'
 
+# Task Master aliases added on 4/14/2025
+alias tm='task-master'
+alias taskmaster='task-master'
