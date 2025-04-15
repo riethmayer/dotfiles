@@ -38,3 +38,5 @@ for file in "$ZSHRC_D/"*.zsh; do
 done
 
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
+
+PATH=~/.console-ninja/.bin:$PATH
