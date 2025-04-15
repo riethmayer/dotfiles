@@ -1,3 +1,5 @@
-eval "$(direnv hook zsh)"
-source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+# direnv configuration
+if command -v direnv &> /dev/null; then
+    eval "$(direnv hook zsh)"
+fi
 
