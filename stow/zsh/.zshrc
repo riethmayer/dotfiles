@@ -1,16 +1,3 @@
-export PATH=$HOME/bin:$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH
-# Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
-
-ZSH_THEME=""
-
-plugins=(git colored-man-pages)
-
-# User configuration
-
 export MANPATH="/usr/local/man:$MANPATH"
 export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:${MANPATH}"
 
@@ -20,23 +7,33 @@ export LANG=en_US.UTF-8
 # Compilation flags
 export ARCHFLAGS="-arch arm64"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-#
+# Load custom configurations from Oh My Zsh custom directory
+for config_file ($ZSH_CUSTOM/zshrc.d/*.zsh(N)); do
+  source $config_file
+done
 
-# Source all zsh configuration files
-ZSHRC_D="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+# Set XDG Base Directory paths first
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_CACHE_HOME="${HOME}/.cache"
+export XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_STATE_HOME="${HOME}/.local/state"
 
-# Source base configuration files (ensures OMZ core loads early)
-for file in "$ZSHRC_D/"*.zsh; do
-    source "$file"
+# Source environment configuration first
+source "${XDG_CONFIG_HOME}/zsh/000_environment.zsh"
+
+# Set Oh My Zsh path using XDG location
+export ZSH="${XDG_DATA_HOME}/oh-my-zsh"
+
+# Basic Oh My Zsh configuration
+ZSH_THEME=""
+plugins=(git colored-man-pages)
+
+# Source Oh My Zsh
+source "${ZSH}/oh-my-zsh.sh"
+
+# Source remaining configurations
+for config_file ($XDG_CONFIG_HOME/zsh/0[1-9]*.zsh(N)); do
+  source $config_file
 done
 
 # Everything that comes after this line should be moved to dotfiles/stow/zsh
-
-PATH=~/.console-ninja/.bin:$PATH

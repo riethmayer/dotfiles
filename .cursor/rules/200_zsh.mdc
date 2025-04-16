@@ -1,0 +1,62 @@
+# Zsh Configuration Standards
+
+## Directory Structure
+- All custom zsh configurations go in `stow/zsh/.oh-my-zsh/custom/zshrc.d/`
+- Each feature/tool gets its own file with numbered prefix (e.g., `050_node.zsh`)
+- No configurations should be placed directly in `.zshrc`
+- No duplicate configuration loading mechanisms
+
+## File Naming Convention
+- Use three-digit prefixes for load order (e.g., `000_`, `010_`, `020_`)
+- Use descriptive names that indicate purpose (e.g., `050_node.zsh`, `060_golang.zsh`)
+- Group related configurations with similar prefixes
+- Prefix ranges:
+  - 000-009: Core environment and basic setup
+  - 010-029: Package managers and build tools
+  - 030-049: Cloud and platform tools
+  - 050-069: Programming languages
+  - 070-089: Development tools
+  - 090-099: Shell enhancements
+
+## Configuration Loading
+- Use single loading mechanism in `.zshrc`:
+  ```zsh
+  # Load Oh My Zsh
+  source $ZSH/oh-my-zsh.sh
+
+  # Load custom configurations
+  for config_file ($ZSH_CUSTOM/zshrc.d/*.zsh(N)); do
+    source $config_file
+  done
+  ```
+- Do not use multiple loading loops
+- Do not mix configuration locations
+
+## Configuration File Structure
+- Start with descriptive comment indicating purpose
+- Group related settings together
+- Use consistent comment style
+- Follow XDG base directory specification where applicable
+- Example:
+  ```zsh
+  # Tool Name configuration
+  export TOOL_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/tool"
+  
+  # Tool environment setup
+  export TOOL_OPTS="--some-option"
+  
+  # Add to PATH if needed
+  case ":$PATH:" in
+    *":$TOOL_HOME/bin:"*) ;;
+    *) export PATH="$TOOL_HOME/bin:$PATH" ;;
+  esac
+  ```
+
+## Best Practices
+- Keep configurations modular and focused
+- Use environment variables for paths
+- Follow XDG base directory specification
+- Document non-obvious settings
+- Use consistent formatting
+- Avoid duplicating configurations
+- Keep `.zshrc` minimal and delegate to modular files 
