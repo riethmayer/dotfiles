@@ -1,0 +1,12 @@
+; pnpm configuration
+store-dir=${XDG_DATA_HOME}/pnpm/store
+state-dir=${XDG_STATE_HOME}/pnpm
+cache-dir=${XDG_CACHE_HOME}/pnpm
+; Use strict-peer-dependencies to ensure consistent dependencies
+strict-peer-dependencies=true
+; Auto-install peers to avoid missing peer dependency warnings
+auto-install-peers=true
+; Use hoisting to optimize node_modules structure
+hoist=true
+; Save exact versions in package.json
+save-exact=true 
