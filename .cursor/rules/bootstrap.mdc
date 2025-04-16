@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Rules for managing bootstrap scripts and system setup
+globs: ["stow/bootstrap/**/*"]
+alwaysApply: true
+---
+# Bootstrap Script Organization
+- All bootstrap scripts must be in `stow/bootstrap/.system-bootstrap.d/`
+- Scripts must be numbered with three digits (e.g., `001_`, `002_`)
+- Each script should focus on a single tool or component
+- Scripts must be idempotent (safe to run multiple times)
+- Use consistent error handling and logging
+
+# Brewfile Management
+- Split Brewfiles by purpose in `stow/bootstrap/.brewfile.d/`
+- Main Brewfile should only include essential tools
+- Tool-specific Brewfiles should be named after their purpose
+- Use consistent formatting and grouping in Brewfiles
+- Document any special installation requirements
+
+# Script Naming Conventions
+- Use lowercase with underscores for script names
+- Prefix scripts with their purpose (e.g., `setup_`, `install_`)
+- Use consistent file extensions (.sh for shell scripts)
+- Group related scripts in appropriate subdirectories
+- Keep script names descriptive but concise
+
+# Configuration File Structure
+- Follow XDG Base Directory Specification
+- Use consistent file naming across tools
+- Group related configurations in subdirectories
+- Document any non-standard configurations
+- Keep configurations modular and focused
+
+# Tool-specific Setup Patterns
+- Each tool should have its own setup script
+- Follow consistent pattern for tool installation
+- Include version management where applicable
+- Document any tool-specific requirements
+- Handle dependencies explicitly
+
+# Best Practices
+- Use consistent error handling across scripts
+- Include helpful error messages
+- Log important operations
+- Check for prerequisites
+- Clean up temporary files
+- Use environment variables for paths
+- Fo 
