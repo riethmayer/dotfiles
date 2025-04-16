@@ -1,3 +1,8 @@
+---
+description: 
+globs: .zshrc,stow/zsh/**/*
+alwaysApply: false
+---
 # Shell Tool Configuration
 Rules for managing shell-integrated tools and their configurations.
 

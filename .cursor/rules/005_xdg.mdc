@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# XDG Base Directory Specification
+Rules for maintaining consistent XDG compliance across all tools and configurations.
+
+# Directory Structure
+- Configuration files → `$XDG_CONFIG_HOME` (~/.config)
+- Data files → `$XDG_DATA_HOME` (~/.local/share)
+- State files → `$XDG_STATE_HOME` (~/.local/state)
+- Cache files → `$XDG_CACHE_HOME` (~/.cache)
+
+# Configuration Requirements
+- All new tools must follow XDG specification
+- Legacy tools should be wrapped to use XDG paths
+- Document any tools that cannot follow XDG standards
+
+# Environment Variables
+## Required Variables
+```sh
+XDG_CONFIG_HOME="${HOME}/.config"
+XDG_CACHE_HOME="${HOME}/.cache"
+XDG_DATA_HOME="${HOME}/.local/share"
+XDG_STATE_HOME="${HOME}/.local/state"
+```
+
+## Tool-specific Variables
+- Use `${XDG_CONFIG_HOME}/tool` for configuration
+- Use `${XDG_DATA_HOME}/tool` for data
+- Use `${XDG_CACHE_HOME}/tool` for cache
+- Use `${XDG_STATE_HOME}/tool` for state
+
+# Migration Pattern
+For tools that don't support XDG:
+```sh
+# Set tool-specific home to XDG location
+export TOOL_HOME="${XDG_DATA_HOME}/tool"
+
+# Create symlink for backward compatibility if needed
+if [ ! -e "${HOME}/.tool" ] && [ -d "${TOOL_HOME}" ]; then
+    ln -s "${TOOL_HOME}" "${HOME}/.tool"
+fi
+```
+
+# Best Practices
+- Always use XDG variables, never hardcode paths
+- Keep tool data organized in appropriate directories
+- Use consistent naming across tools
+- Document any deviations from XDG standard
+- Handle migration from legacy paths gracefully 
