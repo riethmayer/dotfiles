@@ -1,13 +1,9 @@
 ---
-description: 
-globs: 
-alwaysApply: false
----
----
-description: Rules for managing bootstrap scripts and system setup
-globs: ["stow/bootstrap/**/*"]
+description: Rules for managing bootstrap scripts and system setup, including script organization, brewfile management, and tool-specific setup patterns
+globs: ["stow/bootstrap/**/*", "stow/**/bin/*", "stow/**/.brewfile.d/*"]
 alwaysApply: true
 ---
+
 # Bootstrap Script Organization
 - All bootstrap scripts must be in `stow/bootstrap/.system-bootstrap.d/`
 - Scripts must be numbered with three digits (e.g., `001_`, `002_`)
@@ -50,4 +46,4 @@ alwaysApply: true
 - Check for prerequisites
 - Clean up temporary files
 - Use environment variables for paths
-- Fo 
+- Follow the principle of least privilege 

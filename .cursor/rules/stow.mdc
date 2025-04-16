@@ -1,13 +1,9 @@
 ---
-description: 
-globs: 
+description: Rules for managing dotfiles with stow, including directory structure, bootstrap process, and configuration organization
+globs: ["stow/**/*", ".stow-global-ignore"]
 alwaysApply: true
 ---
----
-description: Rules for managing dotfiles with stow
-globs: 
-alwaysApply: true
----
+
 # Stow Structure and Usage
 - Use `stow` to create and manage symbolic links for all configuration files
 - Each tool or language should have its own stow directory (e.g., `stow/zsh/`, `stow/git/`)
@@ -20,7 +16,7 @@ alwaysApply: true
 - Example order: Homebrew → GPG → mise → language tools
 
 # Bootstrap Scripts Organization
-- All boobe in `stow/bootstrap/.system-bootstrap.d/`
+- All bootstrap scripts must be in `stow/bootstrap/.system-bootstrap.d/`
 - Each script should be named with a number prefix for ordering (e.g., `001_homebrew.sh`)
 - No tool-specific bootstrap scripts outside this directory
 - Purpose: Single source of truth for system setup
@@ -47,4 +43,4 @@ alwaysApply: true
   - Data files → `$XDG_DATA_HOME` (~/.local/share)
   - State files → `$XDG_STATE_HOME` (~/.local/state)
   - Cache files → `$XDG_CACHE_HOME` (~/.cache)
-- Refactor existing configs to foll
+- Refactor existing configs to follow these standards when possible

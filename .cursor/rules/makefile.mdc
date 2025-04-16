@@ -1,17 +1,18 @@
 ---
-description: 
-globs: 
+description: Rules for managing the Makefile, including target organization, documentation, and build process
+globs: ["Makefile", "stow/**/Makefile", "stow/bootstrap/**/*.sh"]
 alwaysApply: true
 ---
----
-description: Rules for managing the Makefile and build process
-globs: 
-alwaysApply: true
----
+
+- Drive tests and execution through `make` and update the Makefile if necessary
+- Always keep the `help` target as the first and default target
+- Always add documentation for new targets
+- Assume $XDG_ prefixed folders for configuration files configured in [005_tmux.zsh](mdc:stow/zsh/.oh-my-zsh/custom/zshrc.d/005_tmux.zsh).
+
 # Makefile Structure
 - Keep the `help` target as the first and default target
 - Document all targets with `##` comments for help text
-- Use consistent formattindocumentation
+- Use consistent formatting for target documentation
 - Group related targets together
 
 # Core Targets
@@ -69,4 +70,5 @@ alwaysApply: true
 - Use @ to suppress command echo
 - Use consistent indentation (tabs)
 - Keep targets focused and single-purpose
-- D
+- Document all non-obvious behavior
+
