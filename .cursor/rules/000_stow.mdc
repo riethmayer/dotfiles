@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Stow Structure and Usage
+- Use `stow` to create and manage symbolic links for all configuration files
+- Each tool or language must have its own stow directory (e.g., `stow/zsh/`, `stow/git/`)
+- Follow the principle: one tool/language = one stow directory
+- All configurations should target XDG-compliant paths
+
+# XDG Compliance
+- All configurations MUST follow XDG Base Directory Specification:
+  - Configurations → `$XDG_CONFIG_HOME` (~/.config)
+    - Example: `stow/tool/.config/tool/`
+  - Data files → `$XDG_DATA_HOME` (~/.local/share)
+    - Example: `stow/tool/.local/share/tool/`
+  - State files → `$XDG_STATE_HOME` (~/.local/state)
+    - Example: `stow/tool/.local/state/tool/`
+  - Cache files → `$XDG_CACHE_HOME` (~/.cache)
+    - Example: `stow/tool/.cache/tool/`
+- Document any tool that cannot follow XDG standards
+
+# Bootstrap Process
+- All system setup must be automated through `make bootstrap`
+- Bootstrap scripts must install dependencies in the correct order
+- After `make bootstrap`, `make install-adopt` should create all stow links
+- Example order: Homebrew → GPG → mise → language tools
+
+# Bootstrap Scripts Organization
+- All bootstrap scripts must be in `stow/bootstrap/.system-bootstrap.d/`
+- Each script should be named with a number prefix for ordering (e.g., `001_homebrew.sh`)
+- No tool-specific bootstrap scripts outside this directory
+- Purpose: Single source of truth for system setup
+
+# Package Manager and Language Config Separation
+- Package managers (mise, brew) handle only:
+  - Version management
+  - Installation
+  - Tool-specific environment setup
+- Language configurations stay in their own directories:
+  - R configs in `stow/R/`
+  - Ruby configs in `stow/ruby/`
+  - Python configs in `stow/python/`
+- Never mix these concerns (e.g., don't put .Rprofile in mise's config)
+
+# Script Organization
+- `stow/bootstrap/bin/` contains only `system-bootstrap.sh`
+- All user-specific scripts go in `stow/scripts/bin/`
+- Purpose: Clear separation between system setup and user tools
+
+# Configuration Standards
+- Use consistent file naming across all tools
+- Follow tool-specific conventions when they exist
+- Document any deviations from standard practices
+- Keep configurations modular and focused
+- Use clear, descriptive comments
+
+# Directory Structure Example
+```
+stow/
+├── tool/
+│   ├── .config/tool/        # XDG config files
+│   ├── .local/share/tool/   # XDG data files
+│   ├── .local/state/tool/   # XDG state files
+│   └── .cache/tool/         # XDG cache files
+└── bootstrap/
+    ├── bin/
+    │   └── system-bootstrap.sh
+    └── .system-bootstrap.d/
+        ├── 001_tool.sh
+        └── 002_another_tool.sh
+``` 
