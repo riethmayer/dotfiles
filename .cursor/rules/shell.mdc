@@ -1,0 +1,63 @@
+# Shell Tool Configuration
+Rules for managing shell-integrated tools and their configurations.
+
+# Tool Integration Patterns
+- Each shell-integrated tool must have:
+  - Its own configuration file in `stow/zsh/.config/zsh/`
+  - A dedicated stow directory if needed (e.g., `stow/tool/`)
+  - Clear documentation of dependencies
+  - Proper XDG compliance
+
+# File Naming Convention
+- Use three-digit numeric prefixes for load order
+- Group tools by function:
+  - 000-009: Core environment
+  - 010-019: Shell framework (Oh My Zsh)
+  - 020-029: Version managers
+  - 030-049: Development tools
+  - 050-069: Shell enhancements
+  - 070-089: Cloud tools
+  - 090-099: Custom scripts
+
+# Configuration Structure
+- Tool configurations should:
+  - Start with a descriptive comment header
+  - Document any required environment variables
+  - Include initialization commands
+  - Handle PATH modifications appropriately
+  - Follow XDG Base Directory Specification
+
+# Integration Requirements
+- Tools must be installed via package manager
+- Configuration must be idempotent
+- Environment variables must be documented
+- PATH modifications must be centralized
+- Dependencies must be explicit
+
+# Common Patterns
+## Version Managers
+```zsh
+# Tool name and purpose
+# Required environment setup
+export TOOL_HOME="${XDG_DATA_HOME}/tool"
+# PATH modifications (if needed)
+export PATH="${TOOL_HOME}/bin:$PATH"
+# Initialization
+eval "$(tool init zsh)"
+```
+
+## Shell Plugins
+```zsh
+# Plugin name and purpose
+# Configuration
+PLUGIN_OPTION="value"
+# Source or initialize
+source "${XDG_DATA_HOME}/plugin/init.zsh"
+```
+
+# Best Practices
+- Keep configurations focused and minimal
+- Document non-obvious settings
+- Use consistent style for similar tools
+- Handle errors gracefully
+- Check for tool existence before initialization 
