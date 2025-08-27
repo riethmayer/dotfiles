@@ -1,9 +1,14 @@
-# Javascript/Typescript/Node configuration
+# Node.js Configuration
+# JavaScript/TypeScript development tools
 
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# Bun - JavaScript runtime
+if [ -d "${HOME}/.bun" ]; then
+    export BUN_INSTALL="${HOME}/.bun"
+    export PATH="${BUN_INSTALL}/bin:$PATH"
+fi
 
-# Console Ninja
-export PATH=$HOME/.console-ninja/.bin:$PATH
+# Console Ninja - development tool
+if [ -d "${HOME}/.console-ninja/.bin" ]; then
+    export PATH="${HOME}/.console-ninja/.bin:$PATH"
+fi
 
