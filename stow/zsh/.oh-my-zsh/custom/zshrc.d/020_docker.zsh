@@ -1,5 +1,9 @@
-# docker
+# Docker Configuration
+# Docker CLI and tools
 
-export PATH=$HOME/.docker/bin/:$PATH
+# Add Docker CLI to PATH if it exists
+if [ -d "${HOME}/.docker/bin" ]; then
+    export PATH="${HOME}/.docker/bin:$PATH"
+fi
 
 

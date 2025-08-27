@@ -17,9 +17,16 @@ export FZF_CTRL_R_OPTS="
 export FZF_ALT_C_OPTS="
   --walker-skip .git,node_modules,target
   --preview 'tree -C {}'"
-source <(fzf --zsh)
+# Initialize fzf if available
+if command -v fzf &> /dev/null; then
+    source <(fzf --zsh)
+else
+    echo "Warning: fzf not found. Fuzzy finder functionality not available."
+    echo "Run 'brew install fzf' to install fzf."
+fi
 
-if [[ -f $HOME/src/fzf-git.sh/fzf-git.sh ]]; then
-  source $HOME/src/fzf-git.sh/fzf-git.sh
+# Load fzf-git.sh if available
+if [[ -f "${HOME}/src/fzf-git.sh/fzf-git.sh" ]]; then
+  source "${HOME}/src/fzf-git.sh/fzf-git.sh"
 fi
 

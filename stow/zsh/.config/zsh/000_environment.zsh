@@ -2,8 +2,14 @@
 # Add user binaries and local binaries to PATH
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
 
-# Homebrew initialization and path
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew initialization and path - portable across different architectures
+if [ -f "/opt/homebrew/bin/brew" ]; then
+    # Apple Silicon Mac
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -f "/usr/local/bin/brew" ]; then
+    # Intel Mac
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 # Language and System Settings
 export LANG="en_US.UTF-8"
@@ -16,9 +22,11 @@ export PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
 # Additional PATH modifications
 export PATH="/usr/local/sbin:$PATH"
 
-# Man path configuration
+# Man path configuration - portable across different architectures
 export MANPATH="/usr/local/man:$MANPATH"
-export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:${MANPATH}"
+if [ -d "/opt/homebrew/opt/coreutils/libexec/gnuman" ]; then
+    export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:${MANPATH}"
+fi
 
 # Editor configuration
 export EDITOR='nvim'

@@ -50,3 +50,13 @@ nvim:
 	@chmod +x stow/bootstrap/.system-bootstrap.d/003_nvim.sh
 	@./stow/bootstrap/.system-bootstrap.d/003_nvim.sh
 
+atuin:
+	@echo "Setting up atuin..."
+	@chmod +x stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+	@./stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+
+zsh-xdg:
+	@echo "Setting up zsh XDG directories..."
+	@chmod +x stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+	@./stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+
