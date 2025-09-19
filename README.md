@@ -9,7 +9,7 @@ Clone the dotfiles repository to your target dotfiles directory.
 
     git clone git@github.com:riethmayer/dotfiles $HOME/dotfiles
     cd ~/dotfiles
-    make install
+    mise run install
 
 # Acknowledgmenets
 

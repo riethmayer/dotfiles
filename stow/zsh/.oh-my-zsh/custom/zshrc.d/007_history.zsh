@@ -15,5 +15,5 @@ if command -v atuin &> /dev/null; then
     bindkey '^P' _atuin_search_widget    # Ctrl+P
 else
     echo "Warning: atuin not found. Shell history enhancement not available."
-    echo "Run 'make bootstrap' to install atuin."
+    echo "Run 'mise run bootstrap' to install atuin."
 fi

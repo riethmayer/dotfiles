@@ -5,5 +5,98 @@ zoxide = "0.9.6"
 python = "3.12.6"
 ruby = "3.3.5"
 lua = "5.1.5"
-node = "24.1"
+node = "24.1.0"
 pnpm = "10.8.1"
+java = "temurin-21"
+
+[tasks.help]
+description = "Show available tasks and stow packages"
+run = '''
+echo "STOW_DIR: $(pwd)/stow"
+echo "PACKAGES: $(ls -d stow/* | xargs basename -a | tr '\n' ' ')"
+echo ""
+echo "Available tasks:"
+mise tasks
+'''
+
+[tasks.install]
+description = "Install all stow packages"
+run = '''
+STOW_DIR=$(pwd)/stow
+PACKAGES=$(ls -d stow/* | xargs basename -a)
+stow --dir $STOW_DIR --target ~ $PACKAGES
+'''
+
+[tasks.install-adopt]
+description = "Install all stow packages and adopt existing files"
+run = '''
+STOW_DIR=$(pwd)/stow
+PACKAGES=$(ls -d stow/* | xargs basename -a)
+stow --dir $STOW_DIR --target ~ $PACKAGES --adopt
+'''
+
+[tasks.delete]
+description = "Delete all stow symlinks"
+run = '''
+STOW_DIR=$(pwd)/stow
+PACKAGES=$(ls -d stow/* | xargs basename -a)
+stow --dir $STOW_DIR --delete --target ~ $PACKAGES
+'''
+
+[tasks.bootstrap]
+description = "Bootstrap the entire environment"
+depends = ["bootstrap-stage1", "install"]
+run = '''
+# Stage 2: Install all requirements
+$HOME/bin/system-bootstrap.sh
+'''
+
+[tasks.bootstrap-stage1]
+description = "Stage 1: Install Homebrew and Stow"
+run = '''
+stow/bootstrap/bin/system-bootstrap.sh
+'''
+
+[tasks.update]
+description = "Update the repository sources"
+run = './update_sources.sh'
+
+[tasks.tmux]
+description = "Setup tmux configuration"
+run = '''
+echo "Setting up tmux..."
+chmod +x stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+./stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+'''
+
+[tasks.gpg]
+description = "Setup GPG configuration"
+run = '''
+echo "Setting up gpg..."
+chmod +x stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+./stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+'''
+
+[tasks.nvim]
+description = "Setup Neovim configuration"
+run = '''
+echo "Setting up neovim..."
+chmod +x stow/bootstrap/.system-bootstrap.d/003_nvim.sh
+./stow/bootstrap/.system-bootstrap.d/003_nvim.sh
+'''
+
+[tasks.atuin]
+description = "Setup Atuin shell history"
+run = '''
+echo "Setting up atuin..."
+chmod +x stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+./stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+'''
+
+[tasks.zsh-xdg]
+description = "Setup Zsh XDG directories"
+run = '''
+echo "Setting up zsh XDG directories..."
+chmod +x stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+./stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+'''

@@ -9,20 +9,20 @@ This is a personal dotfiles repository that uses GNU Stow for managing configura
 ## Key Commands
 
 ### Installation and Setup
-- `make help` - Display all available commands with descriptions
-- `make install` - Install all stow packages (create symlinks)
-- `make install-adopt` - Install with adoption of existing files (use for initial setup)
-- `make bootstrap` - Complete system bootstrap (runs both stages)
-- `make bootstrap_stage1` - Stage 1: Install Homebrew and Stow
-- `make delete` - Remove all stow symlinks
-- `make update` - Update repository sources
+- `mise run help` - Display all available tasks and stow packages
+- `mise run install` - Install all stow packages (create symlinks)
+- `mise run install-adopt` - Install with adoption of existing files (use for initial setup)
+- `mise run bootstrap` - Complete system bootstrap (runs both stages)
+- `mise run bootstrap-stage1` - Stage 1: Install Homebrew and Stow
+- `mise run delete` - Remove all stow symlinks
+- `mise run update` - Update repository sources
 
 ### Tool-specific Setup
-- `make tmux` - Setup tmux configuration
-- `make gpg` - Setup GPG configuration
-- `make nvim` - Setup Neovim configuration
-- `make atuin` - Setup Atuin shell history
-- `make zsh-xdg` - Setup Zsh XDG directories
+- `mise run tmux` - Setup tmux configuration
+- `mise run gpg` - Setup GPG configuration
+- `mise run nvim` - Setup Neovim configuration
+- `mise run atuin` - Setup Atuin shell history
+- `mise run zsh-xdg` - Setup Zsh XDG directories
 
 ## Architecture and Structure
 
@@ -33,11 +33,12 @@ This is a personal dotfiles repository that uses GNU Stow for managing configura
 - All packages listed in `PACKAGES` variable (derived from `stow/` subdirectories)
 
 ### Bootstrap System
-- Two-stage bootstrap process via `make bootstrap`
+- Two-stage bootstrap process via `mise run bootstrap`
 - Stage 1: Install Homebrew and Stow (`stow/bootstrap/bin/system-bootstrap.sh`)
 - Stage 2: Install all requirements (`$HOME/bin/system-bootstrap.sh`)
 - Individual setup scripts in `stow/bootstrap/.system-bootstrap.d/`
 - Scripts numbered with three digits for ordering (e.g., `001_mise.sh`)
+- All tasks managed through mise configuration in `stow/mise/.config/mise/config.toml`
 
 ### Configuration Loading
 **Zsh Configuration:**
@@ -66,7 +67,7 @@ Current stow packages: atuin, bootstrap, brew, git, mise, pnpm, ruby, scripts, s
 ### Adding New Tools
 1. Create `stow/{tool}/` directory following XDG structure
 2. Add tool-specific bootstrap script: `stow/bootstrap/.system-bootstrap.d/XXX_{tool}.sh`
-3. Add Makefile target for individual tool setup
+3. Add mise task for individual tool setup in `stow/mise/.config/mise/config.toml`
 4. For Zsh integration: add `stow/zsh/.oh-my-zsh/custom/zshrc.d/XXX_{tool}.zsh`
 
 ### Script Organization
@@ -80,3 +81,4 @@ Current stow packages: atuin, bootstrap, brew, git, mise, pnpm, ruby, scripts, s
 - Follow XDG paths in all configurations
 - Keep configurations modular and tool-focused
 - Document any non-XDG compliant tools
+- Always use mise for automating tasks and as entry point

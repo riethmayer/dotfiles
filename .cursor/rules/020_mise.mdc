@@ -1,0 +1,69 @@
+---
+description:
+globs: stow/mise/.config/mise/config.toml
+alwaysApply: false
+---
+# Mise Task Structure
+- Keep the `help` task as the first task for easy discovery
+- Document all tasks with clear descriptions
+- Use consistent formatting for task documentation
+- Group related tasks together
+
+# Core Tasks
+- `help`: Must be the first task
+  - Shows STOW_DIR and PACKAGES variables
+  - Lists all available tasks with descriptions
+  - Uses color formatting for better readability
+
+- `install`: Basic stow installation
+  - Creates symlinks for all packages
+  - Uses --dir and --target options
+  - Does not modify existing files
+
+- `install-adopt`: Installation with file adoption
+  - Creates symlinks and adopts existing files
+  - Use with caution as it modifies existing files
+  - Useful for initial setup
+
+- `delete`: Clean removal
+  - Removes all stow symlinks
+  - Does not delete source files
+  - Use for clean reinstallation
+
+# Bootstrap Process
+- `bootstrap`: Main bootstrap task
+  - Depends on bootstrap-stage1 and install
+  - Runs system-bootstrap.sh from $HOME/bin
+  - Handles stage 2 of bootstrap process
+
+- `bootstrap-stage1`: Initial bootstrap
+  - Runs system-bootstrap.sh from stow/bootstrap/bin
+  - Sets up Homebrew and Stow
+  - Must complete before main bootstrap
+
+# Tool-specific Tasks
+- Each tool should have its own task
+- Follow the pattern:
+  ```toml
+  [tasks.tool]
+  description = "Setup tool configuration"
+  run = '''
+  echo "Setting up tool..."
+  chmod +x stow/bootstrap/.system-bootstrap.d/XXX_tool.sh
+  ./stow/bootstrap/.system-bootstrap.d/XXX_tool.sh
+  '''
+  ```
+- Keep tool setup scripts in bootstrap directory
+- Use consistent naming (XXX_tool.sh)
+
+# Task Dependencies
+- Use `depends` to specify task dependencies
+- Keep dependency chains simple and clear
+- Document complex dependencies
+
+# Best Practices
+- Use descriptive task names with hyphens for readability
+- Use triple-quoted strings for multi-line run commands
+- Keep tasks focused and single-purpose
+- Document all non-obvious behavior
+- Use consistent shell scripting patterns across tasks 

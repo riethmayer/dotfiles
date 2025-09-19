@@ -22,9 +22,9 @@ alwaysApply: true
 - Document any tool that cannot follow XDG standards
 
 # Bootstrap Process
-- All system setup must be automated through `make bootstrap`
+- All system setup must be automated through `mise run bootstrap`
 - Bootstrap scripts must install dependencies in the correct order
-- After `make bootstrap`, `make install-adopt` should create all stow links
+- After `mise run bootstrap`, `mise run install-adopt` should create all stow links
 - Example order: Homebrew → GPG → mise → language tools
 
 # Bootstrap Scripts Organization
