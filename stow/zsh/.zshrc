@@ -32,3 +32,4 @@ done
 for config_file ($XDG_CONFIG_HOME/zsh/*.zsh(N)); do
   source $config_file
 done
+
