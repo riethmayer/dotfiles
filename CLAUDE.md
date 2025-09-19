@@ -14,8 +14,9 @@ This is a personal dotfiles repository that uses GNU Stow for managing configura
 - `mise run install-adopt` - Install with adoption of existing files (use for initial setup)
 - `mise run bootstrap` - Complete system bootstrap (runs both stages)
 - `mise run bootstrap-stage1` - Stage 1: Install Homebrew and Stow
+- `mise run quick-bootstrap` - Quick bootstrap for development setup (essential tools only)
 - `mise run delete` - Remove all stow symlinks
-- `mise run update` - Update repository sources
+- `mise run update` - Sync dotfiles repo and handle git conflicts
 
 ### Tool-specific Setup
 - `mise run tmux` - Setup tmux configuration
