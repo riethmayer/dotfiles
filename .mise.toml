@@ -1,0 +1,159 @@
+# Dotfiles bootstrap
+
+[tasks.help]
+description = "Show available tasks and stow packages"
+run = '''
+echo "STOW_DIR: $(pwd)/stow"
+echo "PACKAGES: $(ls -d stow/* | xargs basename -a | tr '\n' ' ')"
+echo ""
+echo "Available tasks:"
+mise tasks
+'''
+
+[tasks.install]
+description = "Install all stow packages"
+run = '''
+STOW_DIR=$(pwd)/stow
+PACKAGES=$(ls -d stow/* | xargs basename -a)
+stow --dir $STOW_DIR --target ~ $PACKAGES
+'''
+
+[tasks.install-adopt]
+description = "Install all stow packages and adopt existing files"
+run = '''
+STOW_DIR=$(pwd)/stow
+PACKAGES=$(ls -d stow/* | xargs basename -a)
+stow --dir $STOW_DIR --target ~ $PACKAGES --adopt
+'''
+
+[tasks.delete]
+description = "Delete all stow symlinks"
+run = '''
+STOW_DIR=$(pwd)/stow
+PACKAGES=$(ls -d stow/* | xargs basename -a)
+stow --dir $STOW_DIR --delete --target ~ $PACKAGES
+'''
+
+[tasks.bootstrap]
+description = "Bootstrap the entire environment"
+depends = ["bootstrap-stage1", "install"]
+run = '''
+# Stage 2: Install all requirements
+$HOME/bin/system-bootstrap.sh
+'''
+
+[tasks.bootstrap-stage1]
+description = "Stage 1: Install Homebrew and Stow"
+run = '''
+stow/bootstrap/bin/system-bootstrap.sh
+'''
+
+[tasks.quick-bootstrap]
+description = "Quick bootstrap for development setup"
+depends = ["install"]
+run = '''
+#!/bin/bash
+
+COLOR_BLUE="\033[0;34m"
+COLOR_GREEN="\033[0;32m"
+COLOR_RESET="\033[0m"
+
+echo -e "${COLOR_GREEN}Starting quick bootstrap...${COLOR_RESET}"
+
+# Run essential bootstrap scripts
+dir="stow/bootstrap/.system-bootstrap.d"
+
+for file in "$dir"/{001_mise.sh,004_atuin.sh,005_zsh_xdg.sh}; do
+  if [ -f "$file" ]; then
+    echo -e "${COLOR_BLUE}==> Processing $(basename "$file")...${COLOR_RESET}"
+    chmod +x "$file"
+    bash "$file"
+  fi
+done
+
+echo -e "${COLOR_GREEN}Quick bootstrap completed!${COLOR_RESET}"
+'''
+
+[tasks.update]
+description = "Sync dotfiles repo and handle git conflicts"
+run = '''
+#!/bin/bash
+
+# Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
+
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+RED='\033[1;30m'
+NC='\033[0m'
+
+# Navigate to the repository root
+cd "$(git rev-parse --show-toplevel)"
+
+echo -e "${BLUE}Stashing existing changes...${NC}"
+stash_result=$(git stash push -m "sync-dotfiles: Before syncing dotfiles")
+needs_pop=1
+if [ "$stash_result" = "No local changes to save" ]; then
+  needs_pop=0
+fi
+
+echo -e "${BLUE}Pulling updates from dotfiles repo...${NC}"
+echo
+git pull origin main
+echo
+
+if [[ "$needs_pop" -eq "1" ]]; then
+  echo -e "${BLUE}Popping stashed changes...${NC}"
+  echo
+  git stash pop
+fi
+
+unmerged_files=$(git diff --name-only --diff-filter=U)
+if [[ ! -z $unmerged_files ]]; then
+  echo -e "${RED}The following files have merge conflicts after popping the stash:${NC}"
+  echo
+  printf %"s\n" $unmerged_files # Ensure newlines are printed
+  exit 1
+fi
+
+echo -e "${GREEN}Dotfiles sync completed successfully!${NC}"
+'''
+
+[tasks.tmux]
+description = "Setup tmux configuration"
+run = '''
+echo "Setting up tmux..."
+chmod +x stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+./stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+'''
+
+[tasks.gpg]
+description = "Setup GPG configuration"
+run = '''
+echo "Setting up gpg..."
+chmod +x stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+./stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+'''
+
+[tasks.nvim]
+description = "Setup Neovim configuration"
+run = '''
+echo "Setting up neovim..."
+chmod +x stow/bootstrap/.system-bootstrap.d/003_nvim.sh
+./stow/bootstrap/.system-bootstrap.d/003_nvim.sh
+'''
+
+[tasks.atuin]
+description = "Setup Atuin shell history"
+run = '''
+echo "Setting up atuin..."
+chmod +x stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+./stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+'''
+
+[tasks.zsh-xdg]
+description = "Setup Zsh XDG directories"
+run = '''
+echo "Setting up zsh XDG directories..."
+chmod +x stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+./stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+'''
