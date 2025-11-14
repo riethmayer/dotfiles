@@ -6,6 +6,7 @@ Claude Code configuration files for AI-powered development assistant.
 
 ```
 .claude/
+├── CLAUDE.md           # Claude personal memory
 ├── settings.json       # Claude settings (alwaysThinkingEnabled, etc.)
 └── plugins/
     └── config.json     # Plugin configuration

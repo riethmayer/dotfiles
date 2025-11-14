@@ -1,3 +1,9 @@
 {
-  "alwaysThinkingEnabled": true
+  "enabledPlugins": {
+    "earlybird-shared@earlybird-marketplace": true,
+    "earlybird-product-management@earlybird-marketplace": true,
+    "document-skills@anthropic-agent-skills": true,
+    "example-skills@anthropic-agent-skills": true
+  },
+  "alwaysThinkingEnabled": false
 }

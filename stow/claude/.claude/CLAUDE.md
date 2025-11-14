@@ -2,7 +2,7 @@
 
 ## GitHub
 
-- your primary method for interacting with GitHub shgould be the github CLI
+- your primary method for interacting with GitHub is github CLI
 
 ## Git
 
@@ -11,3 +11,4 @@
 ## Plans
 
 - At the end of each plan, give me a list of unresolved questions to answer, if any. Make the questions extremely concise and sacrifice grammer for the sake of concision.
+
