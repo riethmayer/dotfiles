@@ -5,34 +5,44 @@ set -euo pipefail
 
 BRAG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/brag-book"
 TODAY=$(date +%Y-%m-%d)
-
-# Category selection
-echo "Category?"
-echo "1) Strategy"
-echo "2) Culture"
-echo "3) Execution"
-read -r choice
-
-case $choice in
-  1) category="strategy" ;;
-  2) category="culture" ;;
-  3) category="execution" ;;
-  *) category="execution" ;;
-esac
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%S%z)
 
 # Get description
 echo "What did you work on?"
 read -r description
 
-# Ensure file exists
-FILE="$BRAG_DIR/$category/$TODAY.md"
-if [[ ! -f "$FILE" ]]; then
-  echo "# ${category^} - $TODAY" > "$FILE"
-  echo "" >> "$FILE"
+if [[ -z "$description" ]]; then
+  echo "Empty description, skipping"
+  exit 0
 fi
 
-# Append entry with timestamp
-TIMESTAMP=$(date +%H:%M)
-echo "- [$TIMESTAMP] $description" >> "$FILE"
+# Capture context
+CWD=$(pwd)
+GIT_REPO=""
+GIT_BRANCH=""
+FILES_CHANGED="[]"
 
-echo "Added to $category/$TODAY.md"
+if git rev-parse --git-dir &>/dev/null; then
+  GIT_REPO=$(basename "$(git rev-parse --show-toplevel)")
+  GIT_BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+
+  # Get changed files (staged + unstaged + untracked)
+  FILES_CHANGED=$(git status --porcelain | awk '{print $2}' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+fi
+
+# Ensure directory exists
+mkdir -p "$BRAG_DIR"
+
+# Append to daily JSONL file
+JSONL_FILE="$BRAG_DIR/$TODAY.jsonl"
+jq -n \
+  --arg ts "$TIMESTAMP" \
+  --arg sum "$description" \
+  --arg cwd "$CWD" \
+  --arg repo "$GIT_REPO" \
+  --arg branch "$GIT_BRANCH" \
+  --argjson files "$FILES_CHANGED" \
+  '{timestamp: $ts, summary: $sum, source: "manual", cwd: $cwd, git_repo: $repo, git_branch: $branch, files_changed: $files}' \
+  >> "$JSONL_FILE"
+
+echo "Added to $TODAY.jsonl"

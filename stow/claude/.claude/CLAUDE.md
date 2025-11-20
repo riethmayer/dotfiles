@@ -15,8 +15,9 @@
 ## Brag Book
 
 - Track work in `$XDG_DATA_HOME/brag-book/` (`~/.local/share/brag-book/`)
-- Organized by: strategy, culture, execution
-- Daily files named by date (e.g., 2025-11-20.md)
+- Daily JSONL files: `{date}.jsonl` (e.g., `2025-11-20.jsonl`)
+- Categories: strategy, culture, execution
+- Entry format: `{"timestamp": "HH:MM:SS", "category": "...", "summary": "...", "source": "hook|manual", "session_id": "..."}`
 - Use `brag` command to add entries manually
-- Stop hook auto-captures Claude Code sessions
+- Stop hook auto-captures via `brag-capture-stop` (uses `claude -p` CLI)
 
