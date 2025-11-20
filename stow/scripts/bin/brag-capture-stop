@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Stop hook for brag-book - captures conversation summary
+
+set -euo pipefail
+
+BRAG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/brag-book"
+TODAY=$(date +%Y-%m-%d)
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%S%z)
+
+# Read hook input from stdin
+HOOK_INPUT=$(cat)
+
+# Extract transcript path
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty')
+
+if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
+  echo '{"ok": true, "systemMessage": "Brag: no transcript"}'
+  exit 0
+fi
+
+# Read transcript (last 50 lines)
+TRANSCRIPT=$(tail -50 "$TRANSCRIPT_PATH")
+
+if [[ -z "$TRANSCRIPT" ]]; then
+  echo '{"ok": true, "systemMessage": "Brag: empty transcript"}'
+  exit 0
+fi
+
+# Check if claude CLI is available
+if ! command -v claude &> /dev/null; then
+  echo '{"ok": true, "systemMessage": "Brag: claude CLI not found"}'
+  exit 0
+fi
+
+# Call Claude via CLI for summary only
+ESCAPED_TRANSCRIPT=$(jq -Rs '.' <<< "$TRANSCRIPT")
+SUMMARY=$(claude -p "Summarize this conversation in one concise line. Respond with ONLY the summary text, no JSON.
+
+Transcript:
+$ESCAPED_TRANSCRIPT" 2>&1)
+
+if [[ $? -ne 0 || -z "$SUMMARY" ]]; then
+  echo '{"ok": true, "systemMessage": "Brag: summary failed"}'
+  exit 0
+fi
+
+# Capture context
+CWD=$(pwd)
+GIT_REPO=""
+GIT_BRANCH=""
+FILES_CHANGED="[]"
+
+if git rev-parse --git-dir &>/dev/null; then
+  GIT_REPO=$(basename "$(git rev-parse --show-toplevel)")
+  GIT_BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+
+  # Get changed files (staged + unstaged + untracked)
+  FILES_CHANGED=$(git status --porcelain | awk '{print $2}' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+fi
+
+# Extract hook metadata
+SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // "unknown"')
+PERMISSION_MODE=$(echo "$HOOK_INPUT" | jq -r '.permission_mode // "default"')
+
+# Append to daily JSONL file
+JSONL_FILE="$BRAG_DIR/$TODAY.jsonl"
+
+mkdir -p "$BRAG_DIR"
+jq -n \
+  --arg ts "$TIMESTAMP" \
+  --arg sum "$SUMMARY" \
+  --arg src "hook" \
+  --arg sid "$SESSION_ID" \
+  --arg cwd "$CWD" \
+  --arg repo "$GIT_REPO" \
+  --arg branch "$GIT_BRANCH" \
+  --argjson files "$FILES_CHANGED" \
+  --arg mode "$PERMISSION_MODE" \
+  '{timestamp: $ts, summary: $sum, source: $src, session_id: $sid, cwd: $cwd, git_repo: $repo, git_branch: $branch, files_changed: $files, permission_mode: $mode}' \
+  >> "$JSONL_FILE"
+
+# Return success
+echo "{\"ok\": true, \"systemMessage\": \"Brag: $SUMMARY\"}"
