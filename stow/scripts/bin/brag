@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Add entry to brag-book
+
+set -euo pipefail
+
+BRAG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/brag-book"
+TODAY=$(date +%Y-%m-%d)
+
+# Category selection
+echo "Category?"
+echo "1) Strategy"
+echo "2) Culture"
+echo "3) Execution"
+read -r choice
+
+case $choice in
+  1) category="strategy" ;;
+  2) category="culture" ;;
+  3) category="execution" ;;
+  *) category="execution" ;;
+esac
+
+# Get description
+echo "What did you work on?"
+read -r description
+
+# Ensure file exists
+FILE="$BRAG_DIR/$category/$TODAY.md"
+if [[ ! -f "$FILE" ]]; then
+  echo "# ${category^} - $TODAY" > "$FILE"
+  echo "" >> "$FILE"
+fi
+
+# Append entry with timestamp
+TIMESTAMP=$(date +%H:%M)
+echo "- [$TIMESTAMP] $description" >> "$FILE"
+
+echo "Added to $category/$TODAY.md"

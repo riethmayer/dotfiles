@@ -5,5 +5,22 @@
     "document-skills@anthropic-agent-skills": true,
     "example-skills@anthropic-agent-skills": true
   },
-  "alwaysThinkingEnabled": false
+  "alwaysThinkingEnabled": true,
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Analyze the conversation and create a brag-book entry. Respond with ONLY this JSON format:\n\n{\"category\": \"strategy|culture|execution\", \"summary\": \"one concise line\"}\n\nCategorization:\n- strategy: high-level direction, positioning, frameworks, business model\n- culture: values, hiring, team, communication, brand\n- execution: implementation, technical work, operational improvements\n\nConversation context: $ARGUMENTS",
+            "model": "claude-sonnet-4-5-20250929"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/bin/brag-capture"
+          }
+        ]
+      }
+    ]
+  }
 }
