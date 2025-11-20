@@ -11,6 +11,9 @@ public.key
 # GPG
 .gnupg/
 
+# Google Cloud SDK
+/stow/gcloud/.local/share/google-cloud-sdk/
+
 # Windsurf
 /stow/windsurf/.codeium/windsurf/bin/*
 !/stow/windsurf/.codeium/windsurf/bin/.keep
