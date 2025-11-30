@@ -18,4 +18,3 @@ for maven_path in "${MAVEN_PATHS[@]}"; do
         break
     fi
 done
-

@@ -83,3 +83,10 @@ Current stow packages: atuin, bootstrap, brew, git, mise, pnpm, ruby, scripts, s
 - Keep configurations modular and tool-focused
 - Document any non-XDG compliant tools
 - Always use mise for automating tasks and as entry point
+
+## Shared Rules
+
+Load on need-to-know basis:
+- `.rules/planning.md` - Sprint management (check when working on .planning/)
+- `.rules/tools.md` - Tool preferences (rg, fd, gh, fzf, etc.)
+- `.planning/tech-radar.md` - When adding/referencing technology, review and clarify categorization

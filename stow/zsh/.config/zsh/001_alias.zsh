@@ -1,3 +1,5 @@
+# Aliases
+# Common command shortcuts
 
 alias dc="docker-compose"
 alias v=nvim
@@ -14,9 +16,8 @@ alias or='nvim $OBSIDIAN_VAULT/inbox/*.md'
 export LESSOPEN='| p() { chroma --fail "$1" || cat "$1"; }; p "%s"'
 
 # Fonts
-
 alias nerdfonts='fc-list : family | grep Nerd'
 
-# Task Master aliases added on 4/14/2025
+# Task Master aliases
 alias tm='task-master'
 alias taskmaster='task-master'

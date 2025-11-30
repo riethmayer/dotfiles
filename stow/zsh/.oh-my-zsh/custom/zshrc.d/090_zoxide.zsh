@@ -1,2 +1,0 @@
-eval "$(zoxide init zsh)"
-
