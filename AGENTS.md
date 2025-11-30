@@ -9,6 +9,8 @@ When starting a session on this repo:
 2. Look for incomplete sprints (unchecked `[ ]` items)
 3. Read the sprint file before starting work
 
+A sprint is complete when `sprint-{NN}-{name}-summary.md` exists. See `.rules/planning.md` for details.
+
 ## Repository Overview
 
 Personal dotfiles using GNU Stow + XDG Base Directory Specification.
