@@ -20,15 +20,17 @@ mkdir -p "${XDG_DATA_HOME}/zsh"
 mkdir -p "${XDG_STATE_HOME}/zsh"
 
 # Create specific directories that zsh expects
-mkdir -p "${XDG_STATE_HOME}/zsh/history"
 mkdir -p "${XDG_DATA_HOME}/oh-my-zsh"
+
+# Create history file (not directory)
+touch "${XDG_STATE_HOME}/zsh/history"
 
 # Set proper permissions
 chmod 755 "${XDG_CONFIG_HOME}/zsh"
 chmod 755 "${XDG_CACHE_HOME}/zsh"
 chmod 755 "${XDG_DATA_HOME}/zsh"
 chmod 755 "${XDG_STATE_HOME}/zsh"
-chmod 755 "${XDG_STATE_HOME}/zsh/history"
+chmod 644 "${XDG_STATE_HOME}/zsh/history"
 chmod 755 "${XDG_DATA_HOME}/oh-my-zsh"
 
 echo "XDG directories for zsh created successfully"

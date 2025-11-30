@@ -1,6 +1,6 @@
 # Dotfiles Improvement Plan
 
-9 sprints to resolve identified gaps. Work sequentially.
+10 sprints to resolve identified gaps. Work sequentially.
 
 **Completion Rule**: A sprint is complete when `sprint-{NN}-{name}-summary.md` exists.
 See `.rules/planning.md` for details.
@@ -18,6 +18,7 @@ See `.rules/planning.md` for details.
 | 7 | Empty/Broken Files | High | Small |
 | 8 | Hardcoded Paths | Low | Small |
 | 9 | Claude CLAUDE.md Enhancement | Low | Medium |
+| 10 | LSP Server Support | Medium | Medium |
 
 ## Status
 
@@ -27,6 +28,7 @@ See `.rules/planning.md` for details.
 - [x] Sprint 4: Bootstrap Script Fixes
 - [x] Sprint 5: XDG Compliance
 - [x] Sprint 6: Missing Stow Packages
-- [ ] Sprint 7: Empty/Broken Files
+- [x] Sprint 7: Empty/Broken Files
 - [ ] Sprint 8: Hardcoded Paths
 - [ ] Sprint 9: Claude CLAUDE.md Enhancement
+- [ ] Sprint 10: LSP Server Support
