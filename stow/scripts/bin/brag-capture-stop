@@ -3,9 +3,9 @@
 
 set -euo pipefail
 
-BRAG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/brag-book"
-TODAY=$(date +%Y-%m-%d)
-TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%S%z)
+# Source the shared library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/brag-lib.sh"
 
 # Read hook input from stdin
 HOOK_INPUT=$(cat)
@@ -44,40 +44,18 @@ if [[ $? -ne 0 || -z "$SUMMARY" ]]; then
   exit 0
 fi
 
-# Capture context
-CWD=$(pwd)
-GIT_REPO=""
-GIT_BRANCH=""
-FILES_CHANGED="[]"
-
-if git rev-parse --git-dir &>/dev/null; then
-  GIT_REPO=$(basename "$(git rev-parse --show-toplevel)")
-  GIT_BRANCH=$(git branch --show-current 2>/dev/null || echo "")
-
-  # Get changed files (staged + unstaged + untracked)
-  FILES_CHANGED=$(git status --porcelain | awk '{print $2}' | jq -R -s -c 'split("\n") | map(select(length > 0))')
-fi
-
 # Extract hook metadata
 SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // "unknown"')
 PERMISSION_MODE=$(echo "$HOOK_INPUT" | jq -r '.permission_mode // "default"')
 
-# Append to daily JSONL file
-JSONL_FILE="$BRAG_DIR/$TODAY.jsonl"
-
-mkdir -p "$BRAG_DIR"
-jq -n \
-  --arg ts "$TIMESTAMP" \
-  --arg sum "$SUMMARY" \
-  --arg src "hook" \
+# Create extra metadata JSON
+EXTRA_JSON=$(jq -n \
   --arg sid "$SESSION_ID" \
-  --arg cwd "$CWD" \
-  --arg repo "$GIT_REPO" \
-  --arg branch "$GIT_BRANCH" \
-  --argjson files "$FILES_CHANGED" \
   --arg mode "$PERMISSION_MODE" \
-  '{timestamp: $ts, summary: $sum, source: $src, session_id: $sid, cwd: $cwd, git_repo: $repo, git_branch: $branch, files_changed: $files, permission_mode: $mode}' \
-  >> "$JSONL_FILE"
+  '{session_id: $sid, permission_mode: $mode}')
+
+# Write the entry using shared function
+brag_write_entry "$SUMMARY" "claude-hook" "$EXTRA_JSON"
 
 # Return success
 echo "{\"ok\": true, \"systemMessage\": \"Brag: $SUMMARY\"}"

@@ -2,6 +2,15 @@
 
 Personal preferences applied across all projects.
 
+## Brag Book
+
+- Automatically tracks work sessions in `$XDG_DATA_HOME/brag-book/`
+- Daily JSONL files: `{date}.jsonl` (e.g., `2025-11-30.jsonl`)
+- Use `/brag <description>` command to add manual entries
+- Use `brag` CLI command to add entries or list recent work
+- Session auto-capture via plugin on idle/completion
+- Shares data format with Claude brag book
+
 ## Planning
 
 When a repo has `.planning/` directory:
