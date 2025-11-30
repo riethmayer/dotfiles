@@ -35,8 +35,7 @@ The following tools are managed via GNU Stow:
 | ssh | SSH configuration | ❌ (hardcoded) |
 | starship | Starship prompt | ✅ |
 | tmux | Tmux configuration | ✅ |
-| wezterm | WezTerm terminal config | ✅ |
-| windsurf | Windsurf IDE config | ✅ |
+
 | zsh | Zsh configuration | ✅ |
 
 ### Separate Repositories

@@ -69,23 +69,22 @@ Deprecated, rarely used, or replaced. Not in shell startup.
 - cat → bat (but cat still used in scripts)
 - oh-my-zsh → native zsh config (Sprint 1)
 
-**Configured but not primary**
-- wezterm → ghostty (but ✅ stowed as backup)
-- windsurf (Codeium IDE) - ✅ stowed but not primary editor
+
 
 **Removed from dotfiles**
+- wezterm - ❌ Removed (using ghostty/kitty)
+- windsurf - ❌ Removed (not using Codeium IDE)
 - console-ninja - ❌ Removed (Sprint 8, VS Code specific)
+- spidermonkey, wxmac - ❌ Removed (Erlang deps, not needed)
 - pack (Cloud Native Buildpacks) - not configured
 
 **Never adopted**
 - emacs - not using
-- elixir, erlang - using golang instead
-- fwup - Nerves/embedded Elixir (not doing IoT)
+- elixir, erlang - ❌ Removed from Brewfile (using golang instead)
+- fwup - ❌ Removed from Brewfile (Nerves/embedded, not doing IoT)
 
 **Dependencies** (keep, required by other tools)
-- spidermonkey - JS engine, likely CouchDB/Erlang dep
-- wxmac/wxwidgets - GUI toolkit for Erlang observer/debugger
-- cairo, pixman, glib, icu4c, libyaml, etc.
+- cairo, pixman, glib, icu4c, libyaml, etc. - Graphics/system libs
 
 ## Action Items
 
@@ -98,6 +97,6 @@ Deprecated, rarely used, or replaced. Not in shell startup.
 - [x] oh-my-zsh custom directory - Removed (Sprint 1)
 
 **To Consider**
-- [ ] Remove erlang/elixir dependencies if truly not needed
-- [ ] Archive wezterm config if ghostty is stable
-- [ ] Document windsurf usage or remove if not used
+- [x] ~~Remove erlang/elixir dependencies~~ - Done
+- [x] ~~Archive wezterm config~~ - Removed
+- [x] ~~Document windsurf usage or remove~~ - Removed

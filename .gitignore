@@ -13,6 +13,4 @@ public.key
 
 # Google Cloud SDK (excluded - contains credentials)
 
-# Windsurf
-/stow/windsurf/.codeium/windsurf/bin/*
-!/stow/windsurf/.codeium/windsurf/bin/.keep
+
