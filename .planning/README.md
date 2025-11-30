@@ -19,6 +19,7 @@ See `.rules/planning.md` for details.
 | 8 | Hardcoded Paths | Low | Small |
 | 9 | Claude CLAUDE.md Enhancement | Low | Medium |
 | 10 | LSP Server Support | Medium | Medium |
+| 11 | Final Cleanup | Low | Small |
 
 ## Status
 
@@ -32,3 +33,4 @@ See `.rules/planning.md` for details.
 - [x] Sprint 8: Hardcoded Paths
 - [x] Sprint 9: Claude CLAUDE.md Enhancement
 - [x] Sprint 10: LSP Server Support
+- [x] Sprint 11: Final Cleanup

@@ -10,7 +10,4 @@ if [[ $(ulimit -Sn) -lt 20000 ]]; then
   exit 1
 fi
 
-# concatenate all files from ../.brewfile.d/* and pass to xargs brew installed
-cat "$(dirname "$0")"/../.brewfile.d/* | xargs brew install -q
-
-cd "$HOME" && brew bundle --file="$HOME/Brewfile"
+cd "$HOME" && brew bundle --file="$HOME/Brewfile" --quiet
