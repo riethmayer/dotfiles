@@ -48,7 +48,7 @@ brew 'libtiff'
 brew 'libtool'
 brew 'libyaml'
 brew 'llvm'
-brew 'lua'
+# brew 'lua'  # Managed by mise
 brew 'markdown'
 brew 'mpfr'
 brew 'nmap'
