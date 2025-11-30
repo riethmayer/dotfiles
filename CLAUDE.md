@@ -61,7 +61,7 @@ All configurations must follow XDG Base Directory Specification:
 - Cache files → `$XDG_CACHE_HOME` (~/.cache)
 
 ### Key Packages
-Current stow packages: atuin, bootstrap, brew, git, mise, pnpm, ruby, scripts, ssh, starship, tmux, wezterm, windsurf, zsh
+Current stow packages: atuin, bootstrap, brew, claude, ghostty, git, kitty, mise, obsidian, opencode, pnpm, ruby, scripts, ssh, starship, tmux, zsh
 
 ## Development Patterns
 
@@ -83,3 +83,10 @@ Current stow packages: atuin, bootstrap, brew, git, mise, pnpm, ruby, scripts, s
 - Keep configurations modular and tool-focused
 - Document any non-XDG compliant tools
 - Always use mise for automating tasks and as entry point
+
+## Shared Rules
+
+Load on need-to-know basis:
+- `.rules/planning.md` - Sprint management (check when working on .planning/)
+- `.rules/tools.md` - Tool preferences (rg, fd, gh, fzf, etc.)
+- `.planning/tech-radar.md` - When adding/referencing technology, review and clarify categorization

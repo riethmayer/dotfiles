@@ -63,7 +63,7 @@ echo -e "${COLOR_GREEN}Starting quick bootstrap...${COLOR_RESET}"
 # Run essential bootstrap scripts
 dir="stow/bootstrap/.system-bootstrap.d"
 
-for file in "$dir"/{001_mise.sh,004_atuin.sh,005_zsh_xdg.sh}; do
+for file in "$dir"/{001_mise.sh,006_atuin.sh,007_zsh_xdg.sh,008_lsp_servers.sh}; do
   if [ -f "$file" ]; then
     echo -e "${COLOR_BLUE}==> Processing $(basename "$file")...${COLOR_RESET}"
     chmod +x "$file"
@@ -122,38 +122,46 @@ echo -e "${GREEN}Dotfiles sync completed successfully!${NC}"
 description = "Setup tmux configuration"
 run = '''
 echo "Setting up tmux..."
-chmod +x stow/bootstrap/.system-bootstrap.d/001_tmux.sh
-./stow/bootstrap/.system-bootstrap.d/001_tmux.sh
+chmod +x stow/bootstrap/.system-bootstrap.d/002_tmux.sh
+./stow/bootstrap/.system-bootstrap.d/002_tmux.sh
 '''
 
 [tasks.gpg]
 description = "Setup GPG configuration"
 run = '''
 echo "Setting up gpg..."
-chmod +x stow/bootstrap/.system-bootstrap.d/002_gpg.sh
-./stow/bootstrap/.system-bootstrap.d/002_gpg.sh
+chmod +x stow/bootstrap/.system-bootstrap.d/003_gpg.sh
+./stow/bootstrap/.system-bootstrap.d/003_gpg.sh
 '''
 
 [tasks.nvim]
 description = "Setup Neovim configuration"
 run = '''
 echo "Setting up neovim..."
-chmod +x stow/bootstrap/.system-bootstrap.d/003_nvim.sh
-./stow/bootstrap/.system-bootstrap.d/003_nvim.sh
+chmod +x stow/bootstrap/.system-bootstrap.d/004_nvim.sh
+./stow/bootstrap/.system-bootstrap.d/004_nvim.sh
 '''
 
 [tasks.atuin]
 description = "Setup Atuin shell history"
 run = '''
 echo "Setting up atuin..."
-chmod +x stow/bootstrap/.system-bootstrap.d/004_atuin.sh
-./stow/bootstrap/.system-bootstrap.d/004_atuin.sh
+chmod +x stow/bootstrap/.system-bootstrap.d/006_atuin.sh
+./stow/bootstrap/.system-bootstrap.d/006_atuin.sh
 '''
 
 [tasks.zsh-xdg]
 description = "Setup Zsh XDG directories"
 run = '''
 echo "Setting up zsh XDG directories..."
-chmod +x stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
-./stow/bootstrap/.system-bootstrap.d/005_zsh_xdg.sh
+chmod +x stow/bootstrap/.system-bootstrap.d/007_zsh_xdg.sh
+./stow/bootstrap/.system-bootstrap.d/007_zsh_xdg.sh
+'''
+
+[tasks.lsp]
+description = "Install language servers (LSP) for common dotfiles"
+run = '''
+echo "Installing LSP servers..."
+chmod +x stow/bootstrap/.system-bootstrap.d/008_lsp_servers.sh
+./stow/bootstrap/.system-bootstrap.d/008_lsp_servers.sh
 '''
