@@ -3,46 +3,34 @@
 
 set -euo pipefail
 
-BRAG_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/brag-book"
-TODAY=$(date +%Y-%m-%d)
-TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%S%z)
+# Source the shared library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/brag-lib.sh"
 
-# Get description
-echo "What did you work on?"
-read -r description
+# Parse command line options
+case "${1:-}" in
+  -l|--list)
+    brag_list "${2:-7}"
+    exit 0
+    ;;
+  -h|--help)
+    echo "Usage: brag [options] [description]"
+    echo "Options:"
+    echo "  -l, --list [days]  List recent entries (default: 7 days)"
+    echo "  -h, --help         Show this help"
+    echo ""
+    echo "Without options, prompts for a description to add to brag book"
+    exit 0
+    ;;
+esac
 
-if [[ -z "$description" ]]; then
-  echo "Empty description, skipping"
-  exit 0
+# Get description from args or prompt
+if [[ -n "${1:-}" ]]; then
+  description="$*"
+else
+  echo "What did you work on?"
+  read -r description
 fi
 
-# Capture context
-CWD=$(pwd)
-GIT_REPO=""
-GIT_BRANCH=""
-FILES_CHANGED="[]"
-
-if git rev-parse --git-dir &>/dev/null; then
-  GIT_REPO=$(basename "$(git rev-parse --show-toplevel)")
-  GIT_BRANCH=$(git branch --show-current 2>/dev/null || echo "")
-
-  # Get changed files (staged + unstaged + untracked)
-  FILES_CHANGED=$(git status --porcelain | awk '{print $2}' | jq -R -s -c 'split("\n") | map(select(length > 0))')
-fi
-
-# Ensure directory exists
-mkdir -p "$BRAG_DIR"
-
-# Append to daily JSONL file
-JSONL_FILE="$BRAG_DIR/$TODAY.jsonl"
-jq -n \
-  --arg ts "$TIMESTAMP" \
-  --arg sum "$description" \
-  --arg cwd "$CWD" \
-  --arg repo "$GIT_REPO" \
-  --arg branch "$GIT_BRANCH" \
-  --argjson files "$FILES_CHANGED" \
-  '{timestamp: $ts, summary: $sum, source: "manual", cwd: $cwd, git_repo: $repo, git_branch: $branch, files_changed: $files}' \
-  >> "$JSONL_FILE"
-
-echo "Added to $TODAY.jsonl"
+# Write the entry
+brag_write_entry "$description" "manual"

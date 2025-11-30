@@ -32,7 +32,8 @@ fi
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-# History configuration
-export HISTFILE="${XDG_STATE_HOME}/zsh/history"
-export HISTSIZE=10000
-export SAVEHIST=10000 
+# Ruby/Gem XDG configuration
+export GEMRC="${XDG_CONFIG_HOME:-$HOME/.config}/gem/gemrc"
+export GEM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/gem"
+export GEM_SPEC_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/gem"
+export PATH="$GEM_HOME/bin:$PATH" 
