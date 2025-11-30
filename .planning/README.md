@@ -22,7 +22,7 @@ See `.rules/planning.md` for details.
 ## Status
 
 - [x] Sprint 1: Zsh Config Consolidation
-- [ ] Sprint 2: Claude Config Cleanup
+- [x] Sprint 2: Claude Config Cleanup
 - [ ] Sprint 3: OpenCode Configuration
 - [ ] Sprint 4: Bootstrap Script Fixes
 - [ ] Sprint 5: XDG Compliance
