@@ -24,7 +24,7 @@ See `.rules/planning.md` for details.
 - [x] Sprint 1: Zsh Config Consolidation
 - [x] Sprint 2: Claude Config Cleanup
 - [x] Sprint 3: OpenCode Configuration
-- [ ] Sprint 4: Bootstrap Script Fixes
+- [x] Sprint 4: Bootstrap Script Fixes
 - [ ] Sprint 5: XDG Compliance
 - [ ] Sprint 6: Missing Stow Packages
 - [ ] Sprint 7: Empty/Broken Files
