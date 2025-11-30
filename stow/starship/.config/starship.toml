@@ -1,22 +1,10 @@
-# format = """\
-#   $username\
-#   $directory\
-#   $hostname\
-#   $package\
-#   $memory_usage\
-#   $git_branch\
-#   $git_commit\
-#   $git_state\
-#   $git_status\
-#   $cmd_duration\
-#   $env_var\
-#   $custom\
-#   $line_break\
-#   $jobs\
-#   $battery\
-#   $time\
-#   $character\
-#   """
+format = """\
+  $directory\
+  $git_branch\
+  $git_status\
+  $line_break\
+  $character\
+  """
 
 [gcloud]
 format = '' # on [$symbol$account(@$domain)(\($project\))]($style) '
