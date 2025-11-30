@@ -28,3 +28,7 @@ format = ''
 
 [docker_context]
 format = ""
+
+[git_branch]
+format = "[$branch]($style) "
+style = "bold purple"
