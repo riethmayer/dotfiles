@@ -29,6 +29,6 @@ See `.rules/planning.md` for details.
 - [x] Sprint 5: XDG Compliance
 - [x] Sprint 6: Missing Stow Packages
 - [x] Sprint 7: Empty/Broken Files
-- [ ] Sprint 8: Hardcoded Paths
+- [x] Sprint 8: Hardcoded Paths
 - [ ] Sprint 9: Claude CLAUDE.md Enhancement
 - [ ] Sprint 10: LSP Server Support
