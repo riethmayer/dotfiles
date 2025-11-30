@@ -1,12 +1,11 @@
-- In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
+In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
 
-## GitHub
+## Git & GitHub
 
-- your primary method for interacting with GitHub is github CLI
-
-## Git
-
-- When creating branches, prefix them with riethmayer/ to indicate they came from me
+- Use `gh` CLI for GitHub operations (not `git` for PR/issue ops)
+- Branch prefix: `riethmayer/`
+- End plans with unresolved questions
+- Commit early and often, atomic commits
 - Do NOT add Claude Code footer or Co-Authored-By to commit messages
 
 ## Search
@@ -29,4 +28,3 @@
 - Entry format: `{"timestamp": "HH:MM:SS", "category": "...", "summary": "...", "source": "hook|manual", "session_id": "..."}`
 - Use `brag` command to add entries manually
 - Stop hook auto-captures via `brag-capture-stop` (uses `claude -p` CLI)
-
