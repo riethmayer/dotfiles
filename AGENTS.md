@@ -2,6 +2,13 @@
 
 Instructions for OpenCode when working in this repository.
 
+## Resuming Work
+
+When starting a session on this repo:
+1. Check `.planning/README.md` for current sprint status
+2. Look for incomplete sprints (unchecked `[ ]` items)
+3. Read the sprint file before starting work
+
 ## Repository Overview
 
 Personal dotfiles using GNU Stow + XDG Base Directory Specification.
