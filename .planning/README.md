@@ -31,4 +31,4 @@ See `.rules/planning.md` for details.
 - [x] Sprint 7: Empty/Broken Files
 - [x] Sprint 8: Hardcoded Paths
 - [x] Sprint 9: Claude CLAUDE.md Enhancement
-- [ ] Sprint 10: LSP Server Support
+- [x] Sprint 10: LSP Server Support

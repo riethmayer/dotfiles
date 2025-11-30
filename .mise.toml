@@ -63,7 +63,7 @@ echo -e "${COLOR_GREEN}Starting quick bootstrap...${COLOR_RESET}"
 # Run essential bootstrap scripts
 dir="stow/bootstrap/.system-bootstrap.d"
 
-for file in "$dir"/{001_mise.sh,006_atuin.sh,007_zsh_xdg.sh}; do
+for file in "$dir"/{001_mise.sh,006_atuin.sh,007_zsh_xdg.sh,008_lsp_servers.sh}; do
   if [ -f "$file" ]; then
     echo -e "${COLOR_BLUE}==> Processing $(basename "$file")...${COLOR_RESET}"
     chmod +x "$file"
@@ -156,4 +156,12 @@ run = '''
 echo "Setting up zsh XDG directories..."
 chmod +x stow/bootstrap/.system-bootstrap.d/007_zsh_xdg.sh
 ./stow/bootstrap/.system-bootstrap.d/007_zsh_xdg.sh
+'''
+
+[tasks.lsp]
+description = "Install language servers (LSP) for common dotfiles"
+run = '''
+echo "Installing LSP servers..."
+chmod +x stow/bootstrap/.system-bootstrap.d/008_lsp_servers.sh
+./stow/bootstrap/.system-bootstrap.d/008_lsp_servers.sh
 '''

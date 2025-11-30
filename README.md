@@ -54,6 +54,8 @@ The following tools are managed via GNU Stow:
 mise run help           # Show available tasks
 mise run install        # Install all stow packages
 mise run bootstrap      # Full system setup
+mise run quick-bootstrap # Minimal dev setup (mise, atuin, zsh-xdg, LSP)
+mise run lsp            # Install LSP servers (bash, lua, yaml, toml, json, md)
 mise run update         # Sync and update dotfiles
 ```
 
