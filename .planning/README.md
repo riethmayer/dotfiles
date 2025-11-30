@@ -30,5 +30,5 @@ See `.rules/planning.md` for details.
 - [x] Sprint 6: Missing Stow Packages
 - [x] Sprint 7: Empty/Broken Files
 - [x] Sprint 8: Hardcoded Paths
-- [ ] Sprint 9: Claude CLAUDE.md Enhancement
+- [x] Sprint 9: Claude CLAUDE.md Enhancement
 - [ ] Sprint 10: LSP Server Support
