@@ -30,4 +30,10 @@ fi
 
 # Editor configuration
 export EDITOR='nvim'
-export VISUAL='nvim' 
+export VISUAL='nvim'
+
+# Ruby/Gem XDG configuration
+export GEMRC="${XDG_CONFIG_HOME:-$HOME/.config}/gem/gemrc"
+export GEM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/gem"
+export GEM_SPEC_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/gem"
+export PATH="$GEM_HOME/bin:$PATH" 

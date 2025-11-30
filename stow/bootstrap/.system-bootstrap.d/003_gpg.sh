@@ -4,6 +4,7 @@
 brew install gnupg pinentry-mac
 
 # Create necessary directories
+# Note: GPG does not support XDG paths - ~/.gnupg is hardcoded
 mkdir -p ~/.gnupg
 chmod 700 ~/.gnupg
 
