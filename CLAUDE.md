@@ -61,7 +61,7 @@ All configurations must follow XDG Base Directory Specification:
 - Cache files → `$XDG_CACHE_HOME` (~/.cache)
 
 ### Key Packages
-Current stow packages: atuin, bootstrap, brew, git, mise, pnpm, ruby, scripts, ssh, starship, tmux, wezterm, windsurf, zsh
+Current stow packages: atuin, bootstrap, brew, claude, ghostty, git, kitty, mise, obsidian, opencode, pnpm, ruby, scripts, ssh, starship, tmux, zsh
 
 ## Development Patterns
 

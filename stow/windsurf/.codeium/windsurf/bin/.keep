@@ -1,9 +1,0 @@
-# Windsurf binary directory
-#
-# This directory contains Windsurf binaries that are managed by the Windsurf installer.
-# The .keep file ensures the directory structure is maintained in git while the binaries
-# themselves are ignored.
-#
-# Related files:
-# - ~/.oh-my-zsh/custom/zshrc.d/100_windsurf.zsh (PATH configuration)
-# - .gitignore (binary exclusion rules) 
