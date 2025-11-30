@@ -1,5 +1,12 @@
 # Planning Rules
 
+## Resuming Work
+
+When starting a session on a repo with `.planning/`:
+1. Check `.planning/README.md` for current sprint status
+2. Look for incomplete sprints (unchecked `[ ]` items)
+3. Read the sprint file before starting work
+
 ## Sprint Management
 
 Sprints are tracked in `.planning/` directory.
@@ -9,11 +16,6 @@ Sprints are tracked in `.planning/` directory.
 A sprint is **complete** when a `summary.md` file exists in `.planning/`:
 - File naming: `sprint-{NN}-{name}-summary.md`
 - Example: `sprint-01-zsh-consolidation-summary.md`
-
-When starting work:
-1. Check `.planning/README.md` for sprint status
-2. Look for existing `*-summary.md` files to determine completed sprints
-3. Work on next incomplete sprint sequentially
 
 ### Summary File Format
 
