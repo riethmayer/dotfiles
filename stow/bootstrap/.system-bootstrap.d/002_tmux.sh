@@ -7,20 +7,20 @@ fi
 brew install fzf    # Required for tmux-fzf and tmux-sessionx
 brew install zoxide # Required for tmux-sessionx zoxide mode
 
-# Create tmux directories if they don't exist
-mkdir -p ~/.tmux/plugins
-mkdir -p ~/.config/tmux
-mkdir -p ~/.local/state/tmux/log  # XDG state directory for logs
+# Create tmux directories if they don't exist (XDG compliant)
+mkdir -p ~/.local/share/tmux/plugins  # XDG data directory for plugins
+mkdir -p ~/.config/tmux                # XDG config directory
+mkdir -p ~/.local/state/tmux/log      # XDG state directory for logs
 
-# Install Tmux Plugin Manager if not already installed
-TPM_PATH=~/.tmux/plugins/tpm
+# Install Tmux Plugin Manager if not already installed (XDG path)
+TPM_PATH=~/.local/share/tmux/plugins/tpm
 if [ ! -d "$TPM_PATH" ]; then
     git clone https://github.com/tmux-plugins/tpm "$TPM_PATH"
 fi
 
 # Install/Update tmux plugins non-interactively
-~/.tmux/plugins/tpm/bin/install_plugins
-~/.tmux/plugins/tpm/bin/update_plugins all
+~/.local/share/tmux/plugins/tpm/bin/install_plugins
+~/.local/share/tmux/plugins/tpm/bin/update_plugins all
 
 # Ensure tmux server is running and reload config
 TMUX_TMPDIR=~/.local/state/tmux tmux start-server
