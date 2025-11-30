@@ -24,5 +24,3 @@ for conda_path in "${CONDA_PATHS[@]}"; do
     fi
 done
 unset __conda_setup
-
-

@@ -1,6 +1,10 @@
 # Atuin Configuration
 # Shell history search and sync tool
-# Requires: atuin (installed via brew)
+
+# History settings (atuin manages history, but keep these for compatibility)
+export HISTSIZE=1000000
+export SAVEHIST=1000000
+export HISTFILE="${XDG_STATE_HOME}/zsh/history"
 
 # Check if atuin is available
 if command -v atuin >/dev/null 2>&1; then
@@ -10,6 +14,9 @@ if command -v atuin >/dev/null 2>&1; then
 
     # Initialize atuin shell integration
     eval "$(atuin init zsh)"
-else
-    echo "Warning: atuin not found. Shell history enhancement not available."
+
+    # Bind keyboard shortcuts for Atuin
+    bindkey '^[[A' _atuin_search_widget  # Up arrow
+    bindkey '^[OA' _atuin_search_widget  # Up arrow (alternative code)
+    bindkey '^P' _atuin_search_widget    # Ctrl+P
 fi 
