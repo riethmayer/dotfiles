@@ -26,7 +26,7 @@ See `.rules/planning.md` for details.
 - [x] Sprint 3: OpenCode Configuration
 - [x] Sprint 4: Bootstrap Script Fixes
 - [x] Sprint 5: XDG Compliance
-- [ ] Sprint 6: Missing Stow Packages
+- [x] Sprint 6: Missing Stow Packages
 - [ ] Sprint 7: Empty/Broken Files
 - [ ] Sprint 8: Hardcoded Paths
 - [ ] Sprint 9: Claude CLAUDE.md Enhancement
