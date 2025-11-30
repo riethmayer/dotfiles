@@ -21,7 +21,7 @@
 [user]
   name = Jan Riethmayer
 	email = jan@earlybird.com
-	signingkey = 556385234DFF3241
+	signingkey = CAE7D5F3F5A7C6F7
 [hub]
   protocol = https
 [color]
