@@ -13,4 +13,5 @@ public.key
 
 # Google Cloud SDK (excluded - contains credentials)
 
-
+# Claude plugins marketplaces (nested git repos)
+stow/claude/.claude/plugins/marketplaces/
