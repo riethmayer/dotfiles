@@ -7,6 +7,7 @@ return {
       opts.formatters_by_ft.python = { "ruff_format", "ruff_organize_imports" }
       opts.formatters_by_ft.markdown = { "prettierd", "prettier", stop_after_first = true }
       opts.formatters_by_ft.go = { "gofumpt", "goimports" }
+      opts.formatters_by_ft.fish = {} -- disable fish (not used)
       opts.format_on_save = {
         timeout_ms = 500,
         lsp_fallback = true,
@@ -22,6 +23,14 @@ return {
       ensure_installed = {
         "prettierd",
       },
+    },
+  },
+
+  -- Disable latex in render-markdown (no latex tools installed)
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      latex = { enabled = false },
     },
   },
 }
