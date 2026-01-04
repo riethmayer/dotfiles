@@ -1,11 +1,15 @@
+[env]
+GOBIN = ""
+
 [tools]
 direnv = "2.35.0"
-go = "1.23.3"
-zoxide = "0.9.6"
+go = "latest"
+zoxide = "latest"
 python = "3.12.6"
-ruby = "3.3.5"
+ruby = "latest"
 lua = "5.1.5"
 node = "22.14.0"
 pnpm = "10.8.1"
 bun = "latest"
 java = "temurin-21"
+1password = "latest"
