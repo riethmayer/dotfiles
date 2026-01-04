@@ -15,21 +15,19 @@ LazyVim-based config managed via stow.
 │   │   ├── keymaps.lua   # Custom keymaps (empty, uses LazyVim defaults)
 │   │   └── autocmds.lua  # Custom autocmds (empty)
 │   └── plugins/
-│       ├── extras.lua    # Theme (dracula), fzf-lua, yanky overrides
+│       ├── extras.lua    # Theme (dracula) override
 │       └── formatting.lua # conform.nvim config
 ```
 
 ## Enabled Extras
 
-Languages: astro, docker, go, json, markdown, python, ruby, sql, tailwind, terraform, toml, typescript
+Languages: astro, docker, go, json, markdown, python, ruby, sql, tailwind, terraform, toml, typescript, yaml
 
 Tools: claudecode, yanky, fzf, mini-hipatterns
 
 ## Custom Plugins
 
 - **Theme**: dracula.nvim (overrides tokyonight)
-- **Fuzzy finder**: fzf-lua with custom keymaps (`<leader>f` files, `<leader>g` grep)
-- **Clipboard**: yanky.nvim with sqlite storage
 
 ## Formatting
 
