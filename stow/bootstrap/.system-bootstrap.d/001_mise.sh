@@ -21,7 +21,7 @@ mkdir -p ~/.local/share/mise
 
 # Stow the mise configuration
 cd "$(dirname "$0")/../../.."
-stow mise
+stow -d stow -t ~ mise
 
 # Initialize mise
 mise install
