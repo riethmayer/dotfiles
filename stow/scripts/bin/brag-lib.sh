@@ -87,7 +87,7 @@ brag_write_entry() {
       files_changed: $files
     }' >> "$jsonl_file"
   
-  echo "Added to $today.jsonl"
+  echo "Added to $today.jsonl" >&2
 }
 
 # List recent brag entries
