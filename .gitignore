@@ -17,3 +17,5 @@ public.key
 stow/claude/.claude/plugins/marketplaces/
 
 stow/gcloud/
+stow/claude/.claude/plugins/installed_plugins.json
+stow/claude/.claude/plugins/known_marketplaces.json
