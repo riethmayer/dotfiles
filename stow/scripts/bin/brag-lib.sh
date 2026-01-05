@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Shared brag book library
+#
+# Format: JSONL (JSON Lines) - append-only log, one JSON object per line
+# Read as array: jq -s '.' file.jsonl
+# Filter: grep "pattern" file.jsonl | jq '.summary'
 
 set -euo pipefail
 

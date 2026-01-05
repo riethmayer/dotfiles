@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Add entry to brag-book
+#
+# Storage: JSONL (JSON Lines) append-only log format
+# Location: $XDG_DATA_HOME/brag-book/{date}.jsonl
+# Each line is a complete JSON object - easy to grep, stream, append
 
 set -euo pipefail
 
