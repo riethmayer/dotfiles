@@ -5,6 +5,14 @@ set -euo pipefail
 
 GCLOUD_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/google-cloud-sdk"
 
+# Use mise Python to avoid gcloud's sudo-requiring Python installer
+if command -v mise &>/dev/null; then
+  MISE_PYTHON="$(mise which python 2>/dev/null || true)"
+  if [[ -n "$MISE_PYTHON" ]]; then
+    export CLOUDSDK_PYTHON="$MISE_PYTHON"
+  fi
+fi
+
 echo "==> Setting up Google Cloud SDK"
 
 # Install if not present
