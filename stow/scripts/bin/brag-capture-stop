@@ -18,41 +18,8 @@ if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
   exit 0
 fi
 
-# Read transcript (last 50 lines)
-TRANSCRIPT=$(tail -50 "$TRANSCRIPT_PATH")
-
-if [[ -z "$TRANSCRIPT" ]]; then
-  echo '{"ok": true, "systemMessage": "Brag: empty transcript"}'
-  exit 0
-fi
-
-# Check if claude CLI is available
-if ! command -v claude &> /dev/null; then
-  echo '{"ok": true, "systemMessage": "Brag: claude CLI not found"}'
-  exit 0
-fi
-
-# Call Claude via CLI for structured JSON summary
-ESCAPED_TRANSCRIPT=$(jq -Rs '.' <<< "$TRANSCRIPT")
-CLAUDE_RESPONSE=$(claude -p "Summarize this coding session in one concise line.
-
-Respond with ONLY valid JSON in this exact format:
-{\"summary\": \"<one line summary here>\"}
-
-Transcript:
-$ESCAPED_TRANSCRIPT" 2>&1)
-
-# Extract summary from JSON response, fallback to raw response if not valid JSON
-SUMMARY=$(echo "$CLAUDE_RESPONSE" | jq -r '.summary // empty' 2>/dev/null)
-if [[ -z "$SUMMARY" ]]; then
-  # Fallback: use raw response, strip any markdown code blocks
-  SUMMARY=$(echo "$CLAUDE_RESPONSE" | sed 's/^```json//;s/^```//;s/```$//' | tr -d '\n' | head -c 200)
-fi
-
-if [[ -z "$SUMMARY" ]]; then
-  echo '{"ok": true, "systemMessage": "Brag: summary failed"}'
-  exit 0
-fi
+# Simple summary: session ended
+SUMMARY="session ended"
 
 # Extract hook metadata
 SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // "unknown"')
