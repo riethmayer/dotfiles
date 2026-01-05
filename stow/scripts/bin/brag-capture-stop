@@ -3,8 +3,8 @@
 
 set -euo pipefail
 
-# Source the shared library
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Source the shared library (resolve symlinks)
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 source "$SCRIPT_DIR/brag-lib.sh"
 
 # Read hook input from stdin
@@ -32,14 +32,24 @@ if ! command -v claude &> /dev/null; then
   exit 0
 fi
 
-# Call Claude via CLI for summary only
+# Call Claude via CLI for structured JSON summary
 ESCAPED_TRANSCRIPT=$(jq -Rs '.' <<< "$TRANSCRIPT")
-SUMMARY=$(claude -p "Summarize this conversation in one concise line. Respond with ONLY the summary text, no JSON.
+CLAUDE_RESPONSE=$(claude -p "Summarize this coding session in one concise line.
+
+Respond with ONLY valid JSON in this exact format:
+{\"summary\": \"<one line summary here>\"}
 
 Transcript:
 $ESCAPED_TRANSCRIPT" 2>&1)
 
-if [[ $? -ne 0 || -z "$SUMMARY" ]]; then
+# Extract summary from JSON response, fallback to raw response if not valid JSON
+SUMMARY=$(echo "$CLAUDE_RESPONSE" | jq -r '.summary // empty' 2>/dev/null)
+if [[ -z "$SUMMARY" ]]; then
+  # Fallback: use raw response, strip any markdown code blocks
+  SUMMARY=$(echo "$CLAUDE_RESPONSE" | sed 's/^```json//;s/^```//;s/```$//' | tr -d '\n' | head -c 200)
+fi
+
+if [[ -z "$SUMMARY" ]]; then
   echo '{"ok": true, "systemMessage": "Brag: summary failed"}'
   exit 0
 fi
@@ -57,5 +67,5 @@ EXTRA_JSON=$(jq -n \
 # Write the entry using shared function
 brag_write_entry "$SUMMARY" "claude-hook" "$EXTRA_JSON"
 
-# Return success
-echo "{\"ok\": true, \"systemMessage\": \"Brag: $SUMMARY\"}"
+# Return success (properly escape summary for JSON)
+jq -n --arg msg "Brag: $SUMMARY" '{"ok": true, "systemMessage": $msg}'

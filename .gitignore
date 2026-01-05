@@ -15,3 +15,5 @@ public.key
 
 # Claude plugins marketplaces (nested git repos)
 stow/claude/.claude/plugins/marketplaces/
+
+stow/gcloud/
