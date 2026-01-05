@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# PostToolUse hook - captures commits and file edits to brag book
+# Runs on every tool use, filters for interesting events, no AI
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+source "$SCRIPT_DIR/brag-lib.sh"
+
+# Read hook input
+HOOK_INPUT=$(cat)
+
+TOOL_NAME=$(echo "$HOOK_INPUT" | jq -r '.tool_name // empty')
+TOOL_INPUT=$(echo "$HOOK_INPUT" | jq -r '.tool_input // empty')
+SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // "unknown"')
+
+# Only capture interesting events
+case "$TOOL_NAME" in
+  Bash)
+    # Check if it's a git commit
+    COMMAND=$(echo "$TOOL_INPUT" | jq -r '.command // empty')
+    if [[ "$COMMAND" == git\ commit* ]]; then
+      # Extract commit message
+      MSG=$(echo "$COMMAND" | grep -oP '(?<=-m ")[^"]+' || echo "$COMMAND")
+      SUMMARY="commit: $MSG"
+    else
+      echo '{"ok": true}'
+      exit 0
+    fi
+    ;;
+  Edit|Write)
+    FILE=$(echo "$TOOL_INPUT" | jq -r '.file_path // empty')
+    SUMMARY="$TOOL_NAME: ${FILE##*/}"
+    ;;
+  *)
+    # Ignore other tools
+    echo '{"ok": true}'
+    exit 0
+    ;;
+esac
+
+# Write entry with session context
+EXTRA_JSON=$(jq -n --arg sid "$SESSION_ID" --arg tool "$TOOL_NAME" '{session_id: $sid, tool: $tool}')
+brag_write_entry "$SUMMARY" "hook" "$EXTRA_JSON"
+
+echo '{"ok": true}'
