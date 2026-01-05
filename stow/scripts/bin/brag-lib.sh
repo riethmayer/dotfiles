@@ -63,8 +63,8 @@ brag_write_entry() {
   
   local jsonl_file="$BRAG_DIR/$today.jsonl"
   
-  # Merge base entry with extra JSON
-  jq -n \
+  # Merge base entry with extra JSON (compact for JSONL)
+  jq -nc \
     --arg ts "$timestamp" \
     --arg sum "$summary" \
     --arg src "$source" \
