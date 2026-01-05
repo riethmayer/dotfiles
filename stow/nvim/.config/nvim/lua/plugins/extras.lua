@@ -8,4 +8,21 @@ return {
       vim.cmd([[colorscheme dracula]])
     end,
   },
+  -- Show hidden/ignored files in explorer by default
+  {
+    "folke/snacks.nvim",
+    opts = {
+      explorer = {
+        replace_netrw = true,
+      },
+      picker = {
+        sources = {
+          explorer = {
+            hidden = true,
+            ignored = true,
+          },
+        },
+      },
+    },
+  },
 }
