@@ -20,3 +20,4 @@ mouse-hide-while-typing = true
 # Shell Integration
 shell-integration = zsh
 
+keybind = shift+enter=text:\x1b\r
