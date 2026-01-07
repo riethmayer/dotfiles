@@ -24,7 +24,7 @@ case "$TOOL_NAME" in
       MSG=$(echo "$COMMAND" | grep -oP '(?<=-m ")[^"]+' || echo "$COMMAND")
       SUMMARY="commit: $MSG"
     else
-      echo '{"ok": true}'
+      # Silent exit for non-commit bash commands
       exit 0
     fi
     ;;
@@ -41,6 +41,7 @@ esac
 
 # Write entry with session context
 EXTRA_JSON=$(jq -n --arg sid "$SESSION_ID" --arg tool "$TOOL_NAME" '{session_id: $sid, tool: $tool}')
-brag_write_entry "$SUMMARY" "hook" "$EXTRA_JSON"
+brag_write_entry "$SUMMARY" "hook" "$EXTRA_JSON" 2>/dev/null
 
-echo '{"ok": true}'
+# Silent success - no output means no message shown
+exit 0
