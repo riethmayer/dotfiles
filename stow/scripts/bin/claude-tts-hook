@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Stop hook - speaks summary via TTS when Claude finishes a task
+# Toggle with: tts-on / tts-off
+
+set -euo pipefail
+
+STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/claude-tts-enabled"
+
+# Check if TTS is enabled
+if [[ ! -f "$STATE_FILE" ]]; then
+  echo '{"ok": true}'
+  exit 0
+fi
+
+# Read hook input
+HOOK_INPUT=$(cat)
+
+# Extract stop reason
+STOP_REASON=$(echo "$HOOK_INPUT" | jq -r '.stop_hook_reason // empty')
+
+# Only speak on end_turn (task completion), not on interrupt
+if [[ "$STOP_REASON" != "end_turn" ]]; then
+  echo '{"ok": true}'
+  exit 0
+fi
+
+# Extract the last assistant message as summary
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // empty')
+
+if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
+  echo '{"ok": true}'
+  exit 0
+fi
+
+# Get last assistant message (limit to ~500 chars for reasonable TTS length)
+SUMMARY=$(jq -r '
+  [.[] | select(.role == "assistant") | .content[] | select(.type == "text") | .text]
+  | last // "Task complete"
+' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 500)
+
+# Skip if summary is too short or just tool usage
+if [[ ${#SUMMARY} -lt 20 ]]; then
+  echo '{"ok": true}'
+  exit 0
+fi
+
+# Speak the summary in background
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+"$SCRIPT_DIR/tts-speak" "$SUMMARY" &>/dev/null &
+
+echo '{"ok": true}'

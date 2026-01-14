@@ -1,5 +1,16 @@
 {
   "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/bin/claude-tts-hook"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Bash",
@@ -32,9 +43,10 @@
   },
   "enabledPlugins": {
     "document-skills@anthropic-skills": true,
-    "earlybird-shared@earlybird-marketplace": true,
     "earlybird-product-management@earlybird-marketplace": true,
-    "document-skills@anthropic-agent-skills": true
+    "document-skills@anthropic-agent-skills": true,
+    "earlybird-shared@earlybird-marketplace": true,
+    "example-skills@anthropic-agent-skills": true
   },
   "extraKnownMarketplaces": {
     "earlybirdvc-skills": {
