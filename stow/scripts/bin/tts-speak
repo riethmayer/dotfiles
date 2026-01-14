@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Speak text using ElevenLabs TTS API."""
+
+import os
+import subprocess
+import sys
+import tempfile
+
+def get_api_key():
+    """Get ElevenLabs API key from 1Password."""
+    # Check env var first
+    if api_key := os.environ.get("ELEVENLABS_API_KEY"):
+        return api_key
+
+    try:
+        result = subprocess.run(
+            ["op", "read", "op://Private/ElevenLabs/api-key"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"1Password error: {e.stderr}", file=sys.stderr)
+        return None
+    except FileNotFoundError:
+        print("1Password CLI (op) not found", file=sys.stderr)
+        return None
+
+def speak(text: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb"):
+    """Convert text to speech and play it."""
+    api_key = get_api_key()
+    if not api_key:
+        print("Failed to get API key from 1Password", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        from elevenlabs.client import ElevenLabs
+        from elevenlabs import VoiceSettings
+    except ImportError:
+        print("Installing elevenlabs package...", file=sys.stderr)
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "elevenlabs", "-q"])
+        from elevenlabs.client import ElevenLabs
+        from elevenlabs import VoiceSettings
+
+    client = ElevenLabs(api_key=api_key)
+
+    response = client.text_to_speech.convert(
+        voice_id=voice_id,
+        output_format="mp3_22050_32",
+        text=text,
+        model_id="eleven_turbo_v2",
+        voice_settings=VoiceSettings(
+            stability=0.5,
+            similarity_boost=0.75,
+            style=0.0,
+            use_speaker_boost=True,
+        ),
+    )
+
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
+        for chunk in response:
+            if chunk:
+                f.write(chunk)
+        audio_file = f.name
+
+    # Play audio using afplay (macOS)
+    try:
+        subprocess.run(["afplay", audio_file], check=True)
+    finally:
+        os.unlink(audio_file)
+
+def main():
+    if len(sys.argv) > 1:
+        text = " ".join(sys.argv[1:])
+    else:
+        text = sys.stdin.read().strip()
+
+    if not text:
+        print("Usage: tts-speak <text> or echo <text> | tts-speak", file=sys.stderr)
+        sys.exit(1)
+
+    speak(text)
+
+if __name__ == "__main__":
+    main()

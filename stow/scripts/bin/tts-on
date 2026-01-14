@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Enable TTS notifications for Claude
+set -euo pipefail
+
+STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/claude-tts-enabled"
+mkdir -p "$(dirname "$STATE_FILE")"
+touch "$STATE_FILE"
+echo "TTS notifications enabled"
