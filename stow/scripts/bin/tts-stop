@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Stop any running TTS audio
+pkill -9 afplay 2>/dev/null && echo "Stopped" || echo "Nothing playing"
