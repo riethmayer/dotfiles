@@ -6,12 +6,26 @@ import subprocess
 import sys
 import tempfile
 
+def get_credentials_file():
+    """Get path to credentials file (XDG compliant)."""
+    xdg_data = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+    return os.path.join(xdg_data, "tts", "credentials")
+
+
 def get_api_key():
-    """Get ElevenLabs API key from 1Password."""
-    # Check env var first
+    """Get ElevenLabs API key from env, cache, or 1Password."""
+    # 1. Check env var
     if api_key := os.environ.get("ELEVENLABS_API_KEY"):
         return api_key
 
+    # 2. Check cached credentials
+    creds_file = get_credentials_file()
+    if os.path.exists(creds_file):
+        with open(creds_file) as f:
+            if api_key := f.read().strip():
+                return api_key
+
+    # 3. Fetch from 1Password and cache
     try:
         result = subprocess.run(
             ["op", "read", "op://Private/ElevenLabs/api-key"],
@@ -19,7 +33,14 @@ def get_api_key():
             text=True,
             check=True
         )
-        return result.stdout.strip()
+        api_key = result.stdout.strip()
+        if api_key:
+            os.makedirs(os.path.dirname(creds_file), exist_ok=True)
+            with open(creds_file, "w") as f:
+                f.write(api_key)
+            os.chmod(creds_file, 0o600)  # secure perms
+            print(f"Cached API key to {creds_file}", file=sys.stderr)
+        return api_key
     except subprocess.CalledProcessError as e:
         print(f"1Password error: {e.stderr}", file=sys.stderr)
         return None

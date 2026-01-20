@@ -15,11 +15,9 @@ fi
 # Read hook input
 HOOK_INPUT=$(cat)
 
-# Extract stop reason
-STOP_REASON=$(echo "$HOOK_INPUT" | jq -r '.stop_hook_reason // empty')
-
-# Only speak on end_turn (task completion), not on interrupt
-if [[ "$STOP_REASON" != "end_turn" ]]; then
+# Avoid infinite loops - don't speak if already triggered by stop hook
+STOP_ACTIVE=$(echo "$HOOK_INPUT" | jq -r '.stop_hook_active // false')
+if [[ "$STOP_ACTIVE" == "true" ]]; then
   echo '{"ok": true}'
   exit 0
 fi
@@ -32,9 +30,10 @@ if [[ -z "$TRANSCRIPT_PATH" || ! -f "$TRANSCRIPT_PATH" ]]; then
   exit 0
 fi
 
-# Get last assistant message (limit to ~500 chars for reasonable TTS length)
-SUMMARY=$(jq -r '
-  [.[] | select(.role == "assistant") | .content[] | select(.type == "text") | .text]
+# Get last assistant message (JSONL format - one JSON per line)
+# Limit to ~500 chars for reasonable TTS length
+SUMMARY=$(jq -rs '
+  [.[] | select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text]
   | last // "Task complete"
 ' "$TRANSCRIPT_PATH" 2>/dev/null | head -c 500)
 
