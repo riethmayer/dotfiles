@@ -1,8 +1,15 @@
 {
+  "permissions": {
+    "allow": [
+      "Edit(//Users/jan/code/**)",
+      "Write(//Users/jan/code/**)",
+      "Edit(//Users/jan/.claude/**)",
+      "Write(//Users/jan/.claude/**)"
+    ]
+  },
   "hooks": {
     "Stop": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -43,10 +50,10 @@
   },
   "enabledPlugins": {
     "document-skills@anthropic-skills": true,
-    "earlybird-product-management@earlybird-marketplace": true,
+    "example-skills@anthropic-agent-skills": true,
     "document-skills@anthropic-agent-skills": true,
-    "earlybird-shared@earlybird-marketplace": true,
-    "example-skills@anthropic-agent-skills": true
+    "eb@earlybird-marketplace": true,
+    "ee@earlybird-marketplace": true
   },
   "extraKnownMarketplaces": {
     "earlybirdvc-skills": {
