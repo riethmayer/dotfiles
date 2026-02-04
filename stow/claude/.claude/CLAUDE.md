@@ -52,6 +52,14 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 - Keep technical debt in TODO comments
 - Use Markdown for all docs
 
+**Diagrams:**
+- Use Mermaid for technical diagrams (not Figma)
+- Excalidraw for visual technical documentation
+- Ensure Mermaid is Notion-compliant (embed in markdown)
+- Prefer flowchart TD (top-down) for sequential workflows
+- Prefer flowchart LR (left-right) for decision trees
+- Use subgraphs to organize complex flows
+
 **Tools:**
 - ripgrep (`rg`) over grep
 - fd over find
