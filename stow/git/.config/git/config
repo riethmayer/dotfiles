@@ -42,3 +42,5 @@
 	program = gpg
   # GPG program will be found in PATH (works for both Intel and ARM Macs)
 
+[coderabbit]
+	machineId = cli/3cce15a84a4547f8935b5b09d2aa7f3e
