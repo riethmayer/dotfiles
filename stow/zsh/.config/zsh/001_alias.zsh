@@ -21,3 +21,6 @@ alias nerdfonts='fc-list : family | grep Nerd'
 # Task Master aliases
 alias tm='task-master'
 alias taskmaster='task-master'
+
+# Claude Code
+alias yolo='claude --dangerously-skip-permissions'

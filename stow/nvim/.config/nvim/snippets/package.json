@@ -1,0 +1,8 @@
+{
+  "name": "claude-coding-snippets",
+  "contributes": {
+    "snippets": [
+      { "language": "markdown", "path": "./claude.json" }
+    ]
+  }
+}
