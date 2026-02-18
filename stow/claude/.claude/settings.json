@@ -57,7 +57,8 @@
   },
   "enabledPlugins": {
     "eb@earlybird-marketplace": true,
-    "ee@earlybird-marketplace": true
+    "ee@earlybird-marketplace": true,
+    "example-skills@anthropic-agent-skills": true
   },
   "extraKnownMarketplaces": {
     "earlybirdvc-skills": {
