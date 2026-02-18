@@ -19,3 +19,5 @@ stow/claude/.claude/plugins/marketplaces/
 stow/gcloud/
 stow/claude/.claude/plugins/installed_plugins.json
 stow/claude/.claude/plugins/known_marketplaces.json
+stow/claude/.claude/plugins/cache/
+stow/claude/.claude/plugins/install-counts-cache.json
