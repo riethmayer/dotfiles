@@ -90,3 +90,4 @@ Load on need-to-know basis:
 - `.rules/planning.md` - Sprint management (check when working on .planning/)
 - `.rules/tools.md` - Tool preferences (rg, fd, gh, fzf, etc.)
 - `.planning/tech-radar.md` - When adding/referencing technology, review and clarify categorization
+- `.decisions/` - Architecture decision records (check before security audits or scope changes)
