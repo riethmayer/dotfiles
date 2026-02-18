@@ -22,5 +22,12 @@ alias nerdfonts='fc-list : family | grep Nerd'
 alias tm='task-master'
 alias taskmaster='task-master'
 
+# EagleEye worktrees
+alias w1='cd ~/code/ee-one/apps/eagleeye-web'
+alias w2='cd ~/code/ee-two/apps/eagleeye-web'
+alias w3='cd ~/code/ee-three/apps/eagleeye-web'
+alias w4='cd ~/code/ee-four/apps/eagleeye-web'
+
 # Claude Code
-alias yolo='claude --dangerously-skip-permissions'
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+alias yolo='claude --dangerously-skip-permissions --model opus'

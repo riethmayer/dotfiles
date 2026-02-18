@@ -32,6 +32,9 @@ fi
 export EDITOR='nvim'
 export VISUAL='nvim'
 
+# Claude Code: skip permissions for trusted repos (0=normal, 1=skip)
+export CLAUDE_SKIP_PERMS="1"
+
 # Ruby/Gem XDG configuration
 export GEMRC="${XDG_CONFIG_HOME:-$HOME/.config}/gem/gemrc"
 export GEM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/gem"
