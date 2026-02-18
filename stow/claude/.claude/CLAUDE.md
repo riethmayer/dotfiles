@@ -139,9 +139,11 @@ When a repo has `.planning/` directory:
 - Start with: `cd data/transformation && ./up.sh`
 
 **Context warning**: Large MCP query results (1000+ rows) kill context. Use Python scripts with psycopg2 instead.
+- When copying content to clipboard, omit markdown fences (no backticks) — just the raw content
 - When asking to create a presentation, refer to the pptx skill and brand guidelines
 - When reading excalidraw files, don't try to load them fully but extract relevant nodes instead
 - always assume cursor over code as client, until I adopted nvim
-- When creating git worktrees, remember to copy over configuration files (e.g. CLAUDE mcp settings, .env files, etc) check the gitignore
+- Worktrees: keep repo prefix (e.g. `../eagleeye-{feature}`), copy `.claude/settings.local.json` and `.env`
+- Fresh EagleEye clone: copy these from existing repo: `.env`, `.claude/settings.local.json`, `devtools/airflow/.env`, `data/transformation/.env`, `packages/prisma/src/*.prisma`
 - Looks like you've done the presentation without taking into consideration the brand guidelines in the earlybird plugin. Always, when you create a website, presentation or any other visual, take the brand-guidelines into account
 - when creating presentations, add strictly confidential to the first slide on the top right.
