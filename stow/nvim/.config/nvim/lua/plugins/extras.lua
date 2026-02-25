@@ -4,6 +4,15 @@ return {
     "Mofiqul/dracula.nvim",
     priority = 1000,
     config = function()
+      require("dracula").setup({
+        overrides = function(colors)
+          return {
+            -- Fix dark-on-dark gitignored files in snacks explorer
+            SnacksPickerPathIgnored = { fg = colors.bright_blue },
+            SnacksPickerGitStatusIgnored = { fg = colors.bright_blue },
+          }
+        end,
+      })
       require("lazy.core.loader").disable_rtp_plugin("tokyonight.nvim")
       vim.cmd([[colorscheme dracula]])
     end,
