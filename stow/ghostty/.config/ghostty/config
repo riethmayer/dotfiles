@@ -1,6 +1,6 @@
 # Font
-font-family = Hack Nerd Font Mono
-font-size = 16
+font-family = GeistMono Nerd Font Mono
+font-size = 14
 
 # Theme
 theme = Dracula
@@ -21,3 +21,14 @@ mouse-hide-while-typing = true
 shell-integration = zsh
 
 keybind = shift+enter=text:\x1b\r
+
+# Cmd+N switches tmux windows (sends Alt+N, bound in tmux)
+keybind = command+digit_1=text:\x1b1
+keybind = command+digit_2=text:\x1b2
+keybind = command+digit_3=text:\x1b3
+keybind = command+digit_4=text:\x1b4
+keybind = command+digit_5=text:\x1b5
+keybind = command+digit_6=text:\x1b6
+keybind = command+digit_7=text:\x1b7
+keybind = command+digit_8=text:\x1b8
+keybind = command+digit_9=text:\x1b9
