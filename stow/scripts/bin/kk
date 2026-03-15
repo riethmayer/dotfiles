@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# kk - Kill by port number or application name
+# Usage: kk <port|name>
+
+set -euo pipefail
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: kk <port|application-name>"
+  echo "Examples:"
+  echo "  kk 3000        # kill process on port 3000"
+  echo "  kk node        # kill all node processes"
+  exit 1
+fi
+
+target="$1"
+
+# Check if argument is a number (port)
+if [[ "$target" =~ ^[0-9]+$ ]]; then
+  pids=$(lsof -ti :"$target" 2>/dev/null || true)
+  if [[ -z "$pids" ]]; then
+    echo "No process found on port $target"
+    exit 0
+  fi
+  echo "→ lsof -ti :$target"
+  echo "  Found PIDs: $pids"
+  cmd="kill -9 $pids"
+  echo "→ $cmd"
+  eval "$cmd"
+  echo "Killed process(es) on port $target"
+else
+  pids=$(pgrep -f "$target" 2>/dev/null || true)
+  if [[ -z "$pids" ]]; then
+    echo "No process found matching '$target'"
+    exit 0
+  fi
+  echo "→ pgrep -f $target"
+  echo "  Found PIDs: $pids"
+  cmd="pkill -9 -f $target"
+  echo "→ $cmd"
+  eval "$cmd" 2>/dev/null || true
+  echo "Killed process(es) matching '$target'"
+fi
