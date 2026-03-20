@@ -1,0 +1,26 @@
+{
+  "earlybird-marketplace": {
+    "source": {
+      "source": "github",
+      "repo": "earlybirdvc/skills"
+    },
+    "installLocation": "/Users/jan/.claude/plugins/marketplaces/earlybird-marketplace",
+    "lastUpdated": "2026-02-05T14:53:35.985Z"
+  },
+  "anthropic-agent-skills": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/skills"
+    },
+    "installLocation": "/Users/jan/.claude/plugins/marketplaces/anthropic-agent-skills",
+    "lastUpdated": "2026-02-12T21:07:24.108Z"
+  },
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "/Users/jan/.claude/plugins/marketplaces/claude-plugins-official",
+    "lastUpdated": "2026-03-20T19:37:09.305Z"
+  }
+}

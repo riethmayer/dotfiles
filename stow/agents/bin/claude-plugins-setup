@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Setup Claude Code plugins marketplaces
+# Run on new machines after stow install
+
+set -e
+
+echo "Adding Claude Code marketplaces..."
+
+# Official Anthropic skills
+claude plugins:marketplace add anthropics/skills
+
+# EarlyBird skills
+claude plugins:marketplace add earlybirdvc/skills
+
+echo "Done. Install plugins with: claude plugins:install <plugin-name>"

@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "mise": {
+      "command": "mise",
+      "args": [
+        "mcp"
+      ],
+      "env": {
+        "MISE_EXPERIMENTAL": "1"
+      }
+    }
+  },
+  "preferences": {
+    "ccBranchPrefix": "riethmayer",
+    "localAgentModeTrustedFolders": [
+      "/Users/jan/code/skills",
+      "/Users/jan/Desktop/Testing",
+      "/Users/jan/Desktop/foo",
+      "/Users/jan/obsidian/riethmayer/2 - Areas/Design"
+    ],
+    "coworkScheduledTasksEnabled": true,
+    "ccdScheduledTasksEnabled": true,
+    "sidebarMode": "task",
+    "coworkWebSearchEnabled": true,
+    "keepAwakeEnabled": true
+  }
+}
