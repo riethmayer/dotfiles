@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TODAY=$(date +%Y-%m-%d)
+
+usage() {
+  cat <<'EOF'
+today - date utility
+
+Usage:
+  today            Output today's date (no trailing newline)
+  today -c FILE    Rename FILE with file creation date prefix
+  today -C DIR     Prefix all files in DIR with their creation date
+  today -a FILE    Extract date from file content via AI, rename with it
+  today -A DIR     AI-extract dates and prefix all files in DIR
+  today -p PROMPT FILE  Extract date via custom AI prompt, rename FILE
+  today -d DIR     Create a dated subdirectory under DIR
+  today -t         Output ISO datetime (2026-03-20T14:30:00)
+  today -h         Show this help
+
+Examples:
+  today | pbcopy              Copy date to clipboard
+  today -c notes.txt          notes.txt → 2026-03-20-notes.txt
+  today -C ~/docs             Prefix all files by creation date
+  today -a invoice.pdf        Extract invoice date, rename to YYYY-MM-DD-invoice.pdf
+  today -A ~/invoices         AI-prefix all files in directory
+  today -p "invoice paid date" receipt.pdf   Rename to YYYY-MM-DD-receipt.pdf
+  today -d ~/journal          Creates ~/journal/2026-03-20/
+  today -t                    2026-03-20T14:30:00
+EOF
+}
+
+cmd_date() {
+  printf '%s' "$TODAY"
+}
+
+cmd_datetime() {
+  printf '%s' "$(date +%Y-%m-%dT%H:%M:%S)"
+}
+
+cmd_file() {
+  local file=$1
+  [[ -e $file ]] || { echo "today: $file: not found" >&2; exit 1; }
+  local dir base created
+  dir=$(dirname "$file")
+  base=$(basename "$file")
+  [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
+  created=$(stat -f %SB -t %Y-%m-%d "$file")
+  mv "$file" "$dir/$created-$base"
+  echo "$dir/$created-$base"
+}
+
+cmd_file_batch() {
+  local dir=$1
+  [[ -d $dir ]] || { echo "today: $dir: not a directory" >&2; exit 1; }
+  local count=0
+  for file in "$dir"/*; do
+    [[ -f $file ]] || continue
+    local base
+    base=$(basename "$file")
+    # skip files already prefixed with a date
+    [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && continue
+    local created
+    created=$(stat -f %SB -t %Y-%m-%d "$file")
+    mv "$file" "$dir/$created-$base"
+    echo "$dir/$created-$base"
+    count=$((count + 1))
+  done
+  echo "today: prefixed $count file(s)" >&2
+}
+
+AI_PROMPT="Extract the primary document date (invoice date, letter date, statement date, etc).
+Output ONLY the date in YYYY-MM-DD format. Nothing else. No explanation."
+
+extract_date() {
+  local file=$1
+  local extracted
+  extracted=$(claude -p "$AI_PROMPT" < "$file" 2>/dev/null)
+  # validate YYYY-MM-DD format
+  if [[ $extracted =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    printf '%s' "$extracted"
+  else
+    echo "today: could not extract date from $file (got: $extracted)" >&2
+    return 1
+  fi
+}
+
+cmd_ai_file() {
+  local file=$1
+  [[ -e $file ]] || { echo "today: $file: not found" >&2; exit 1; }
+  local dir base extracted
+  dir=$(dirname "$file")
+  base=$(basename "$file")
+  [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
+  extracted=$(extract_date "$file") || exit 1
+  mv "$file" "$dir/$extracted-$base"
+  echo "$dir/$extracted-$base"
+}
+
+cmd_ai_batch() {
+  local dir=$1
+  [[ -d $dir ]] || { echo "today: $dir: not a directory" >&2; exit 1; }
+  local count=0 skipped=0
+  for file in "$dir"/*; do
+    [[ -f $file ]] || continue
+    local base
+    base=$(basename "$file")
+    [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && continue
+    local extracted
+    if extracted=$(extract_date "$file"); then
+      mv "$file" "$dir/$extracted-$base"
+      echo "$dir/$extracted-$base"
+      count=$((count + 1))
+    else
+      skipped=$((skipped + 1))
+    fi
+  done
+  echo "today: prefixed $count file(s), skipped $skipped" >&2
+}
+
+cmd_prompt() {
+  local prompt=$1 file=$2
+  [[ -e $file ]] || { echo "today: $file: not found" >&2; exit 1; }
+  local dir base extracted
+  dir=$(dirname "$file")
+  base=$(basename "$file")
+  [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
+  extracted=$(claude -p "$prompt. Extract the relevant date. Output ONLY YYYY-MM-DD, nothing else." < "$file" 2>/dev/null)
+  if [[ $extracted =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    mv "$file" "$dir/$extracted-$base"
+    echo "$dir/$extracted-$base"
+  else
+    echo "today: could not extract date (got: $extracted)" >&2
+    return 1
+  fi
+}
+
+cmd_dir() {
+  local parent=$1
+  [[ -d $parent ]] || { echo "today: $parent: not a directory" >&2; exit 1; }
+  local target="$parent/$TODAY"
+  mkdir -p "$target"
+  echo "$target"
+}
+
+[[ $# -eq 0 ]] && { cmd_date; exit 0; }
+
+while getopts ":c:C:a:A:p:d:th" opt; do
+  case $opt in
+    c) cmd_file "$OPTARG"; exit 0 ;;
+    C) cmd_file_batch "$OPTARG"; exit 0 ;;
+    a) cmd_ai_file "$OPTARG"; exit 0 ;;
+    A) cmd_ai_batch "$OPTARG"; exit 0 ;;
+    p) PROMPT="$OPTARG" ;;
+    d) cmd_dir "$OPTARG"; exit 0 ;;
+    t) cmd_datetime; exit 0 ;;
+    h) usage; exit 0 ;;
+    :) echo "today: -$OPTARG requires an argument" >&2; exit 1 ;;
+    *) usage >&2; exit 1 ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+if [[ -n ${PROMPT:-} ]]; then
+  [[ $# -ge 1 ]] || { echo "today: -p requires PROMPT and FILE" >&2; exit 1; }
+  cmd_prompt "$PROMPT" "$1"
+  exit 0
+fi
+
+usage >&2
+exit 1
