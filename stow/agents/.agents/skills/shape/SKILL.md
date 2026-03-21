@@ -1,11 +1,11 @@
 ---
 name: shape
-description: Shape work into a walkable Obsidian project folder — from press release down to feature files — then optionally commit to Linear. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this".
+description: Shape work into a walkable project folder — from press release down to feature files — then optionally commit to Linear. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this".
 ---
 
 # Shape
 
-Create a PRD as a sequentially-readable Obsidian project folder. Files descend from highest abstraction (press release) to lowest (feature files + language). Each file ends with open questions and empty answer slots for async mobile review. Ship to Linear when ready.
+Create a PRD as 8 sequentially-readable files. Files descend from highest abstraction (press release) to lowest (feature files + language). Each file ends with open questions and empty answer slots for async review. Commit to Linear when ready.
 
 ## Process
 
@@ -13,33 +13,40 @@ Create a PRD as a sequentially-readable Obsidian project folder. Files descend f
 
 Ask the user for a description of what they want to solve. Keep it conversational — they'll refine through the documents.
 
-### 2. Prime (if not already primed)
+### 2. Determine output location
+
+Check in order:
+1. **User's personal agent config** — look for a `planning` or `notes` setting in `~/.agents/AGENTS.md` or `~/.claude/CLAUDE.md` that specifies a preferred app/folder (e.g., Obsidian vault path, Apple Notes, a local folder)
+2. **Ask the user** — "Where do you want the shaped documents? (e.g., Obsidian vault, a folder in the repo, or just inline)"
+3. **Fall back to repo** — create a `.planning/{feature-name}/` folder in the current repo
+
+### 3. Prime (if not already primed)
 
 If `/prime` hasn't been run in this session, load project context now: vision, strategy, roadmap, domain architecture. This informs everything that follows.
 
-### 3. Explore the codebase
+### 4. Explore the codebase
 
 Automatically discover what exists:
 - Which packages/modules touch this problem space
 - What interfaces already exist that could be extended
 - What's been tried before (git log, existing code)
 
-### 4. Grill — minimal
+### 5. Grill — minimal
 
 Only ask about gaps the codebase can't answer. Focus on:
 - Ambiguous intent (multiple valid interpretations)
 - Priority conflicts (this vs competing work)
 - Scope boundaries (what's explicitly out)
 
-### 5. Write the Obsidian project
+### 6. Write the project files
 
-Output to `1 - Projects/{feature-name}/` in the user's Obsidian vault. Files are numbered for sequential reading — highest level first, most detailed last.
+Output 8 numbered files to the chosen location. Files are numbered for sequential reading — highest level first, most detailed last.
 
-### 6. Decision gate
+### 7. Decision gate
 
-After writing, tell the user:
+After writing, tell the user where the files are and:
 
-> PRD draft is in Obsidian at `1 - Projects/{feature-name}/`. Review on mobile, fill in the answer slots, then come back and say "commit it" to create Linear issues.
+> Review the docs, fill in the answer slots, then come back and say "commit it" to create Linear issues.
 
 Do NOT create Linear issues until explicitly asked.
 
