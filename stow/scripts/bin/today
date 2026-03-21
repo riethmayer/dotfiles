@@ -2,32 +2,65 @@
 set -euo pipefail
 
 TODAY=$(date +%Y-%m-%d)
+DRY_RUN=false
 
 usage() {
   cat <<'EOF'
 today - date utility
 
 Usage:
-  today            Output today's date (no trailing newline)
-  today -c FILE    Rename FILE with file creation date prefix
-  today -C DIR     Prefix all files in DIR with their creation date
-  today -a FILE    Extract date from file content via AI, rename with it
-  today -A DIR     AI-extract dates and prefix all files in DIR
-  today -p PROMPT FILE  Extract date via custom AI prompt, rename FILE
-  today -d DIR     Create a dated subdirectory under DIR
-  today -t         Output ISO datetime (2026-03-20T14:30:00)
-  today -h         Show this help
+  today                       Output today's date (no trailing newline)
+  today -f FILE               Prefix FILE with today's date
+  today -c FILE               Prefix FILE with file creation date
+  today -C DIR                Prefix all files in DIR with their creation date
+  today -a FILE               Extract date from file content via AI, rename
+  today -A DIR                AI-extract dates and prefix all files in DIR
+  today -p PROMPT FILE        Extract date via custom AI prompt, rename FILE
+  today -d DIR                Create a dated subdirectory under DIR
+  today -t                    Output ISO datetime (2026-03-21T14:30:00)
+  today -n                    Dry-run (combine with -c/-C/-a/-A/-f/-p)
+  today -h                    Show this help
 
 Examples:
-  today | pbcopy              Copy date to clipboard
-  today -c notes.txt          notes.txt → 2026-03-20-notes.txt
-  today -C ~/docs             Prefix all files by creation date
-  today -a invoice.pdf        Extract invoice date, rename to YYYY-MM-DD-invoice.pdf
-  today -A ~/invoices         AI-prefix all files in directory
+  today | pbcopy                             Copy date to clipboard
+  today -f notes.txt                         notes.txt → 2026-03-21-notes.txt
+  today -c notes.txt                         notes.txt → 2026-03-20-notes.txt
+  today -C ~/docs                            Prefix all files by creation date
+  today -nC ~/docs                           Show what -C would do
+  today -a invoice.pdf                       Extract invoice date, rename
+  today -A ~/invoices                        AI-prefix all files in directory
   today -p "invoice paid date" receipt.pdf   Rename to YYYY-MM-DD-receipt.pdf
-  today -d ~/journal          Creates ~/journal/2026-03-20/
-  today -t                    2026-03-20T14:30:00
+  today -d ~/journal                         Creates ~/journal/2026-03-21/
+  today -t                                   2026-03-21T14:30:00
 EOF
+}
+
+# cross-platform file creation date
+file_creation_date() {
+  local file=$1
+  if [[ $(uname) == "Darwin" ]]; then
+    stat -f %SB -t %Y-%m-%d "$file"
+  else
+    local birth
+    birth=$(stat -c %W "$file" 2>/dev/null)
+    if [[ $birth == "0" || -z $birth ]]; then
+      # fallback to modification date if birth time unavailable
+      stat -c %Y "$file" | xargs -I{} date -d @{} +%Y-%m-%d
+    else
+      date -d @"$birth" +%Y-%m-%d
+    fi
+  fi
+}
+
+# rename or dry-run
+rename_file() {
+  local src=$1 dst=$2
+  if $DRY_RUN; then
+    echo "[dry-run] $src → $dst"
+  else
+    mv "$src" "$dst"
+    echo "$dst"
+  fi
 }
 
 cmd_date() {
@@ -38,6 +71,16 @@ cmd_datetime() {
   printf '%s' "$(date +%Y-%m-%dT%H:%M:%S)"
 }
 
+cmd_today_file() {
+  local file=$1
+  [[ -e $file ]] || { echo "today: $file: not found" >&2; exit 1; }
+  local dir base
+  dir=$(dirname "$file")
+  base=$(basename "$file")
+  [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
+  rename_file "$file" "$dir/$TODAY-$base"
+}
+
 cmd_file() {
   local file=$1
   [[ -e $file ]] || { echo "today: $file: not found" >&2; exit 1; }
@@ -45,9 +88,8 @@ cmd_file() {
   dir=$(dirname "$file")
   base=$(basename "$file")
   [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
-  created=$(stat -f %SB -t %Y-%m-%d "$file")
-  mv "$file" "$dir/$created-$base"
-  echo "$dir/$created-$base"
+  created=$(file_creation_date "$file")
+  rename_file "$file" "$dir/$created-$base"
 }
 
 cmd_file_batch() {
@@ -58,12 +100,10 @@ cmd_file_batch() {
     [[ -f $file ]] || continue
     local base
     base=$(basename "$file")
-    # skip files already prefixed with a date
     [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && continue
     local created
-    created=$(stat -f %SB -t %Y-%m-%d "$file")
-    mv "$file" "$dir/$created-$base"
-    echo "$dir/$created-$base"
+    created=$(file_creation_date "$file")
+    rename_file "$file" "$dir/$created-$base"
     count=$((count + 1))
   done
   echo "today: prefixed $count file(s)" >&2
@@ -76,7 +116,6 @@ extract_date() {
   local file=$1
   local extracted
   extracted=$(claude -p "$AI_PROMPT" < "$file" 2>/dev/null)
-  # validate YYYY-MM-DD format
   if [[ $extracted =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
     printf '%s' "$extracted"
   else
@@ -93,8 +132,7 @@ cmd_ai_file() {
   base=$(basename "$file")
   [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
   extracted=$(extract_date "$file") || exit 1
-  mv "$file" "$dir/$extracted-$base"
-  echo "$dir/$extracted-$base"
+  rename_file "$file" "$dir/$extracted-$base"
 }
 
 cmd_ai_batch() {
@@ -108,8 +146,7 @@ cmd_ai_batch() {
     [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && continue
     local extracted
     if extracted=$(extract_date "$file"); then
-      mv "$file" "$dir/$extracted-$base"
-      echo "$dir/$extracted-$base"
+      rename_file "$file" "$dir/$extracted-$base"
       count=$((count + 1))
     else
       skipped=$((skipped + 1))
@@ -127,8 +164,7 @@ cmd_prompt() {
   [[ $base =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}- ]] && { echo "today: $base already prefixed" >&2; exit 1; }
   extracted=$(claude -p "$prompt. Extract the relevant date. Output ONLY YYYY-MM-DD, nothing else." < "$file" 2>/dev/null)
   if [[ $extracted =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-    mv "$file" "$dir/$extracted-$base"
-    echo "$dir/$extracted-$base"
+    rename_file "$file" "$dir/$extracted-$base"
   else
     echo "today: could not extract date (got: $extracted)" >&2
     return 1
@@ -139,21 +175,27 @@ cmd_dir() {
   local parent=$1
   [[ -d $parent ]] || { echo "today: $parent: not a directory" >&2; exit 1; }
   local target="$parent/$TODAY"
-  mkdir -p "$target"
-  echo "$target"
+  if $DRY_RUN; then
+    echo "[dry-run] mkdir -p $target"
+  else
+    mkdir -p "$target"
+    echo "$target"
+  fi
 }
 
 [[ $# -eq 0 ]] && { cmd_date; exit 0; }
 
-while getopts ":c:C:a:A:p:d:th" opt; do
+while getopts ":f:c:C:a:A:p:d:tnh" opt; do
   case $opt in
-    c) cmd_file "$OPTARG"; exit 0 ;;
-    C) cmd_file_batch "$OPTARG"; exit 0 ;;
-    a) cmd_ai_file "$OPTARG"; exit 0 ;;
-    A) cmd_ai_batch "$OPTARG"; exit 0 ;;
-    p) PROMPT="$OPTARG" ;;
-    d) cmd_dir "$OPTARG"; exit 0 ;;
-    t) cmd_datetime; exit 0 ;;
+    n) DRY_RUN=true ;;
+    f) CMD=today_file; ARG="$OPTARG" ;;
+    c) CMD=file; ARG="$OPTARG" ;;
+    C) CMD=file_batch; ARG="$OPTARG" ;;
+    a) CMD=ai_file; ARG="$OPTARG" ;;
+    A) CMD=ai_batch; ARG="$OPTARG" ;;
+    p) CMD=prompt; PROMPT="$OPTARG" ;;
+    d) CMD=dir; ARG="$OPTARG" ;;
+    t) CMD=datetime ;;
     h) usage; exit 0 ;;
     :) echo "today: -$OPTARG requires an argument" >&2; exit 1 ;;
     *) usage >&2; exit 1 ;;
@@ -162,11 +204,16 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -n ${PROMPT:-} ]]; then
-  [[ $# -ge 1 ]] || { echo "today: -p requires PROMPT and FILE" >&2; exit 1; }
-  cmd_prompt "$PROMPT" "$1"
-  exit 0
-fi
-
-usage >&2
-exit 1
+case ${CMD:-} in
+  today_file)  cmd_today_file "$ARG" ;;
+  file)        cmd_file "$ARG" ;;
+  file_batch)  cmd_file_batch "$ARG" ;;
+  ai_file)     cmd_ai_file "$ARG" ;;
+  ai_batch)    cmd_ai_batch "$ARG" ;;
+  prompt)
+    [[ $# -ge 1 ]] || { echo "today: -p requires PROMPT and FILE" >&2; exit 1; }
+    cmd_prompt "$PROMPT" "$1" ;;
+  dir)         cmd_dir "$ARG" ;;
+  datetime)    cmd_datetime ;;
+  *)           usage >&2; exit 1 ;;
+esac
