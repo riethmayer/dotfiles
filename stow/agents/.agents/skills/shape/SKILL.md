@@ -1,11 +1,11 @@
 ---
 name: shape
-description: Shape work into a walkable project folder — from press release down to feature files — then optionally commit to Linear. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this".
+description: Shape work into a walkable project folder — from press release down to feature files. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this". After shaping, use /linear to commit to Linear.
 ---
 
 # Shape
 
-Create a PRD as 8 sequentially-readable files. Files descend from highest abstraction (press release) to lowest (feature files + language). Each file ends with open questions and empty answer slots for async review. Commit to Linear when ready.
+Create a PRD as 8 sequentially-readable files. Files descend from highest abstraction (press release) to lowest (feature files + language). Each file ends with open questions and empty answer slots for async review. When ready to commit, use `/linear`.
 
 ## Process
 
@@ -16,6 +16,7 @@ Ask the user for a description of what they want to solve. Keep it conversationa
 ### 2. Determine output location
 
 Check in order:
+
 1. **User's personal agent config** — look for a `planning` or `notes` setting in `~/.agents/AGENTS.md` or `~/.claude/CLAUDE.md` that specifies a preferred app/folder (e.g., Obsidian vault path, Apple Notes, a local folder)
 2. **Ask the user** — "Where do you want the shaped documents? (e.g., Obsidian vault, a folder in the repo, or just inline)"
 3. **Fall back to repo** — create a `.planning/{feature-name}/` folder in the current repo
@@ -27,6 +28,7 @@ If `/prime` hasn't been run in this session, load project context now: vision, s
 ### 4. Explore the codebase
 
 Automatically discover what exists:
+
 - Which packages/modules touch this problem space
 - What interfaces already exist that could be extended
 - What's been tried before (git log, existing code)
@@ -34,6 +36,7 @@ Automatically discover what exists:
 ### 5. Grill — minimal
 
 Only ask about gaps the codebase can't answer. Focus on:
+
 - Ambiguous intent (multiple valid interpretations)
 - Priority conflicts (this vs competing work)
 - Scope boundaries (what's explicitly out)
@@ -46,9 +49,9 @@ Output 8 numbered files to the chosen location. Files are numbered for sequentia
 
 After writing, tell the user where the files are and:
 
-> Review the docs, fill in the answer slots, then come back and say "commit it" to create Linear issues.
+> Review the docs, fill in the answer slots, then run `/linear` to create initiative, projects, and issues.
 
-Do NOT create Linear issues until explicitly asked.
+Do NOT create Linear issues from this skill — that's `/linear`'s job.
 
 ## Output Format
 
@@ -74,8 +77,8 @@ Every file follows this structure:
 
 ```markdown
 ---
-date: {today}
-tags: [prd, {feature-name}]
+date: { today }
+tags: [prd, { feature-name }]
 hubs:
   - "[[{feature-name}]]"
 ---
@@ -91,14 +94,10 @@ hubs:
 ### {Question 1}?
 
 > **Answer:**
->
->
 
 ### {Question 2}?
 
 > **Answer:**
->
->
 ```
 
 The blockquote answer slots are empty — ready for voice-to-text input on mobile.
@@ -205,31 +204,27 @@ New or changed terms that emerged during PRD writing. Grouped by bounded context
 ```markdown
 ## Sourcing
 
-| Term | Definition | Aliases to avoid | Status |
-|------|-----------|-----------------|--------|
-| **Signal** | A data point indicating founder activity | Indicator, metric | existing |
-| **Triage** | Prioritization of founders by signal strength | Scoring, ranking | new |
+| Term       | Definition                                    | Aliases to avoid  | Status   |
+| ---------- | --------------------------------------------- | ----------------- | -------- |
+| **Signal** | A data point indicating founder activity      | Indicator, metric | existing |
+| **Triage** | Prioritization of founders by signal strength | Scoring, ranking  | new      |
 
 ## CRM
 
-| Term | Definition | Aliases to avoid | Status |
-|------|-----------|-----------------|--------|
-| **Push** | Export a lead to external CRM system | Sync, export | clarified |
+| Term     | Definition                           | Aliases to avoid | Status    |
+| -------- | ------------------------------------ | ---------------- | --------- |
+| **Push** | Export a lead to external CRM system | Sync, export     | clarified |
 ```
 
 When shipping, these get merged into each domain's `UBIQUITOUS_LANGUAGE.md`.
 
 Open questions: term conflicts across contexts, ambiguous definitions.
 
-## Shipping to Linear
+## Next step: /linear
 
-When the user says "ship it" (or similar):
-
-1. Read the Obsidian project files (answers may have been filled in)
-2. Update the PRD based on answers to open questions
-3. Invoke the project-specific PRD writer if available (e.g., EagleEye's `prd-writer`)
-4. If no project-specific writer, create Linear issues directly:
-   - One project for the PRD
-   - One issue per capability with Gherkin scenarios in the description
-5. Copy `.feature` drafts from `06-feature-files.md` into package directories
-6. Merge language additions from `07-language.md` into `UBIQUITOUS_LANGUAGE.md` files
+When the user is ready to commit shaped work to Linear, point them to `/linear`. That skill handles:
+- Strategic placement (initiative selection)
+- Change assessment (new/changing/removing)
+- Project grouping by domain
+- Issue breakdown with AFK/HITL classification and dependency ordering
+- `.feature` file copying and language merging
