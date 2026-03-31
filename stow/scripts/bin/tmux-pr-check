@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# Check GitHub PR status for each tmux window, set @pr_info per window
+# Called periodically via tmux status bar #() and on window select (--seen)
+
+set -uo pipefail
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-pr-check"
+CACHE_TTL=300
+LOCK_FILE="$CACHE_DIR/.lock"
+
+# Prevent concurrent runs
+if [[ "${1:-}" != "--seen" ]]; then
+  mkdir -p "$CACHE_DIR"
+  if ! mkdir "$LOCK_FILE" 2>/dev/null; then
+    # Stale lock? Remove if older than 60s
+    if [[ -d "$LOCK_FILE" ]] && (( $(date +%s) - $(stat -f %m "$LOCK_FILE" 2>/dev/null || echo 0) > 60 )); then
+      rmdir "$LOCK_FILE" 2>/dev/null
+      mkdir "$LOCK_FILE" 2>/dev/null || exit 0
+    else
+      exit 0
+    fi
+  fi
+  trap 'rmdir "$LOCK_FILE" 2>/dev/null' EXIT
+fi
+
+# --seen: mark current window's PR info as seen (clears bell)
+if [[ "${1:-}" == "--seen" ]]; then
+  tmux set-option -wq @pr_seen "$(tmux display-message -p '#{@pr_info}')"
+  exit 0
+fi
+
+# Preflight
+command -v gh >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+gh auth status &>/dev/null || exit 0
+mkdir -p "$CACHE_DIR"
+
+cache_age() {
+  local now mod
+  now=$(date +%s)
+  mod=$(stat -f %m "$1" 2>/dev/null) || { echo 999999; return; }
+  echo $(( now - mod ))
+}
+
+check_window() {
+  local window="$1"
+  local pane_path pr_json pr_number pr_state review display_state pr_info
+  local branch repo_root cache_key cache_file
+
+  pane_path=$(tmux display-message -p -t ":$window" '#{pane_current_path}' 2>/dev/null) || return
+
+  # Must be a git repo
+  repo_root=$(git -C "$pane_path" rev-parse --show-toplevel 2>/dev/null) || {
+    tmux set-option -wqt ":$window" @pr_info "" 2>/dev/null
+    return
+  }
+
+  branch=$(git -C "$pane_path" branch --show-current 2>/dev/null)
+  if [[ -z "$branch" || "$branch" == "main" || "$branch" == "master" ]]; then
+    tmux set-option -wqt ":$window" @pr_info "" 2>/dev/null
+    return
+  fi
+
+  # Cache per repo+branch
+  cache_key=$(printf '%s:%s' "$repo_root" "$branch" | md5 -q 2>/dev/null)
+  cache_file="$CACHE_DIR/$cache_key"
+
+  if [[ -f "$cache_file" ]] && (( $(cache_age "$cache_file") < CACHE_TTL )); then
+    pr_info=$(<"$cache_file")
+    tmux set-option -wqt ":$window" @pr_info "$pr_info" 2>/dev/null
+    return
+  fi
+
+  # Query GitHub
+  pr_json=$(cd "$pane_path" && gh pr view --json number,state,reviewDecision 2>/dev/null) || pr_json=""
+
+  if [[ -n "$pr_json" ]]; then
+    pr_number=$(echo "$pr_json" | jq -r '.number // empty')
+    pr_state=$(echo "$pr_json" | jq -r '.state // empty' | tr '[:upper:]' '[:lower:]')
+    review=$(echo "$pr_json" | jq -r '.reviewDecision // empty')
+
+    case "$review" in
+      CHANGES_REQUESTED) display_state="changes" ;;
+      APPROVED) display_state="approved" ;;
+      *) display_state="$pr_state" ;;
+    esac
+
+    pr_info="#${pr_number} ${display_state}"
+  else
+    pr_info=""
+  fi
+
+  printf '%s' "$pr_info" > "$cache_file"
+  tmux set-option -wqt ":$window" @pr_info "$pr_info" 2>/dev/null
+}
+
+# Check all windows in parallel
+pids=()
+for window in $(tmux list-windows -F '#{window_index}' 2>/dev/null); do
+  check_window "$window" &
+  pids+=($!)
+done
+for pid in "${pids[@]:-}"; do
+  wait "$pid" 2>/dev/null || true
+done
