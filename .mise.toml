@@ -16,6 +16,8 @@ run = '''
 STOW_DIR=$(pwd)/stow
 PACKAGES=$(ls -d stow/* | xargs basename -a)
 stow --dir $STOW_DIR --target ~ $PACKAGES
+# AGENTS.md is source of truth; Claude Code needs it at ~/.claude/CLAUDE.md
+ln -sf ~/.agents/AGENTS.md ~/.claude/CLAUDE.md
 '''
 
 [tasks.install-adopt]
