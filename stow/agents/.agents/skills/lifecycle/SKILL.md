@@ -5,10 +5,10 @@ description: The full product development lifecycle from context loading to depl
 
 # Product Development Lifecycle
 
-Six commands, one pipeline. Each step has a clear input and output.
+Seven commands, one pipeline. Each step has a clear input and output.
 
 ```
-/prime → /shape → /prd → /tdd → /review → /ship
+/prime → /brief → /shape → /linear → /tdd → /review → /ship
 ```
 
 ## The Pipeline
@@ -20,9 +20,20 @@ Six commands, one pipeline. Each step has a clear input and output.
 
 Reads `docs/vision/`, `docs/strategy/`, `docs/roadmap/`, and `domain-architecture` skill. Falls back to README + git log for simpler repos. Re-prime each session.
 
-### 2. `/shape` — Design the Work
+### 2. `/brief` — Justify the Work
 
-**Input:** A problem to solve
+**Input:** A problem or opportunity that needs leadership buy-in
+**Output:** One-page decision brief (Situation, Stakes, Constraints, Key Question, Options, Recommendation)
+
+Interviews the user to produce a board-ready brief that forces a business value debate before any design work begins. Answers the question "should we invest in this?" with concrete numbers and structured options.
+
+The brief is the contract between leadership intent and engineering execution. In an agent-driven pipeline, it's the structured decision input that multiple agents can reason over independently.
+
+**Decision gate:** Leadership reviews and approves before moving to `/shape`. No approval → no shaping.
+
+### 3. `/shape` — Design the Work
+
+**Input:** An approved brief — a problem the team has committed to solving
 **Output:** Obsidian project folder (`1 - Projects/{name}/`)
 
 Creates 8 numbered files descending from highest to lowest abstraction:
@@ -40,18 +51,20 @@ Creates 8 numbered files descending from highest to lowest abstraction:
 
 Every file ends with open questions + empty answer slots for mobile review.
 
-**Decision gate:** Review on mobile, fill in answers, then move to `/prd` when ready.
+**Decision gate:** Review on mobile, fill in answers, then move to `/linear` when ready.
 
-### 3. `/prd` — Commit to Linear
+### 4. `/linear` — Commit to Linear
 
 **Input:** Shaped Obsidian project (with answers filled in)
-**Output:** Linear project + issues with Gherkin scenarios
+**Output:** Linear initiative, projects + issues with Gherkin scenarios, AFK/HITL classification, dependency ordering
 
-Reads the shaped output, validates against EagleEye's 5-lens score and survival criteria, creates Linear issues per capability. Copies `.feature` files into package directories. Merges ubiquitous language updates.
+Reads the shaped output, validates open questions are resolved, places work under a Linear initiative tied to a measurable outcome. Groups issues into projects by domain (infra, domain logic, UI, data). Each issue is a vertical slice with acceptance criteria, Gherkin scenarios, and explicit blocking relationships.
 
-In non-EagleEye repos, creates issues directly (Linear or GitHub).
+Classifies every issue as **AFK** (agent-autonomous) or **HITL** (needs human judgment). Copies `.feature` files into package directories. Merges ubiquitous language updates.
 
-### 4. `/tdd` — Build It
+In non-EagleEye repos, use `/prd-to-issues` for GitHub-based projects.
+
+### 5. `/tdd` — Build It
 
 **Input:** Linear issues with Gherkin scenarios + `.feature` files in packages
 **Output:** Working code with passing tests
@@ -65,14 +78,14 @@ Red-green-refactor in vertical slices:
 
 Tests verify behavior through the port interface, not implementation. Integration-style, not unit mocks.
 
-### 5. `/review` — Verify It
+### 6. `/review` — Verify It
 
 **Input:** PR with code changes
 **Output:** Approved, green PR
 
 Runs `/check-pr` loop: sync, fix CI, address CodeRabbit comments, push, wait for re-review. Repeat until green. CodeRabbit is the external reviewer — close comments to give it feedback.
 
-### 6. `/ship` — Deploy It
+### 7. `/ship` — Deploy It
 
 **Input:** Green, approved PR
 **Output:** Running in production
@@ -85,20 +98,22 @@ These plug into the pipeline at various points:
 
 | Skill | Used During | Purpose |
 |-------|-------------|---------|
-| `/grill-me` | `/shape` step 4 | Stress-test design decisions |
+| `/grill-me` | `/brief`, `/shape` | Stress-test decisions and design |
 | `/user-story` | `/shape` step 5 | Write verb-noun capability cards |
-| `/ubiquitous-language` | `/shape` step 5, `/prd` step 7 | Formalize domain terms |
+| `/ubiquitous-language` | `/shape` step 5, `/linear` step 7 | Formalize domain terms |
 | `/improve-codebase-architecture` | Before `/shape` | Find refactoring opportunities |
-| `/prd-to-issues` | Alternative to `/prd` | For GitHub-based projects |
+| `/prd-to-issues` | Alternative to `/linear` | For GitHub-based projects |
 
 ## When to Use What
 
 | Situation | Start at |
 |-----------|----------|
-| New feature from scratch | `/prime` → `/shape` |
-| Bug fix | `/tdd` (skip shape/prd) |
-| Shaped work ready to build | `/prd` → `/tdd` |
+| New feature from scratch | `/prime` → `/brief` |
+| Approved brief, ready to design | `/shape` → `/linear` |
+| Bug fix | `/tdd` (skip brief/shape/linear) |
+| Shaped work ready to build | `/linear` → `/tdd` |
 | Code ready for review | `/review` |
 | PR approved, ready to deploy | `/ship` |
 | Need to understand the project | `/prime` |
+| Need leadership buy-in | `/brief` |
 | Want to stress-test an idea | `/grill-me` |

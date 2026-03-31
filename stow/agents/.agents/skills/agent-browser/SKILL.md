@@ -65,6 +65,24 @@ agent-browser screenshot --full       # Full page screenshot
 agent-browser pdf output.pdf          # Save as PDF
 ```
 
+## Cloud Browser (Lightpanda)
+
+Use `--cdp` to connect to Lightpanda cloud browser instead of launching local Chromium. Faster startup, no local browser overhead.
+
+```bash
+# Load API key and connect
+eval "$(dotenvx run -f ~/.env -- env | grep LIGHTPANDA)"
+CDP_URL="wss://cloud.lightpanda.io/v1?token=$LIGHTPANDA_API_KEY"
+
+agent-browser --cdp "$CDP_URL" open https://example.com
+agent-browser --cdp "$CDP_URL" snapshot -i
+agent-browser --cdp "$CDP_URL" click @e1
+```
+
+**When to use cloud vs local:**
+- **Cloud (Lightpanda)**: web scraping, data extraction, snapshot-based workflows
+- **Local Chromium**: file:// URLs, PDF generation, headed debugging, screenshots, state persistence
+
 ## Common Patterns
 
 ### Form Submission

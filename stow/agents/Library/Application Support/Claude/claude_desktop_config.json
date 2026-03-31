@@ -16,11 +16,12 @@
       "/Users/jan/code/skills",
       "/Users/jan/Desktop/Testing",
       "/Users/jan/Desktop/foo",
-      "/Users/jan/obsidian/riethmayer/2 - Areas/Design"
+      "/Users/jan/obsidian/riethmayer/2 - Areas/Design",
+      "/Users/jan/code/eagleeye"
     ],
     "coworkScheduledTasksEnabled": true,
     "ccdScheduledTasksEnabled": true,
-    "sidebarMode": "task",
+    "sidebarMode": "code",
     "coworkWebSearchEnabled": true,
     "keepAwakeEnabled": true
   }

@@ -8,12 +8,19 @@
       }
     },
     "playwright": {
-      "command": "npx",
-      "args": ["@anthropic-ai/mcp-server-playwright@latest"]
+      "command": "bash",
+      "args": [
+        "-c",
+        "dotenvx run -f ~/.env -- npx @playwright/mcp@latest --cdp-endpoint \"wss://cloud.lightpanda.io/v1?token=$LIGHTPANDA_API_KEY\""
+      ]
     },
     "shadcn": {
       "command": "npx",
       "args": ["shadcn@latest", "mcp"]
+    },
+    "excalidraw": {
+      "command": "node",
+      "args": ["/Users/jan/code/excalidraw-mcp/dist/index.js", "--stdio"]
     }
   }
 }
