@@ -22,6 +22,9 @@ shell-integration = zsh
 
 keybind = shift+enter=text:\x1b\r
 
+# Cmd+T creates tmux window instead of ghostty tab
+keybind = super+t=text:\x01c
+
 # Cmd+N switches tmux windows (sends Alt+N, bound in tmux)
 keybind = command+digit_1=text:\x1b1
 keybind = command+digit_2=text:\x1b2
