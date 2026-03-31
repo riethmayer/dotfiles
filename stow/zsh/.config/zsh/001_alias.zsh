@@ -6,6 +6,8 @@ alias v=nvim
 alias vim=nvim
 alias tg=terragrunt
 alias t=tmux
+alias nv="neovide"
+alias nvf="neovide --no-fork"
 
 # Obsidian
 export OBSIDIAN_VAULT="$HOME/obsidian/riethmayer"
@@ -30,4 +32,5 @@ alias w4='cd ~/code/ee-four/apps/eagleeye-web'
 
 # Claude Code
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
-alias yolo='claude --dangerously-skip-permissions --model opus'
+yolo() { claude --dangerously-skip-permissions "$@"; }
+yoloc() { claude --dangerously-skip-permissions --chrome "$@"; }

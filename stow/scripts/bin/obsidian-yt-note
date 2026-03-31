@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# obsidian-yt-note - Extract YouTube transcript, summarize, save to Obsidian
+# Usage: obsidian-yt-note <youtube-url>
+
+set -euo pipefail
+
+VAULT="$HOME/obsidian/riethmayer"
+RESOURCE_DIR="$VAULT/3 - Resources/YouTube"
+TRANSCRIPT_DIR="$RESOURCE_DIR/Transcripts"
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: obsidian-yt-note <youtube-url>"
+  exit 1
+fi
+
+url="$1"
+
+# Extract video metadata
+echo "Fetching video metadata..."
+title=$(yt-dlp --skip-download --print '%(title)s' "$url" 2>/dev/null)
+channel=$(yt-dlp --skip-download --print '%(channel)s' "$url" 2>/dev/null)
+upload_date=$(yt-dlp --skip-download --print '%(upload_date)s' "$url" 2>/dev/null)
+duration=$(yt-dlp --skip-download --print '%(duration_string)s' "$url" 2>/dev/null)
+video_id=$(yt-dlp --skip-download --print '%(id)s' "$url" 2>/dev/null)
+
+# Format upload date
+formatted_date="${upload_date:0:4}-${upload_date:4:2}-${upload_date:6:2}"
+
+# Sanitize title for filename
+safe_title=$(echo "$title" | sed 's/[\/\\:*?"<>|]/-/g' | sed 's/  */ /g' | head -c 120)
+
+echo "Title: $title"
+echo "Channel: $channel"
+
+# Extract transcript (prefer manual subs, fall back to auto)
+echo "Fetching transcript..."
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+yt-dlp --skip-download \
+  --write-subs --write-auto-subs \
+  --sub-langs "en.*,en" --sub-format srt \
+  --convert-subs srt \
+  -o "$tmpdir/%(id)s" \
+  "$url" 2>/dev/null
+
+# Find the subtitle file
+sub_file=$(ls "$tmpdir"/*.srt 2>/dev/null | head -1)
+
+if [[ -z "$sub_file" ]]; then
+  echo "Error: no English transcript available for this video"
+  exit 1
+fi
+
+# Convert SRT to clean text
+transcript=$(sed '/^[0-9]*$/d; /^[0-9][0-9]:[0-9][0-9]/d; /^$/d; s/<[^>]*>//g' "$sub_file" \
+  | awk '!seen[$0]++' \
+  | tr '\n' ' ' \
+  | sed 's/  */ /g; s/^ //; s/ $//' \
+  | fold -s -w 80)
+
+echo "Transcript extracted ($(echo "$transcript" | wc -w | tr -d ' ') words)"
+
+# Generate summary with claude
+echo "Generating summary..."
+summary=$(echo "$transcript" | claude -p "Summarize this YouTube video transcript in 3-5 bullet points. Be concise. Only output the bullet points, no preamble." 2>/dev/null)
+
+# Create directories
+mkdir -p "$RESOURCE_DIR" "$TRANSCRIPT_DIR"
+
+# Write transcript file
+transcript_file="$TRANSCRIPT_DIR/${safe_title}.md"
+cat > "$transcript_file" << MDEOF
+---
+type: transcript
+source: "${url}"
+video_id: "${video_id}"
+---
+
+# Transcript: ${title}
+
+${transcript}
+MDEOF
+
+echo "Wrote transcript: $transcript_file"
+
+# Write resource note
+note_file="$RESOURCE_DIR/${safe_title}.md"
+cat > "$note_file" << MDEOF
+---
+type: youtube
+url: "${url}"
+channel: "${channel}"
+date: ${formatted_date}
+duration: "${duration}"
+tags:
+  - youtube
+---
+
+# ${title}
+
+**Channel:** ${channel}
+**Date:** ${formatted_date}
+**Duration:** ${duration}
+**Link:** ${url}
+
+## Summary
+
+${summary}
+
+## Transcript
+
+![[${safe_title}]]
+MDEOF
+
+echo "Wrote note: $note_file"
+echo ""
+echo "Commands used:"
+echo "  yt-dlp --skip-download --print '%(title)s\\t%(channel)s\\t%(upload_date)s\\t%(duration_string)s\\t%(id)s' \"$url\""
+echo "  yt-dlp --skip-download --write-subs --write-auto-subs --sub-langs 'en.*,en' --sub-format srt --convert-subs srt \"$url\""
+echo "  sed '/^[0-9]*\$/d; /^[0-9][0-9]:[0-9][0-9]/d; /^$/d' <srt-file>  # clean SRT to plain text"
+echo "  claude -p 'Summarize this YouTube video transcript...'  # generate summary"
