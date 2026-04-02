@@ -16,16 +16,16 @@ target="$1"
 
 # Check if argument is a number (port)
 if [[ "$target" =~ ^[0-9]+$ ]]; then
-  pids=$(lsof -ti :"$target" 2>/dev/null || true)
+  pids=$(lsof -ti :"$target" 2>/dev/null | tr '\n' ' ' || true)
+  pids="${pids% }"
   if [[ -z "$pids" ]]; then
     echo "No process found on port $target"
     exit 0
   fi
   echo "→ lsof -ti :$target"
   echo "  Found PIDs: $pids"
-  cmd="kill -9 $pids"
-  echo "→ $cmd"
-  eval "$cmd"
+  echo "→ kill -9 $pids"
+  kill -9 $pids
   echo "Killed process(es) on port $target"
 else
   pids=$(pgrep -f "$target" 2>/dev/null || true)
