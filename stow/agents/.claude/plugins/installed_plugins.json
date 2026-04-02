@@ -34,10 +34,10 @@
     "superpowers@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jan/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6",
-        "version": "5.0.6",
+        "installPath": "/Users/jan/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7",
+        "version": "5.0.7",
         "installedAt": "2026-03-20T08:46:28.892Z",
-        "lastUpdated": "2026-03-25T18:23:06.002Z",
+        "lastUpdated": "2026-04-01T06:07:44.684Z",
         "gitCommitSha": "8ea39819eed74fe2a0338e71789f06b30e953041"
       }
     ],
@@ -144,10 +144,10 @@
     "posthog@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/jan/.claude/plugins/cache/claude-plugins-official/posthog/1.0.0",
-        "version": "1.0.0",
+        "installPath": "/Users/jan/.claude/plugins/cache/claude-plugins-official/posthog/1.0.3",
+        "version": "1.0.3",
         "installedAt": "2026-03-20T08:46:32.332Z",
-        "lastUpdated": "2026-03-20T08:46:32.332Z",
+        "lastUpdated": "2026-04-02T14:41:29.682Z",
         "gitCommitSha": "f2f37954ecef9f1afce4fa81b6a612454a96c410"
       }
     ],
