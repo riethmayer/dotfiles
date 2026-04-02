@@ -1,0 +1,83 @@
+{
+	"$schema": "https://raw.githubusercontent.com/badlogic/pi-mono/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
+	"name": "earlybird-light",
+	"vars": {
+		"ebRed": "#CC1517",
+		"ebRedBright": "#FD1A1B",
+		"ebOffBlack": "#2D1A16",
+		"ebBlue": "#1E78CC",
+		"ebPurple": "#8A3EA6",
+		"ebTeal": "#2B7A6B",
+		"earthy200": "#877364",
+		"earthy300": "#6B5F58",
+		"earthy400": "#675952",
+		"earthy500": "#483D34",
+		"green": "#0E6B2F",
+		"greenBright": "#16803C",
+		"yellow": "#9A6700"
+	},
+	"colors": {
+		"accent": "ebRed",
+		"border": "earthy200",
+		"borderAccent": "ebRed",
+		"borderMuted": "earthy200",
+		"success": "green",
+		"error": "ebRedBright",
+		"warning": "yellow",
+		"muted": "earthy300",
+		"dim": "earthy200",
+		"text": "",
+		"thinkingText": "earthy300",
+
+		"selectedBg": "#e8ddd4",
+		"userMessageBg": "#f0e4da",
+		"userMessageText": "",
+		"customMessageBg": "#ede0e8",
+		"customMessageText": "",
+		"customMessageLabel": "ebPurple",
+		"toolPendingBg": "#ede4da",
+		"toolSuccessBg": "#e8f0e8",
+		"toolErrorBg": "#f5d5d5",
+		"toolTitle": "ebRed",
+		"toolOutput": "earthy500",
+
+		"mdHeading": "ebRed",
+		"mdLink": "ebBlue",
+		"mdLinkUrl": "earthy300",
+		"mdCode": "ebTeal",
+		"mdCodeBlock": "ebOffBlack",
+		"mdCodeBlockBorder": "earthy200",
+		"mdQuote": "earthy300",
+		"mdQuoteBorder": "earthy200",
+		"mdHr": "earthy200",
+		"mdListBullet": "yellow",
+
+		"toolDiffAdded": "green",
+		"toolDiffRemoved": "ebRed",
+		"toolDiffContext": "earthy400",
+
+		"syntaxComment": "earthy400",
+		"syntaxKeyword": "ebRed",
+		"syntaxFunction": "ebBlue",
+		"syntaxVariable": "ebOffBlack",
+		"syntaxString": "greenBright",
+		"syntaxNumber": "ebPurple",
+		"syntaxType": "yellow",
+		"syntaxOperator": "earthy500",
+		"syntaxPunctuation": "earthy400",
+
+		"thinkingOff": "earthy200",
+		"thinkingMinimal": "earthy300",
+		"thinkingLow": "earthy400",
+		"thinkingMedium": "ebBlue",
+		"thinkingHigh": "ebPurple",
+		"thinkingXhigh": "ebRed",
+
+		"bashMode": "green"
+	},
+	"export": {
+		"pageBg": "#F8FCFF",
+		"cardBg": "#ffffff",
+		"infoBg": "#FFF8E6"
+	}
+}
