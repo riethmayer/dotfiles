@@ -1,0 +1,81 @@
+{
+	"$schema": "https://raw.githubusercontent.com/badlogic/pi-mono/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
+	"name": "dracula",
+	"vars": {
+		"bg": "#282a36",
+		"currentLine": "#44475a",
+		"fg": "#f8f8f2",
+		"comment": "#6272a4",
+		"cyan": "#8be9fd",
+		"green": "#50fa7b",
+		"orange": "#ffb86c",
+		"pink": "#ff79c6",
+		"purple": "#bd93f9",
+		"red": "#ff5555",
+		"yellow": "#f1fa8c"
+	},
+	"colors": {
+		"accent": "purple",
+		"border": "comment",
+		"borderAccent": "purple",
+		"borderMuted": "currentLine",
+		"success": "green",
+		"error": "red",
+		"warning": "orange",
+		"muted": "#8891b2",
+		"dim": "comment",
+		"text": "",
+		"thinkingText": "#8891b2",
+
+		"selectedBg": "currentLine",
+		"userMessageBg": "#2d2f3d",
+		"userMessageText": "",
+		"customMessageBg": "#302a42",
+		"customMessageText": "",
+		"customMessageLabel": "pink",
+		"toolPendingBg": "#252733",
+		"toolSuccessBg": "#243030",
+		"toolErrorBg": "#362030",
+		"toolTitle": "purple",
+		"toolOutput": "#8891b2",
+
+		"mdHeading": "pink",
+		"mdLink": "cyan",
+		"mdLinkUrl": "comment",
+		"mdCode": "green",
+		"mdCodeBlock": "fg",
+		"mdCodeBlockBorder": "comment",
+		"mdQuote": "#8891b2",
+		"mdQuoteBorder": "comment",
+		"mdHr": "currentLine",
+		"mdListBullet": "cyan",
+
+		"toolDiffAdded": "green",
+		"toolDiffRemoved": "red",
+		"toolDiffContext": "#8891b2",
+
+		"syntaxComment": "comment",
+		"syntaxKeyword": "pink",
+		"syntaxFunction": "green",
+		"syntaxVariable": "fg",
+		"syntaxString": "yellow",
+		"syntaxNumber": "purple",
+		"syntaxType": "cyan",
+		"syntaxOperator": "pink",
+		"syntaxPunctuation": "fg",
+
+		"thinkingOff": "currentLine",
+		"thinkingMinimal": "comment",
+		"thinkingLow": "cyan",
+		"thinkingMedium": "green",
+		"thinkingHigh": "purple",
+		"thinkingXhigh": "pink",
+
+		"bashMode": "orange"
+	},
+	"export": {
+		"pageBg": "#1e1f29",
+		"cardBg": "#282a36",
+		"infoBg": "#343746"
+	}
+}
