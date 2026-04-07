@@ -1,0 +1,31 @@
+# Earlybird Dark — brand palette from packages/ui
+#
+# Primary:  #FD1A1B (eb-red)
+# Base:     #2D1A16 (eb-off-black)
+# Earthy:   #483D34 → #CCB4A1
+# Accents:  #319CFF (blue), #A458BF (purple)
+
+background = #2D1A16
+foreground = #F8FCFF
+cursor-color = #FD1A1B
+cursor-text = #2D1A16
+selection-background = #675952
+selection-foreground = #F8FCFF
+
+# ANSI palette — Earlybird earthy tones + brand accents
+palette = 0=#483D34
+palette = 1=#FD1A1B
+palette = 2=#22C55E
+palette = 3=#F59E0B
+palette = 4=#319CFF
+palette = 5=#A458BF
+palette = 6=#5CB8A0
+palette = 7=#CCB4A1
+palette = 8=#6B5F58
+palette = 9=#FF5F5F
+palette = 10=#34D399
+palette = 11=#FBBF24
+palette = 12=#60B3FF
+palette = 13=#C084FC
+palette = 14=#7DD3C0
+palette = 15=#F8FCFF
