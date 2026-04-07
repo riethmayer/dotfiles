@@ -1,0 +1,31 @@
+# Earlybird Light — brand palette from packages/ui
+#
+# Primary:  #FD1A1B (eb-red)
+# Base:     #F8FCFF (eb-off-white)
+# Earthy:   #CCB4A1 → #483D34
+# Accents:  #319CFF (blue), #A458BF (purple)
+
+background = #F8FCFF
+foreground = #2D1A16
+cursor-color = #FD1A1B
+cursor-text = #F8FCFF
+selection-background = #CCB4A1
+selection-foreground = #2D1A16
+
+# ANSI palette — darker earthy tones for light background
+palette = 0=#2D1A16
+palette = 1=#CC1517
+palette = 2=#16803C
+palette = 3=#9A6700
+palette = 4=#1E78CC
+palette = 5=#8A3EA6
+palette = 6=#2B7A6B
+palette = 7=#CCB4A1
+palette = 8=#877364
+palette = 9=#FD1A1B
+palette = 10=#22C55E
+palette = 11=#F59E0B
+palette = 12=#319CFF
+palette = 13=#A458BF
+palette = 14=#5CB8A0
+palette = 15=#FAEDEE
