@@ -9,3 +9,5 @@ export XDG_STATE_HOME="${HOME}/.local/state"
 for config_file ($XDG_CONFIG_HOME/zsh/*.zsh(N)); do
     source $config_file
 done
+fpath=(~/.zsh/completions $fpath)
+autoload -U compinit && compinit
