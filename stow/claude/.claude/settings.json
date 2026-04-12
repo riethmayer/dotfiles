@@ -1,0 +1,87 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Edit(/Users/jan/code/**)",
+      "Write(/Users/jan/code/**)",
+      "Edit(/Users/jan/.claude/**)",
+      "Write(/Users/jan/.claude/**)",
+      "Edit(/Users/janriethmayer/code/**)",
+      "Write(/Users/janriethmayer/code/**)",
+      "Edit(/Users/janriethmayer/.claude/**)",
+      "Write(/Users/janriethmayer/.claude/**)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed — fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
+            "timeout": 10,
+            "statusMessage": "Validating YAML..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; case \"$f\" in $HOME/.claude/skills/*) skill_dir=$(echo \"$f\" | sed \"s|$HOME/.claude/skills/||\" | cut -d/ -f1); if [ -n \"$skill_dir\" ] && [ ! -L \"$HOME/.claude/skills/$skill_dir\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"WARNING: Writing directly to ~/.claude/skills/%s/ — skills should live in ~/.agents/skills/ with a symlink. Create the skill in ~/.agents/skills/%s/ and symlink: ln -sf ../../.agents/skills/%s ~/.claude/skills/%s\"}}' \"$skill_dir\" \"$skill_dir\" \"$skill_dir\" \"$skill_dir\"; exit 1; fi ;; esac; }",
+            "timeout": 5,
+            "statusMessage": "Checking skill location..."
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
+  },
+  "enabledPlugins": {
+    "eb@earlybird-marketplace": true,
+    "ee@earlybird-marketplace": true,
+    "frontend-design@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "slack@claude-plugins-official": true,
+    "linear@claude-plugins-official": true,
+    "sentry@claude-plugins-official": true,
+    "firebase@claude-plugins-official": true,
+    "posthog@claude-plugins-official": true,
+    "notion@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "earlybirdvc-skills": {
+      "source": {
+        "source": "github",
+        "repo": "earlybirdvc/skills"
+      }
+    },
+    "anthropic-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    }
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeCoAuthoredBy": false,
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "fastMode": true
+}
