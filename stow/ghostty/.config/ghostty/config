@@ -35,3 +35,10 @@ keybind = command+digit_6=text:\x1b6
 keybind = command+digit_7=text:\x1b7
 keybind = command+digit_8=text:\x1b8
 keybind = command+digit_9=text:\x1b9
+
+# Cmd+l sesh session picker (sends Alt+l, bound in tmux)
+keybind = super+l=text:\x1bl
+# Cmd+o switch to last sesh session (sends Alt+o, bound in tmux)
+keybind = super+o=text:\x1bo
+# Cmd+w kill tmux window (sends Alt+w, bound in tmux)
+keybind = super+w=text:\x1bw
