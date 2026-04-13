@@ -44,7 +44,7 @@ This is a personal dotfiles repository that uses GNU Stow for managing configura
 ### Configuration Loading
 **Zsh Configuration:**
 - Main config: `stow/zsh/.zshrc`
-- Modular configs: `stow/zsh/.oh-my-zsh/custom/zshrc.d/*.zsh`
+- Modular configs: `stow/zsh/.config/zsh/*.zsh`
 - Loading pattern with numbered prefixes (000-099):
   - 000-009: Core environment
   - 010-029: Package managers
@@ -61,7 +61,7 @@ All configurations must follow XDG Base Directory Specification:
 - Cache files → `$XDG_CACHE_HOME` (~/.cache)
 
 ### Key Packages
-Current stow packages: atuin, bootstrap, brew, claude, ghostty, git, kitty, mise, obsidian, opencode, pnpm, ruby, scripts, ssh, starship, tmux, zsh
+Current stow packages: agents, atuin, bootstrap, brew, claude, gcloud, ghostty, git, mise, nvim, opencode, pi, pnpm, ruby, scripts, ssh, starship, tmux, zsh
 
 ## Development Patterns
 
@@ -84,10 +84,8 @@ Current stow packages: atuin, bootstrap, brew, claude, ghostty, git, kitty, mise
 - Document any non-XDG compliant tools
 - Always use mise for automating tasks and as entry point
 
-## Shared Rules
+## Must-Read Context
 
-Load on need-to-know basis:
-- `.rules/planning.md` - Sprint management (check when working on .planning/)
-- `.rules/tools.md` - Tool preferences (rg, fd, gh, fzf, etc.)
-- `.planning/tech-radar.md` - When adding/referencing technology, review and clarify categorization
-- `.decisions/` - Architecture decision records (check before security audits or scope changes)
+Always read these before making changes:
+- `docs/adr/` - Architecture decision records
+- `docs/briefs/` - Work briefs with dated decisions
