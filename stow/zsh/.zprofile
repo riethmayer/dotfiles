@@ -11,5 +11,8 @@ fi
 # Core PATH
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 
-# mise shims
-export PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
+# mise shims — only for non-interactive login shells (GUI launches like Neovide Dock).
+# Interactive shells get shims via `mise activate zsh` in .zshrc fragments.
+if [[ ! -o interactive ]]; then
+    export PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
+fi
