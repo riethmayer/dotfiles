@@ -16,8 +16,7 @@ export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export ARCHFLAGS="-arch arm64"
 
-# mise path configuration
-export PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
+# mise shims are prepended by `mise activate zsh` in 020_mise.zsh
 
 # Additional PATH modifications
 export PATH="/usr/local/sbin:$PATH"

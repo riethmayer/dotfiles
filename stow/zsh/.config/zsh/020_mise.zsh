@@ -9,11 +9,8 @@ if command -v mise >/dev/null 2>&1; then
     export MISE_CONFIG_DIR="${XDG_CONFIG_HOME}/mise"
     export MISE_CACHE_DIR="${XDG_CACHE_HOME}/mise"
 
-    # Initialize mise shell integration
+    # Initialize mise shell integration (also prepends shims to PATH)
     eval "$(mise activate zsh)"
-
-    # Add mise shims to PATH
-    export PATH="${MISE_DATA_DIR}/shims:$PATH"
 else
     echo "Warning: mise not found. Version management not available."
 fi 
