@@ -2,6 +2,11 @@
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Edit(/Users/jan/code/**)",
@@ -15,7 +20,28 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && { echo 'Blocked: piping to head/tail truncates output. Use run_in_background: true + Read the output file instead.' >&2; exit 2; } || exit 0"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/jan/.claude/scripts/mcp-hook.sh",
+            "timeout": 5
+          }
+        ]
+      },
       {
         "matcher": "Write|Edit",
         "hooks": [
@@ -76,12 +102,10 @@
       }
     }
   },
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-  "includeCoAuthoredBy": false,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
+  "fastMode": true,
   "skipDangerousModePermissionPrompt": true,
-  "fastMode": true
+  "theme": "light-ansi",
+  "editorMode": "vim",
+  "verbose": true
 }
