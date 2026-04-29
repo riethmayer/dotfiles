@@ -21,7 +21,7 @@
 [user]
   name = Jan Riethmayer
 	email = jan@earlybird.com
-	signingkey = ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDLpcxfAKDoZTk0oDaCNqmytMxCmEv4fwhPT+oE2Rsgxa9oX8x/4ygv1qGngYVw6+ZX0eVxkaSicm24crNvojl5UY6va1DqBIuHWAGzyhIn5NnNBD5NSQTa7HdGpPz4mvVJK4A896bTObpbowF1aI1IAt8mI9z3h1FDF8YNgEmNgzP4iIAqilvalVllmsRB6V/gt4OudqWJgM77UPvWfKjngTBMquaktalwKsiHF9B5/BQ9xlJyrLICurd63JjJxOqNGynlV7c1UELVjFJq/HLGFj2yiyWJaVKguLDus5IZQdgIaMA+nX97lhv9f7lc2rb2HfPOiKyeTKHEZxrEsRs4B53+mJWb0y/dKs2sq1ytFDsnGPut8G9WMzTSq3/KYP6bPlZ7eaCSDjK/Hrs4nClzOZ5Z+cuqPkiqAD1k98YNmwre76PWfxdUda3zOamlI64X2GSqrCYfLMErJ+RoWZov4oaTEV2j3W9E0cLdGuqdR7C7Ve0a7DtR56XVVg5kMN4lqvPcdQffE6ZH87OsvdK0XdXyaZ7K2UDIikbxD4fp1AT+nINIVp9fm011lyf6SjfLQgUIeLZ9mJ/zjsYlJYZO282Vp6VPSD7BfizNTQDFGTpNVJbGiubogYYLpMR6xwuG10ANtMISP2bDPkWYG9TAC74ZEooFX7i+W4YzXctJlQ==
+	signingkey = ~/.ssh/id_ed25519.pub
 [hub]
   protocol = https
 [color]
@@ -51,5 +51,3 @@
 [credential "https://gist.github.com"]
 	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
-[gpg "ssh"]
-	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
