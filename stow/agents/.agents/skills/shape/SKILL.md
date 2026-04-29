@@ -1,11 +1,19 @@
 ---
 name: shape
-description: Shape work into a walkable project folder — from press release down to feature files. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this". After shaping, use /linear to commit to Linear.
+description: Shape work into a walkable project folder — press release, overview, capabilities, scenarios. Defaults to tracer-bullet vertical slices: smallest end-to-end path first, durable architecture second. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this". After shaping, use /linear to commit to Linear.
 ---
 
 # Shape
 
-Create a PRD as 8 sequentially-readable files. Files descend from highest abstraction (press release) to lowest (feature files + language). Each file ends with open questions and empty answer slots for async review. When ready to commit, use `/linear`.
+Create a PRD as 4 sequentially-readable files (00-03). Files descend from highest abstraction (press release) down to scenarios. Each file ends with open questions and empty answer slots for async review. When ready to commit, use `/linear`.
+
+## Why 4 files, not 8
+
+Earlier versions of this skill produced 8 files (press release → language). In practice the lower-abstraction files (implementation, risks, feature files, language) duplicate what's already implicit in 00-03 at different framings — and every iteration on the upstream files (rename a capability, change the schema, drop backwards compat) forces a sync pass through *all* lower files. The sync cost dwarfs the value.
+
+The implementation/risks/feature-files/language details are better derived during `/linear` (when issues are created) or in the conversation that follows shaping, when the user has already committed to a direction. Don't write them speculatively at shape time.
+
+If a project genuinely needs an upfront implementation doc (e.g. a migration spec with a known correct end state), write it as a separate design doc in `docs/plans/<date>-<slug>-design.md` — not as part of the shape PRD.
 
 ## Process
 
@@ -18,8 +26,9 @@ Ask the user for a description of what they want to solve. Keep it conversationa
 Check in order:
 
 1. **User's personal agent config** — look for a `planning` or `notes` setting in `~/.agents/AGENTS.md` or `~/.claude/CLAUDE.md` that specifies a preferred app/folder (e.g., Obsidian vault path, Apple Notes, a local folder)
-2. **Ask the user** — "Where do you want the shaped documents? (e.g., Obsidian vault, a folder in the repo, or just inline)"
-3. **Fall back to repo** — create a `.planning/{feature-name}/` folder in the current repo
+2. **Project AGENTS.md / CLAUDE.md** — many repos document where design docs live (e.g., `docs/plans/YYYY-MM-DD-<slug>/`). Honor that convention over the skill's default.
+3. **Ask the user** — "Where do you want the shaped documents? (e.g., Obsidian vault, a folder in the repo, or just inline)"
+4. **Fall back to repo** — create a `.planning/{feature-name}/` folder in the current repo
 
 ### 3. Prime (if not already primed)
 
@@ -41,9 +50,19 @@ Only ask about gaps the codebase can't answer. Focus on:
 - Priority conflicts (this vs competing work)
 - Scope boundaries (what's explicitly out)
 
+### 5b. Default to a tracer-bullet shape
+
+Shape the smallest end-to-end vertical slice that proves the whole pipeline works *before* designing the durable architecture. The slice itself follows the vertical-slice rules in `/linear` (and `/prd-to-issues` for GitHub repos) — what's mandatory here at the shape step is the **bias**:
+
+- Tracer first, durable architecture second — even when the user asks for the proper version.
+- The tracer surfaces which signals actually move the metric, which informs the durable schema. Skipping it spends weeks designing the wrong abstraction.
+- Split into two top-level issues with explicit blocking: tracer unblocks the durable design.
+
+Skip the tracer only when (a) the pipeline shape is already proven by earlier work or production code, or (b) the work is operational / migration with a known correct end state.
+
 ### 6. Write the project files
 
-Output 8 numbered files to the chosen location. Files are numbered for sequential reading — highest level first, most detailed last.
+Output 4 numbered files to the chosen location. Files are numbered for sequential reading — highest level first, scenarios last.
 
 ### 7. Decision gate
 
@@ -51,25 +70,21 @@ After writing, tell the user where the files are and:
 
 > Review the docs, fill in the answer slots, then run `/linear` to create initiative, projects, and issues.
 
-Do NOT create Linear issues from this skill — that's `/linear`'s job.
+Do NOT create Linear issues from this skill — that's `/linear`'s job. Implementation details, risks, feature files, and ubiquitous language land during `/linear` or in conversation, not as upfront artifacts.
 
 ## Output Format
 
 ### The abstraction gradient
 
 ```
-1 - Projects/{feature-name}/
+{output-location}/{feature-name}/
   00-press-release.md     ← why this matters (user/customer perspective)
   01-overview.md          ← problem, solution, scope, strategic fit
   02-capabilities.md      ← verb-noun capability cards
   03-scenarios.md         ← Gherkin acceptance criteria per capability
-  04-implementation.md    ← modules, interfaces, what changes
-  05-risks.md             ← assumptions, unknowns, dependencies
-  06-feature-files.md     ← .feature file drafts ready for packages/
-  07-language.md          ← new/changed terms for UBIQUITOUS_LANGUAGE.md
 ```
 
-Reading top-to-bottom: from "why does this matter" → "what exact terms does the code use."
+Reading top-to-bottom: from "why does this matter" → "what behaviour proves it works."
 
 ### File template
 
@@ -162,63 +177,15 @@ Feature: verb-noun
 
 Open questions: missing edge cases, unclear behavior, acceptance thresholds.
 
-### 04-implementation.md
+## Iterating with the user
 
-- **Modules to create**: new `packages/<domain>/<verb-noun>/` directories
-- **Modules to modify**: existing packages that need changes
-- **Interfaces**: port signatures, Zod schemas
-- **Data changes**: schema migrations, new data sources
-- **Dependencies**: what this depends on, what depends on this
+After writing the 4 files, walk the user through them sequentially. Each file's open questions are gating — answers shift the direction of every downstream file. Common iteration patterns:
 
-No file paths or code snippets — they go stale. Describe intent and interfaces.
+- A capability rename in 02 ripples to 03 feature names and scenario language.
+- A schema decision (e.g. "no backwards compat") removes scenarios and tightens scope-out in 01.
+- A new capability emerging during 02/03 questions (e.g. "let's also add a threshold sweep UI") gets added in place — don't defer to a later round.
 
-Open questions: technical unknowns, build-vs-buy, sequencing.
-
-### 05-risks.md
-
-- **Unvalidated assumptions**: what we believe but haven't proven
-- **Dependencies**: external systems, other teams, data availability
-- **Unknowns**: things we need to spike before committing
-
-Open questions: which assumptions to test first, risk mitigation.
-
-### 06-feature-files.md
-
-Draft `.feature` file contents for each capability. These will be copied into `packages/<domain>/<verb-noun>/<verb-noun>.feature` when implementation starts.
-
-```gherkin
-# packages/sourcing/enrich-linkedin-contact-details/enrich-linkedin-contact-details.feature
-
-Feature: enrich-linkedin-contact-details
-  ...scenarios from 03...
-```
-
-Group by domain. Include the target file path as a comment above each feature.
-
-Open questions: scenario completeness, missing edge cases discovered during implementation thinking.
-
-### 07-language.md
-
-New or changed terms that emerged during PRD writing. Grouped by bounded context.
-
-```markdown
-## Sourcing
-
-| Term       | Definition                                    | Aliases to avoid  | Status   |
-| ---------- | --------------------------------------------- | ----------------- | -------- |
-| **Signal** | A data point indicating founder activity      | Indicator, metric | existing |
-| **Triage** | Prioritization of founders by signal strength | Scoring, ranking  | new      |
-
-## CRM
-
-| Term     | Definition                           | Aliases to avoid | Status    |
-| -------- | ------------------------------------ | ---------------- | --------- |
-| **Push** | Export a lead to external CRM system | Sync, export     | clarified |
-```
-
-When shipping, these get merged into each domain's `UBIQUITOUS_LANGUAGE.md`.
-
-Open questions: term conflicts across contexts, ambiguous definitions.
+**Edit in place as answers come in.** Don't accumulate a queue of "things to update next iteration." The whole point of the 4-file ceiling is that ripple cost stays manageable.
 
 ## Next step: /linear
 
@@ -227,4 +194,6 @@ When the user is ready to commit shaped work to Linear, point them to `/linear`.
 - Change assessment (new/changing/removing)
 - Project grouping by domain
 - Issue breakdown with AFK/HITL classification and dependency ordering
-- `.feature` file copying and language merging
+- Implementation details, `.feature` file generation, and ubiquitous-language merging — all derived from the 4 PRD files plus the conversation context
+
+If the project genuinely needs a separate design doc (migration spec, data model with a known correct end state, ADR-adjacent rationale), write that as a standalone file outside the shape PRD — e.g. `docs/plans/<date>-<slug>-design.md`.

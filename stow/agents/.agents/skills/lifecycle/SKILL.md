@@ -11,6 +11,39 @@ Seven commands, one pipeline. Each step has a clear input and output.
 /prime → /brief → /shape → /linear → /tdd → /review → /ship
 ```
 
+## Destination vs Journey
+
+Every step in the lifecycle produces a **destination** — a frozen artifact (or external state) — and is reached via a **journey** of one or more execution phases.
+
+- **Destination = what's true when the step is done.** The brief, the shaped folder, the Linear issues, the green PR, the running service. Persists between sessions; can be reloaded.
+- **Journey = how the agent gets there.** A single short turn for small work, or a multi-phase sequence for big work (see below).
+
+When in doubt, **commit to the destination first** (write the file, create the issue, open the PR), even if the content is rough. A walking-skeleton destination is easier to iterate than a half-formed plan in a context window.
+
+## Multi-phase HITL execution
+
+Big HITL work — large `/shape` projects, multi-issue `/tdd` builds, sprawling `/review` loops — degrades quality if forced through one long context. Split into phases instead, each in a **fresh context** loading the **same canonical destination artifacts**:
+
+```
+Destination       @prd.md      @prd.md      @prd.md      @prd.md
+                  @plan.md     @plan.md     @plan.md     @plan.md
+                  "Phase 1"    "Phase 2"    "Phase 3"    "Phase 4"
+                      ↓            ↓            ↓            ↓
+Journey         [Phase 1]    [Phase 2]    [Phase 3]    [Phase 4]
+                  Smart        Smart        Smart        Smart
+                                                            ↓
+                                                       (#4 — done)
+```
+
+Rules:
+
+- Each phase loads the canonical destination (PRD + plan + relevant code) at start, in a fresh context.
+- Each phase has one narrow scope ("implement issue 003", "fix CI on PR 3419", "draft 03-scenarios").
+- Each phase commits its incremental output back to the destination — the next phase reads it from the file, not from chat history.
+- Phase boundaries are also natural review points (HITL review one phase, then queue the next).
+
+When NOT to split: small work that fits comfortably in one context (one bug fix, one tracer-bullet, one PR review). Splitting tiny work just adds overhead.
+
 ## The Pipeline
 
 ### 1. `/prime` — Load Context
