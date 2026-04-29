@@ -51,35 +51,92 @@ Group entries by repo/branch. Use these to fill gaps that git commits miss (e.g.
 
 ## Output Format
 
-Output a clean markdown standup. Group by workstream (branch/worktree), not by repo.
+Group by workstream/topic (not by repo). Use rich narrative bullets — not raw commit messages.
 
-```markdown
-## Standup — YYYY-MM-DD
+### Style (match existing journal entries)
 
-### Done
-- **branch-name**: concise summary of commits (reference PR if exists)
-- **branch-name**: another workstream
-- **dotfiles**: what changed
-
-### In Progress
-- **branch-name**: uncommitted work or open PRs awaiting review
-
-### Blocked / Open
-- anything flagged in brag-book or unmerged PRs with changes requested
-```
+- **Bold workstream header** followed by narrative bullets
+- PR links as `([#123](https://github.com/earlybirdvc/eagleeye/pull/123))`
+- Group related commits into one bullet (e.g., "Fixed eval runner CF path + trigger")
+- Include context: what problem was solved, not just what file changed
+- Mix shipped PRs + in-progress work under the same workstream
 
 ### Guidelines
 
 - **Deduplicate**: brag-book and git often overlap — prefer the git commit message, use brag-book for context
 - **Summarize**: don't list every commit — group related commits into one bullet per workstream
-- **PR references**: include `#123 (status)` when a PR exists
+- **PR references**: include `([#123](url))` with full GitHub URL for Obsidian clickability
 - **Skip noise**: ignore merge commits, dependabot, automated commits
 - **Be concise**: each bullet should be one line, focused on *what* was accomplished
 
+## Obsidian Journal Integration
+
+Always write the standup to today's Obsidian daily note. Never ask — just do it.
+
+### Journal path
+
+```
+~/obsidian/riethmayer/2 - Areas/Journal/YYYY/MM-MMMM/YYYY-MM-DD-DayName.md
+```
+
+Example: `2026-04-13-Monday.md` in `2026/04-April/`
+
+### Daily note structure
+
+The daily note has this structure (created by Obsidian template):
+
+```markdown
+---
+date: YYYY-MM-DD HH:MM
+tags: []
+...excalidraw frontmatter...
+---
+
+[[prev|Back]] [[next|Forward]] [[Week N|Week N]] ...
+
+# YYYY-MM-DD-DayName
+
+## Morning Standup
+
+### Intentions
+-
+
+### Done
+-
+
+### Focus for today
+-
+
+---
+
+![[YYYY-MM-DD-DayName.svg]]
+
+%%
+## Drawing
+...excalidraw data...
+%%
+```
+
+### Where to write
+
+Replace the content of `### Done` section (between `### Done` and `### Focus for today`).
+Leave `### Intentions` and `### Focus for today` untouched — those are manual entries.
+
+If the daily note doesn't exist yet, create it with the full template structure
+(frontmatter, nav links, headings, excalidraw embed).
+
+If `### Done` already has content, **append** new items — don't overwrite existing entries.
+The user may run `/standup` multiple times during the day.
+
+### After writing
+
+Show the user the standup output in the conversation too (not just silently writing to file).
+
 ## Execution
 
-1. Determine `<since>` based on day of week
+1. Determine `<since>` based on day of week (or last daily note with content)
 2. Launch parallel subagents (or parallel bash commands) to scan all data sources — worktrees can be slow, parallelism matters
-3. Collect results, deduplicate, group by workstream
-4. Output the standup in the format above
-5. If the user's Obsidian journal exists for today (`~/obsidian/riethmayer/2 - Areas/Journal/YYYY/MM-Month/YYYY-MM-DD-DayName.md`), ask if they want it appended there
+3. Also fetch merged PRs: `gh pr list --state merged --author riethmayer --search "merged:>YYYY-MM-DD" --json number,title,url,mergedAt`
+4. Collect results, deduplicate, group by workstream
+5. Write to today's Obsidian daily note `### Done` section
+6. Output the standup in the conversation
