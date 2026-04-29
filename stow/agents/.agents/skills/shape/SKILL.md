@@ -1,6 +1,6 @@
 ---
 name: shape
-description: Shape work into a walkable project folder — press release, overview, capabilities, scenarios. Defaults to tracer-bullet vertical slices: smallest end-to-end path first, durable architecture second. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this". After shaping, use /linear to commit to Linear.
+description: Shape work into a walkable project folder — press release, overview, capabilities, scenarios. Defaults to tracer-bullet vertical slices — smallest end-to-end path first, durable architecture second. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this". After shaping, use /linear to commit to Linear.
 ---
 
 # Shape
