@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DECK TITLE</title>
+<style>
+  /* Earlybird brand fonts. Copied into the deck's assets/fonts/ folder when
+     scaffolded from this template, then base64-inlined by scripts/inline_assets.py
+     so the standalone HTML ships with the real brand fonts. */
+  @font-face {
+    font-family: 'Untitled Sans';
+    src: url('assets/fonts/UntitledSans-Regular.otf') format('opentype');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Untitled Sans';
+    src: url('assets/fonts/UntitledSans-Medium.otf') format('opentype');
+    font-weight: 500; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Untitled Sans';
+    src: url('assets/fonts/UntitledSans-Bold.otf') format('opentype');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Condensed Sans No.10';
+    src: url('assets/fonts/CondensedSansNo10-Black.otf') format('opentype');
+    font-weight: 900; font-style: normal; font-display: swap;
+  }
+
+  /* Inter / Oswald stay imported as safety-net fallbacks: if a deck loses its
+     fonts/ folder (or is rendered in an environment that can't load the OTFs),
+     the stack below degrades gracefully instead of hitting system serif. */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap');
+
+  :root {
+    --eb-red: #FD1A1B;
+    --eb-dark: #2D1A16;
+    --eb-darker: #1a0f0d;
+    --eb-light: #F8FCFF;
+    --eb-gray: #8a8580;
+    --eb-gray-light: #b5b0ab;
+    --eb-border: rgba(253,26,27,0.15);
+    --eb-card: rgba(255,255,255,0.04);
+  }
+  html.light {
+    --eb-darker: #F8FCFF;
+    --eb-light: #2D1A16;
+    --eb-gray: #6b6560;
+    --eb-gray-light: #4a4540;
+    --eb-border: rgba(253,26,27,0.12);
+    --eb-card: rgba(0,0,0,0.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Untitled Sans', 'Inter', -apple-system, sans-serif;
+    letter-spacing: -0.01em;  /* Untitled Sans reads better with a slight negative track */
+    background: var(--eb-darker);
+    color: var(--eb-light);
+    overflow: hidden;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+  }
+  html.light .logo .sep { background: rgba(0,0,0,0.15); }
+
+  /* Slide container — content starts top-left. The brand layout rhythm is
+     logo-in-the-corner, headline anchored to a consistent top edge, body
+     flowing down from there. Vertical centering drifts headline position as
+     content length changes; top alignment keeps the eye on the same line
+     from slide to slide. Use hero/title slides to break the rhythm. */
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-start;
+    padding: 4.75rem 3rem 3rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+    overflow-y: auto;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  /* Chrome */
+  .logo {
+    position: fixed; top: 1.5rem; left: 3rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    z-index: 100;
+  }
+  .logo img { height: 22px; }
+  .logo .sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); }
+  /* Dual-logo theme swap. Class names describe the theme the image is shown
+     in, not the colour of the image itself. EagleEye ships a light eagle
+     (for dark backgrounds) and a dark eagle (for light backgrounds); the
+     Earlybird Red wordmark works on both, so it has no swap class. */
+  .logo .logo-light-mode { display: none; }
+  html.light .logo .logo-dark-mode { display: none; }
+  html.light .logo .logo-light-mode { display: inline; }
+  .session-tag {
+    position: fixed; top: 1.5rem; right: 3rem;
+    font-size: 0.55rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--eb-gray); z-index: 100;
+  }
+  .slide-counter {
+    position: fixed; bottom: 1.5rem; right: 3rem;
+    font-size: 0.7rem; color: var(--eb-gray); z-index: 100;
+    font-variant-numeric: tabular-nums;
+  }
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--eb-red); z-index: 100;
+    transition: width 0.4s ease;
+  }
+
+  /* Typography — headlines use Condensed Sans No.10 (brand), body stays on
+     Untitled Sans. Oswald is a fallback so the stack still reads condensed
+     if the OTF fails to load. */
+  h1, h2 { font-family: 'Condensed Sans No.10', 'Oswald', 'Untitled Sans', 'Inter', sans-serif; text-transform: uppercase; }
+  h1 { font-size: 4rem; font-weight: 900; line-height: 0.95; letter-spacing: 0.01em; }
+  h2 { font-size: 2.2rem; font-weight: 900; line-height: 1.05; letter-spacing: 0.02em; margin-bottom: 1.5rem; }
+  h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; }
+  p { font-size: 1.1rem; line-height: 1.6; color: var(--eb-gray-light); margin-bottom: 0.75rem; }
+  .subtitle { font-size: 1.3rem; color: var(--eb-gray-light); margin-top: 1rem; font-weight: 400; }
+  .kicker { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--eb-red); font-weight: 700; margin-bottom: 1rem; }
+  .big { font-size: 1.5rem; color: var(--eb-light); font-weight: 600; line-height: 1.35; }
+  .huge { font-size: 2.5rem; font-weight: 800; line-height: 1.2; color: var(--eb-light); }
+  strong { color: var(--eb-light); font-weight: 600; }
+  em { color: var(--eb-light); font-style: italic; }
+  .red { color: var(--eb-red); }
+  .muted { color: var(--eb-gray); }
+
+  /* Callout */
+  .callout {
+    background: var(--eb-card); border-left: 3px solid var(--eb-red);
+    padding: 1.25rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0;
+  }
+  .callout p { margin-bottom: 0.5rem; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  blockquote {
+    border-left: 3px solid var(--eb-gray); padding: 0.75rem 1.25rem;
+    font-style: italic; color: var(--eb-gray-light); background: var(--eb-card);
+    border-radius: 0 6px 6px 0; margin: 1rem 0;
+  }
+
+  /* Lists */
+  ul, ol { margin: 1rem 0 1rem 1.5rem; font-size: 1.05rem; color: var(--eb-gray-light); }
+  li { margin-bottom: 0.6rem; }
+  ol.big-num { list-style: none; margin-left: 0; counter-reset: big; }
+  ol.big-num li {
+    counter-increment: big; position: relative;
+    padding-left: 3rem; margin-bottom: 1rem; font-size: 1.1rem;
+  }
+  ol.big-num li::before {
+    content: counter(big); position: absolute; left: 0; top: -0.25rem;
+    font-size: 1.5rem; font-weight: 900; color: var(--eb-red); line-height: 1;
+  }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1rem 0; }
+  th {
+    text-align: left; font-weight: 700; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--eb-gray); padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--eb-border); background: rgba(255,255,255,0.02);
+  }
+  html.light th { background: rgba(0,0,0,0.03); }
+  td { padding: 0.7rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--eb-gray-light); vertical-align: top; }
+  html.light td { border-bottom-color: rgba(0,0,0,0.08); }
+
+  /* Three things / cards */
+  .things { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1.5rem 0; }
+  .thing { padding: 1.25rem; background: var(--eb-card); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
+  .thing .num { font-size: 2rem; font-weight: 900; color: var(--eb-red); line-height: 1; margin-bottom: 0.4rem; }
+  .thing h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .thing p { font-size: 0.85rem; margin: 0; }
+
+  /* Columns */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; align-items: start; }
+
+  /* Stack visual */
+  .stack { display: grid; gap: 0.5rem; margin: 1.5rem 0; max-width: 760px; }
+  .stack-item {
+    display: grid; grid-template-columns: 180px 1fr; gap: 1.5rem; align-items: center;
+    padding: 1.1rem 1.5rem; background: var(--eb-card);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;
+    border-left: 3px solid var(--eb-red);
+  }
+  .stack-item .level { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--eb-red); font-weight: 700; }
+  .stack-item .name { font-size: 1.1rem; font-weight: 700; color: var(--eb-light); margin-top: 0.2rem; }
+  .stack-item .desc { font-size: 0.9rem; color: var(--eb-gray-light); }
+
+  /* Versus / comparison split */
+  .versus {
+    display: grid; grid-template-columns: 1fr 80px 1fr; gap: 1rem; margin: 1.5rem 0;
+    align-items: stretch;
+  }
+  .versus-card {
+    padding: 1.5rem; background: var(--eb-card); border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .versus-card.a { border-left: 3px solid var(--eb-gray); }
+  .versus-card.b { border-left: 3px solid var(--eb-red); }
+  .versus-card .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--eb-gray); margin-bottom: 0.3rem; font-weight: 700; }
+  .versus-card.b .label { color: var(--eb-red); }
+  .versus-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--eb-light); }
+  .versus-card p { font-size: 0.9rem; margin-bottom: 0.4rem; }
+  .versus-gap {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 2.5rem; font-weight: 900; color: var(--eb-red);
+  }
+  .versus-gap small { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--eb-gray); margin-top: 0.3rem; font-weight: 600; }
+
+  /* Checklist */
+  .checklist { margin: 1rem 0; }
+  .checklist li {
+    list-style: none; position: relative; padding-left: 2rem; margin-bottom: 0.75rem;
+    font-size: 1rem; color: var(--eb-gray-light);
+  }
+  .checklist li::before {
+    content: ''; position: absolute; left: 0; top: 4px;
+    width: 16px; height: 16px; border: 1.5px solid var(--eb-red); border-radius: 3px;
+  }
+
+  /* Keyboard hints */
+  .keys {
+    position: fixed; bottom: 1.5rem; left: 3rem;
+    font-size: 0.6rem; color: var(--eb-gray); z-index: 100;
+  }
+  .keys kbd {
+    display: inline-block; padding: 0.1rem 0.4rem; border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px; font-family: inherit; margin: 0 0.15rem;
+  }
+  html.light .keys kbd { border-color: rgba(0,0,0,0.15); }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 300px;
+    background: var(--eb-darker); border-right: 1px solid var(--eb-border);
+    transform: translateX(-100%); transition: transform 0.25s ease;
+    z-index: 200; display: flex; flex-direction: column;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+  }
+  html.light .sidebar { box-shadow: 4px 0 20px rgba(0,0,0,0.08); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-head {
+    padding: 1rem; border-bottom: 1px solid var(--eb-border);
+  }
+  .sidebar-head input {
+    width: 100%; padding: 0.5rem 0.75rem;
+    background: var(--eb-card); border: 1px solid var(--eb-border);
+    color: var(--eb-light); border-radius: 6px;
+    font: inherit; font-size: 0.9rem;
+  }
+  .sidebar-head input::placeholder { color: var(--eb-gray); }
+  .sidebar-head input:focus { outline: none; border-color: var(--eb-red); }
+  .sidebar-hint {
+    font-size: 0.6rem; color: var(--eb-gray);
+    margin-top: 0.5rem; letter-spacing: 0.06em;
+  }
+  .sidebar-hint kbd {
+    display: inline-block; padding: 0.05rem 0.35rem;
+    border: 1px solid var(--eb-border); border-radius: 3px;
+    font-family: inherit; margin: 0 0.1rem;
+  }
+  .sidebar-list {
+    list-style: none; margin: 0; padding: 0.5rem 0;
+    overflow-y: auto; flex: 1; font-size: 0.85rem;
+  }
+  .sidebar-list li {
+    display: grid; grid-template-columns: 28px 1fr; gap: 0.5rem;
+    padding: 0.45rem 1rem; cursor: pointer;
+    color: var(--eb-gray-light);
+    border-left: 2px solid transparent;
+    transition: background 0.1s ease;
+  }
+  .sidebar-list li:hover { background: var(--eb-card); color: var(--eb-light); }
+  .sidebar-list li.current {
+    border-left-color: var(--eb-red);
+    color: var(--eb-light); background: var(--eb-card);
+  }
+  .sidebar-list li.hidden { display: none; }
+  .sidebar-list li .num {
+    font-size: 0.7rem; color: var(--eb-gray);
+    font-variant-numeric: tabular-nums; font-weight: 600;
+    text-align: right;
+  }
+  .sidebar-list li .title {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* Help overlay */
+  .help-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; padding: 2rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+  }
+  html.light .help-overlay { background: rgba(45,26,22,0.55); }
+  .help-overlay.open { opacity: 1; pointer-events: auto; }
+  .help-panel {
+    background: var(--eb-darker); border: 1px solid var(--eb-border);
+    border-radius: 12px; padding: 2rem; max-width: 460px; width: 100%;
+  }
+  .help-panel h3 {
+    font-size: 0.85rem; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--eb-red);
+    margin-bottom: 1.25rem;
+  }
+  .help-panel dl {
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 0.75rem 1.5rem; font-size: 0.9rem; align-items: center;
+  }
+  .help-panel dt { display: flex; gap: 0.25rem; }
+  .help-panel dt kbd {
+    display: inline-block; min-width: 24px; padding: 0.15rem 0.5rem;
+    text-align: center; border: 1px solid var(--eb-border);
+    border-radius: 4px; font-family: inherit; font-size: 0.75rem;
+    color: var(--eb-light); background: var(--eb-card);
+  }
+  .help-panel dd { color: var(--eb-gray-light); margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <img src="assets/Earlybird_Logo_RGB_Red.svg" alt="Earlybird">
+  <span class="sep"></span>
+  <img class="logo-dark-mode"  src="assets/eagleeye-logo.png"      alt="EagleEye">
+  <img class="logo-light-mode" src="assets/eagleeye-logo-dark.png" alt="EagleEye">
+</div>
+<div class="session-tag">CONTEXT · DATE</div>
+<div class="progress" id="progress"></div>
+<div class="slide-counter" id="counter"></div>
+<div class="keys"><kbd>?</kbd> shortcuts</div>
+
+<aside class="sidebar" id="sidebar" aria-label="Slide navigator">
+  <div class="sidebar-head">
+    <input id="search-input" type="search" placeholder="Search slides or type a number…" autocomplete="off">
+    <div class="sidebar-hint"><kbd>/</kbd> search · <kbd>?</kbd> help · <kbd>b</kbd> close</div>
+  </div>
+  <ol class="sidebar-list" id="sidebar-list"></ol>
+</aside>
+
+<div class="help-overlay" id="help-overlay" role="dialog" aria-label="Keyboard shortcuts">
+  <div class="help-panel">
+    <h3>Shortcuts</h3>
+    <dl>
+      <dt><kbd>←</kbd><kbd>→</kbd> <kbd>h</kbd><kbd>l</kbd> <kbd>j</kbd><kbd>k</kbd></dt><dd>Previous / next slide</dd>
+      <dt><kbd>Space</kbd></dt><dd>Next slide</dd>
+      <dt><kbd>gg</kbd> <kbd>G</kbd> <kbd>Home</kbd><kbd>End</kbd></dt><dd>First / last slide</dd>
+      <dt><kbd>b</kbd></dt><dd>Toggle sidebar</dd>
+      <dt><kbd>/</kbd></dt><dd>Search (or type a slide number)</dd>
+      <dt><kbd>n</kbd> <kbd>N</kbd></dt><dd>Next / previous search match</dd>
+      <dt><kbd>d</kbd></dt><dd>Toggle light / dark theme</dd>
+      <dt><kbd>?</kbd></dt><dd>Show this help</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Close overlay or sidebar</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- Slide 1: Title -->
+<section class="slide">
+  <div class="kicker">Context / Audience</div>
+  <h1>Deck title<br><span class="red">second line</span></h1>
+  <p class="subtitle">Tagline or one-line hook.</p>
+</section>
+
+<!-- Slide 2: A basic content slide -->
+<section class="slide">
+  <h2>Slide heading</h2>
+  <p class="big">One-sentence main takeaway.</p>
+  <ul>
+    <li>Supporting point</li>
+    <li>Supporting point</li>
+  </ul>
+</section>
+
+<!-- Add more <section class="slide">…</section> blocks here.
+     See references/layouts.md in the skill for all available patterns. -->
+
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide')
+const counter = document.getElementById('counter')
+const progress = document.getElementById('progress')
+const sidebar = document.getElementById('sidebar')
+const sidebarList = document.getElementById('sidebar-list')
+const searchInput = document.getElementById('search-input')
+const helpOverlay = document.getElementById('help-overlay')
+let current = 0
+let lastG = 0
+let lastSearch = ''
+
+function slideTitle(slide, i) {
+  const h1 = slide.querySelector('h1')
+  if (h1) return h1.textContent.trim().replace(/\s+/g, ' ')
+  const h2 = slide.querySelector('h2')
+  if (h2) return h2.textContent.trim().replace(/\s+/g, ' ')
+  const h3 = slide.querySelector('h3')
+  if (h3) return h3.textContent.trim().replace(/\s+/g, ' ')
+  const kicker = slide.querySelector('.kicker')
+  if (kicker) return kicker.textContent.trim().replace(/\s+/g, ' ')
+  return `Slide ${i + 1}`
+}
+
+const titles = [...slides].map(slideTitle)
+
+function buildSidebar() {
+  sidebarList.innerHTML = titles.map((t, i) =>
+    `<li data-i="${i}" data-title="${t.toLowerCase()}"><span class="num">${i + 1}</span><span class="title">${t}</span></li>`
+  ).join('')
+}
+
+function highlightCurrent() {
+  sidebarList.querySelectorAll('li').forEach((li, i) => {
+    li.classList.toggle('current', i === current)
+  })
+  const active = sidebarList.querySelector('li.current')
+  if (active && sidebar.classList.contains('open')) {
+    active.scrollIntoView({ block: 'nearest' })
+  }
+}
+
+function show(n) {
+  current = Math.max(0, Math.min(n, slides.length - 1))
+  slides.forEach((s, i) => s.classList.toggle('active', i === current))
+  counter.textContent = `${current + 1} / ${slides.length}`
+  progress.style.width = `${((current + 1) / slides.length) * 100}%`
+  highlightCurrent()
+}
+
+function toggleTheme() { document.documentElement.classList.toggle('light') }
+
+function openSidebar() { sidebar.classList.add('open'); highlightCurrent() }
+function closeSidebar() { sidebar.classList.remove('open'); searchInput.blur() }
+function toggleSidebar() { sidebar.classList.contains('open') ? closeSidebar() : openSidebar() }
+
+function openSearch() {
+  openSidebar()
+  searchInput.focus()
+  searchInput.select()
+}
+
+function toggleHelp() { helpOverlay.classList.toggle('open') }
+function closeHelp() { helpOverlay.classList.remove('open') }
+
+function filter(q) {
+  q = q.trim().toLowerCase()
+  const items = sidebarList.querySelectorAll('li')
+  if (!q) { items.forEach(li => li.classList.remove('hidden')); return }
+  // Numeric query: match on slide number exactly, plus any title containing the digits.
+  const asNum = /^\d+$/.test(q) ? parseInt(q, 10) : null
+  items.forEach((li, i) => {
+    const matchesNum = asNum && (i + 1) === asNum
+    const matchesTitle = li.dataset.title.includes(q)
+    li.classList.toggle('hidden', !(matchesNum || matchesTitle))
+  })
+}
+
+function jumpToFirstMatch() {
+  const first = sidebarList.querySelector('li:not(.hidden)')
+  if (first) { show(parseInt(first.dataset.i, 10)); closeSidebar() }
+}
+
+function searchMatches(q) {
+  if (!q) return []
+  const asNum = /^\d+$/.test(q) ? parseInt(q, 10) : null
+  return titles.map((t, i) => ((asNum && i + 1 === asNum) || t.toLowerCase().includes(q)) ? i : -1).filter(i => i >= 0)
+}
+
+function nextSearchMatch(dir) {
+  const hits = searchMatches(lastSearch)
+  if (!hits.length) return
+  const next = dir > 0
+    ? (hits.find(i => i > current) ?? hits[0])
+    : ([...hits].reverse().find(i => i < current) ?? hits[hits.length - 1])
+  show(next)
+}
+
+// Event wiring
+sidebarList.addEventListener('click', e => {
+  const li = e.target.closest('li')
+  if (li) { show(parseInt(li.dataset.i, 10)); closeSidebar() }
+})
+
+searchInput.addEventListener('input', e => {
+  filter(e.target.value)
+  lastSearch = e.target.value.trim().toLowerCase()
+})
+
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); jumpToFirstMatch() }
+  if (e.key === 'Escape') { e.preventDefault(); closeSidebar() }
+})
+
+document.addEventListener('keydown', e => {
+  // Don't hijack typing inside the search input.
+  if (e.target === searchInput) return
+
+  if (e.key === 'Escape') {
+    if (helpOverlay.classList.contains('open')) { closeHelp(); return }
+    if (sidebar.classList.contains('open')) { closeSidebar(); return }
+  }
+  if (e.key === '/') { e.preventDefault(); openSearch(); return }
+  if (e.key === '?') { e.preventDefault(); toggleHelp(); return }
+  if (e.key === 'b' || e.key === 'B') { e.preventDefault(); toggleSidebar(); return }
+  if (e.key === 'd' || e.key === 'D') { toggleTheme(); return }
+  // vim-style navigation
+  if (e.key === 'l' || e.key === 'j') { e.preventDefault(); show(current + 1); return }
+  if (e.key === 'h' || e.key === 'k') { e.preventDefault(); show(current - 1); return }
+  if (e.key === 'G') { e.preventDefault(); show(slides.length - 1); return }
+  if (e.key === 'g') {
+    const now = Date.now()
+    if (now - lastG < 500) { show(0); lastG = 0 } else { lastG = now }
+    return
+  }
+  if (e.key === 'n') { e.preventDefault(); nextSearchMatch(1); return }
+  if (e.key === 'N') { e.preventDefault(); nextSearchMatch(-1); return }
+  // regular keys
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); show(current + 1); return }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); show(current - 1); return }
+  if (e.key === 'Home') { show(0); return }
+  if (e.key === 'End') { show(slides.length - 1); return }
+})
+
+document.addEventListener('click', e => {
+  if (e.target.closest('a, .sidebar, .help-overlay, .help-panel')) return
+  // Clicking the dimmed help backdrop closes the overlay.
+  if (helpOverlay.classList.contains('open')) { closeHelp(); return }
+  if (e.clientX > window.innerWidth / 2) show(current + 1)
+  else show(current - 1)
+})
+
+buildSidebar()
+show(0)
+</script>
+</body>
+</html>
