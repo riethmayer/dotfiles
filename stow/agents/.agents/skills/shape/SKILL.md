@@ -76,7 +76,7 @@ Do NOT create Linear issues from this skill — that's `/linear`'s job. Implemen
 
 ### The abstraction gradient
 
-```
+```text
 {output-location}/{feature-name}/
   00-press-release.md     ← why this matters (user/customer perspective)
   01-overview.md          ← problem, solution, scope, strategic fit
