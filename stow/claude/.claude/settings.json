@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && { echo 'Blocked: piping to head/tail truncates output. Use run_in_background: true + Read the output file instead.' >&2; exit 2; } || exit 0"
+            "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && echo 'Note: piping to head/tail can truncate exploration output (git log, grep, find). For status-checks (gh/git/jq one-liners) it is fine. For long output, prefer run_in_background + Read the output file.' >&2; exit 0"
           }
         ]
       }
