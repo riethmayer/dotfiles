@@ -24,7 +24,7 @@ for text or solid backgrounds.
 
 **Brand fonts (default in this skill — the template ships them):**
 
-- **Condensed Sans No.10** — headlines, ALL CAPS, 90% line height
+- **Condensed Sans No10** — headlines, ALL CAPS, 90% line height
 - **Untitled Sans** — body copy, 140% line height, slight negative letter-spacing
 
 The OTFs are bundled with the template under `assets/template/assets/fonts/`
@@ -38,7 +38,7 @@ Inter (body) and Oswald (condensed headlines) are Google-Fonts imports kept
 in the CSS stack strictly as fallbacks — e.g. if a deck is ever rendered
 somewhere the OTFs can't load. Don't pick Inter or Oswald as the default.
 The stack is `'Untitled Sans', 'Inter', sans-serif` for body and
-`'Condensed Sans No.10', 'Oswald', 'Untitled Sans', 'Inter', sans-serif`
+`'Condensed Sans No10', 'Oswald', 'Untitled Sans', 'Inter', sans-serif`
 for headlines — brand first, fallback second.
 
 **Rules:**
