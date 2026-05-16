@@ -25,6 +25,10 @@ This skill is the deliberate exception. A presentation deck has different constr
 
 The brand display font is **`Condensed Sans No10`** (no period — that's the registered family name); the body font is **`Untitled Sans`**. `Oswald` and `Inter` are fallbacks only, never defaults.
 
+## Diagrams inside slides — use pre-rendered Mermaid SVG
+
+When a slide needs a flowchart, sequence diagram, state machine, ERD, or C4 architecture, **pre-render via the `beautiful-mermaid` skill to static SVG and inline it**, rather than embedding the Mermaid runtime (~250 KB of JS, hostile to "single-file deck"). Apply the Earlybird overrides from `~/.agents/skills/html-output/references/mermaid-earlybird-theme.md` (the "Server-side rendered" section) so colors and fonts match the deck. For ad-hoc spatial diagrams that Mermaid doesn't do well (mountain diagrams, signal grids, custom posters), hand-author SVG as today.
+
 ## What this skill gives you
 
 1. **A pre-styled template** (`assets/template/deck.html`) with Earlybird colors, Inter typography, dark/light theme toggle, keyboard navigation, progress bar, slide counter, **slide-navigator sidebar**, **slide search**, and **keyboard-shortcut help overlay** — ready to drop slides into.

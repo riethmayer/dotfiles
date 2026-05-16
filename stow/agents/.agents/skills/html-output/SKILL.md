@@ -49,6 +49,17 @@ Skip the sidebar when:
 
 The registered font family is `Condensed Sans No10` (no period after "No"). Older artifacts had `Condensed Sans No.10`, which is a different family name that falls through to the Oswald fallback even on systems with the brand OTF installed. All stylesheets in this skill use the correct name.
 
+### 5. Mermaid for diagrams (sequence, state, flowchart, ERD, C4, gantt)
+
+When the artifact needs a flowchart, sequence diagram, state machine, class diagram, ERD, C4 architecture, gantt, or git-graph, reach for [Mermaid](https://mermaid.js.org) rather than hand-authoring SVG. The pair of installed skills handles it:
+
+- **`mermaid-diagrams`** — authoring guide (which type to use, syntax)
+- **`beautiful-mermaid`** — server-side rendering when you need pre-baked SVG instead of in-browser JS
+
+Drop the Earlybird theme initialization into the page via [`references/mermaid-earlybird-theme.md`](references/mermaid-earlybird-theme.md). Light/dark variants swap on the `d` keybind automatically.
+
+**When NOT to use Mermaid:** for user-story-map + event-storm canvases (the `/shape` skill's deterministic inline-SVG path stays — see `feedback_shape_inline_svg_canvas`), and for pixel-precise architecture posters where a hand-authored SVG gives finer control.
+
 ## When to reach for HTML (and this skill)
 
 The skill's trigger surface is deliberately broad. Concrete cases where HTML wins:
@@ -189,7 +200,7 @@ XS artifacts skip the keyboard layer — they're short enough to scroll natively
 - **Color discipline.** Red = brand + active blockers. Orange = major / in-flight. Green = resolved / decided. Yellow = open / pending. Gray = cleanup / parked. The brand-base CSS exposes these as variables.
 - **Use bold for emphasis, not all caps.** Caps are for section titles (Oswald).
 - **End interactive artifacts with an export.** Throwaway editors should have a "copy as JSON" / "copy as prompt" / "copy as markdown" button so the work in the UI can be pasted back into Claude Code or another tool.
-- **SVG over ASCII for diagrams.** If the model wants to show a flowchart, a token-bucket, or any spatial relationship, write SVG. Don't approximate with markdown box-drawing characters.
+- **Mermaid or SVG over ASCII for diagrams.** If the model wants to show a flowchart, sequence, state machine, ERD, C4 architecture, or any spatial relationship — use Mermaid (see convention #5 + `references/mermaid-earlybird-theme.md`). For pixel-precise or one-off layouts, hand-author SVG. Never approximate with markdown box-drawing characters.
 - **Default to light mode** for memos that will be printed / PDF'd / shared widely. Default to dark for read-on-screen ad-hoc artifacts. The toggle (where present) gives the reader the final say.
 - **Don't over-engineer.** Three patterns from layouts.md may be all you need. Skip sections that don't apply. Patterns are a library, not a checklist.
 

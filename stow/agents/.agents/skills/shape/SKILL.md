@@ -100,6 +100,12 @@ python scripts/build_canvas_svg.py shape.json --out /tmp/canvas.svg
 
 The builder is deterministic — fixed sticky sizes, no autosize ambiguity. That's why we use inline SVG rather than `.excalidraw`: it renders correctly on first read, no app open / re-layout step. See `feedback_shape_inline_svg_canvas` for context on this trade-off.
 
+### 7b. Other diagrams in details.html — use Mermaid
+
+The lifecycle canvas (USM + event storm) is the only diagram `/shape` produces *by default*. If the shaped feature has other diagrams that genuinely help the reader — a sequence diagram for a critical interaction, a state machine for a workflow, a C4 architecture sketch, an ERD for a data model — embed them in `details.html` using **Mermaid**, not hand-authored SVG.
+
+Drop the Earlybird-themed Mermaid initialization from `~/.agents/skills/html-output/references/mermaid-earlybird-theme.md` into the page once, then add `<pre class="mermaid">…</pre>` blocks wherever the diagram belongs. Light/dark themes swap with the existing `d` keybind. Don't reinvent SVG layout for diagram types Mermaid already does well — the deterministic-SVG path is reserved for shapes Mermaid can't express well (slice swimlanes, USM backbones, Brandolini sticky-note layouts).
+
 ### 8. Decision gate
 
 After writing, tell the user where the files are. Suggest:
