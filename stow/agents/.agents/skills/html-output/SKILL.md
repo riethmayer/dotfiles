@@ -20,6 +20,35 @@ This skill provides **the Earlybird brand base** — colors, typography, light/d
 
 If the artifact is for an external audience, also check `brand-quick.md`'s logo + gradient + confidentiality rules.
 
+## Conventions (apply to every artifact this skill produces)
+
+These four conventions are load-bearing — they're what makes Earlybird HTML *feel* like Earlybird HTML at a glance, and they're what makes the artifact actually usable without ceremony.
+
+### 1. Local fonts only — never embed OTFs
+
+The brand fonts (Untitled Sans body + Condensed Sans No10 display) load via `@font-face { src: local(...) }`. Earlybirders have them installed; everyone else gets the Google-Fonts-loaded Inter / Oswald fallback (a few KB each, cached across artifacts).
+
+**Don't** ship `url('assets/fonts/UntitledSans-Regular.otf')` or base64-encoded font data in this skill's output. Each brand OTF is 100–200 KiB; embedding 3–4 weights adds ~600 KiB per artifact, which defeats the "shareable on the spot" intent. The `html-presentation` skill is the deliberate exception (decks need to work fully offline as a single attachment) — don't take its pattern here.
+
+### 2. Earlybird logo top-left, always. EagleEye logo too when the artifact concerns EagleEye work.
+
+Fixed top-left position is the visual anchor that says "Earlybird artifact" before the reader has parsed any prose. For EagleEye-specific work (anything in `~/code/eagleeye/...` or about EagleEye product / data / pipelines), pair the Earlybird logo with the EagleEye logo separated by a thin vertical divider. For pure Earlybird memos (firm operations, IR, fund-level decisions, partner briefs not tied to EagleEye), the EagleEye logo can be omitted — but Earlybird stays.
+
+Both logos have light- and dark-mode variants — swap based on the theme class on `<html>`. The `doc.html` template ships with the markup wired up and the asset files in `assets/template/assets/` — just remove the EagleEye block for non-EagleEye artifacts.
+
+### 3. Left sidebar by default (for M/L artifacts)
+
+Anything longer than a single-section page (briefs, memos, alignment docs, walkthroughs, post-mortems, status reports) uses the left sidebar pattern from `doc.html`: collapsible (`b` keybind), auto-built from `.section-title` elements, scroll-sync highlight. Readers jump between sections without scrolling through prose.
+
+Skip the sidebar when:
+- It's a single-section artifact (a one-page pitch, a press-release-style page) — sidebar redundant
+- The page is canvas-dominated and a horizontally-scrolling SVG already eats the horizontal real estate
+- It's a side-by-side comparison grid that fits in one viewport with no internal navigation
+
+### 4. Brand font name is `Condensed Sans No10` — no period
+
+The registered font family is `Condensed Sans No10` (no period after "No"). Older artifacts had `Condensed Sans No.10`, which is a different family name that falls through to the Oswald fallback even on systems with the brand OTF installed. All stylesheets in this skill use the correct name.
+
 ## When to reach for HTML (and this skill)
 
 The skill's trigger surface is deliberately broad. Concrete cases where HTML wins:
@@ -98,10 +127,20 @@ The 80% case. A pricing-table comparison grid, a quick Kanban editor, a 4-mockup
 </style>
 </head>
 <body>
+
+<!-- Logos top-left (convention #2). Drop logo SVG/PNG files in ./assets/.
+     Keep both for EagleEye work; remove the EagleEye block otherwise. -->
+<div class="logo">
+  <img class="ee-light-mode" src="./assets/Earlybird_Logo_RGB_Red.svg" alt="Earlybird" />
+  <img class="ee-dark-mode"  src="./assets/Earlybird_Logo_RGB_White.svg" alt="Earlybird" />
+  <span class="sep"></span>
+  <img class="ee-light-mode" src="./assets/eagleeye-logo.png" alt="EagleEye" />
+  <img class="ee-dark-mode"  src="./assets/eagleeye-logo-dark.png" alt="EagleEye" />
+</div>
+
 <div class="container">
   <header>
     <div class="classification">Strictly Confidential · Internal</div>
-    <div class="brand">earlybird</div>
     <h1>Your title</h1>
     <div class="subtitle">Date · audience</div>
   </header>

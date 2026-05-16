@@ -17,6 +17,14 @@ Build slide decks as one self-contained `.html` file. Arrow-key navigation, dark
 
 If the user wants a `.pptx`, use the `creating-presentations` skill instead. If the user wants a React artefact with state, use `web-artifacts-builder`.
 
+## Trade-off: this skill embeds fonts on purpose
+
+The rule for most HTML artifacts (`html-output`, `/shape`, ad-hoc walkthroughs) is **use `@font-face` with `local()` only — never embed brand OTFs via `url()` or base64**. Each Earlybird brand OTF is 100–200 KiB; embedding 3–4 weights per artifact adds ~600 KiB, which defeats the "shareable on the spot" intent.
+
+This skill is the deliberate exception. A presentation deck has different constraints: it needs to work fully offline, render identically on a stranger's laptop, survive being emailed as a single attachment, and present cleanly when the original brand fonts aren't installed. The inliner base64-encodes fonts, images, and CSS into one self-contained file by design. Don't apply the local-only default here unless the user explicitly asks for a network-loaded variant.
+
+The brand display font is **`Condensed Sans No10`** (no period — that's the registered family name); the body font is **`Untitled Sans`**. `Oswald` and `Inter` are fallbacks only, never defaults.
+
 ## What this skill gives you
 
 1. **A pre-styled template** (`assets/template/deck.html`) with Earlybird colors, Inter typography, dark/light theme toggle, keyboard navigation, progress bar, slide counter, **slide-navigator sidebar**, **slide search**, and **keyboard-shortcut help overlay** — ready to drop slides into.
