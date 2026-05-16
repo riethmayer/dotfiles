@@ -1,199 +1,176 @@
 ---
 name: shape
-description: Shape work into a walkable project folder — press release, overview, capabilities, scenarios. Defaults to tracer-bullet vertical slices — smallest end-to-end path first, durable architecture second. Use when user wants to shape work, write a PRD, plan a feature, scope a capability, or says "shape this". After shaping, use /linear to commit to Linear.
+description: Shape work into a walkable HTML pair — pitch.html (partner-readable argument) + details.html (scope, capabilities, inline-SVG lifecycle canvas, open decisions). Defaults to tracer-bullet vertical slices — smallest end-to-end path first, durable architecture second. Use this skill whenever the user wants to shape work, write a PRD, scope a feature, design a capability, or says "shape this", "let's PRD this", "spec this out", "design this", "frame this for the team". Also trigger when the user asks for a one-page memo arguing for a product investment, when they've described a feature and want a structured artifact for partner review, or when shaping output that downstream agents (/linear) will turn into issues. After shaping, use /linear to commit to Linear.
 ---
 
 # Shape
 
-Create a PRD as 4 sequentially-readable files (00-03). Files descend from highest abstraction (press release) down to scenarios. Each file ends with open questions and empty answer slots for async review. When ready to commit, use `/linear`.
+Produce a walkable, visual HTML pair that argues for a piece of work and lays out its slices, capabilities, lifecycle, and open decisions. Two files (plus a sidecar JSON for the canvas) — designed for top-down skim, partner-shareable, and structurally rich enough that downstream agents can pull from them.
 
-## Why 4 files, not 8
+## Why HTML, not markdown
 
-Earlier versions of this skill produced 8 files (press release → language). In practice the lower-abstraction files (implementation, risks, feature files, language) duplicate what's already implicit in 00-03 at different framings — and every iteration on the upstream files (rename a capability, change the schema, drop backwards compat) forces a sync pass through *all* lower files. The sync cost dwarfs the value.
+Markdown files force the reader to imagine the visual: 6 capabilities = 6 paragraphs to grep through; an event storm = an ASCII diagram. The shape stops being a *shape* and becomes a wall of prose. HTML is the right medium for shape because:
 
-The implementation/risks/feature-files/language details are better derived during `/linear` (when issues are created) or in the conversation that follows shaping, when the user has already committed to a direction. Don't write them speculatively at shape time.
+- **It's the same effort to produce, with massively more information per glance.** Colored cards, swimlanes, and a real canvas land differently than `## Capabilities` followed by bullets.
+- **It rewards skim.** A partner who has 90 seconds for the pitch reads `pitch.html`; the team reads `details.html` end-to-end. Two artifacts with different audiences, both walkable.
+- **It compresses the lifecycle.** A user-story-map + event-storm SVG carries the work of three markdown sections (scenarios, state diagrams, sequencing) in one scannable image.
+- **Agents read HTML.** `/linear` and other downstream agents can parse the same structure humans see — capability cards become issues, slice swimlanes become projects, event-storm events become acceptance criteria.
 
-If a project genuinely needs an upfront implementation doc (e.g. a migration spec with a known correct end state), write it as a separate design doc in `docs/plans/<date>-<slug>-design.md` — not as part of the shape PRD.
+## When to use
+
+The user has a thing they want to do — a feature, a workflow, a system change — and wants to argue for it, scope it, and hand it off cleanly. Use `/shape` *before* writing code, *before* cutting issues, *after* the rough idea is in the head but before partner / team review.
+
+**Don't use `/shape` for:**
+- Implementation plans for already-shaped work (use `docs/plans/<date>-<slug>-design.md`)
+- Architecture decisions with explicit accept/reject context (use ADRs in `docs/decisions/architecture/`)
+- Sprint tracking (use `.planning/`)
 
 ## Process
 
-### 1. Get the problem
+### 1. Prime (if not already primed)
 
-Ask the user for a description of what they want to solve. Keep it conversational — they'll refine through the documents.
+If `/prime` hasn't been run in this session, load the project context (vision, strategy, roadmap, domain architecture) before doing anything else. The pitch is hollow without it.
 
-### 2. Determine output location
+### 2. Get the problem
+
+Ask the user for a description of what they want to solve. Keep it conversational — they'll refine through the artifact, not through a Q&A flow. One paragraph is enough to start.
+
+### 3. Determine output location
 
 Check in order:
 
-1. **User's personal agent config** — look for a `planning` or `notes` setting in `~/.agents/AGENTS.md` or `~/.claude/CLAUDE.md` that specifies a preferred app/folder (e.g., Obsidian vault path, Apple Notes, a local folder)
-2. **Project AGENTS.md / CLAUDE.md** — many repos document where design docs live (e.g., `docs/plans/YYYY-MM-DD-<slug>/`). Honor that convention over the skill's default.
-3. **Ask the user** — "Where do you want the shaped documents? (e.g., Obsidian vault, a folder in the repo, or just inline)"
-4. **Fall back to repo** — create a `.planning/{feature-name}/` folder in the current repo
+1. **User's personal agent config** — look for a `planning` or `notes` setting in `~/.agents/AGENTS.md` or `~/.claude/CLAUDE.md` that specifies a preferred folder.
+2. **Project AGENTS.md / CLAUDE.md** — many repos document where design docs live (e.g., `docs/plans/YYYY-MM-DD-<slug>/`). Honor that convention over this skill's default.
+3. **Ask the user** if neither config points clearly somewhere.
+4. **Fall back to repo** — create `docs/plans/<YYYY-MM-DD>-<slug>/` in the current repo.
 
-### 3. Prime (if not already primed)
+The output folder gets:
 
-If `/prime` hasn't been run in this session, load project context now: vision, strategy, roadmap, domain architecture. This informs everything that follows.
+```text
+{output-location}/<YYYY-MM-DD>-<slug>/
+  pitch.html      ← partner-readable one-page argument
+  details.html    ← team-readable scope · capabilities · canvas · open decisions
+  shape.json      ← canvas source-of-truth (USM + event storm content) — /linear reads this
+```
 
 ### 4. Explore the codebase
 
-Automatically discover what exists:
+Discover what already exists:
 
-- Which packages/modules touch this problem space
-- What interfaces already exist that could be extended
-- What's been tried before (git log, existing code)
+- Which packages / modules touch this problem space
+- What interfaces could be extended vs. built from scratch
+- Whether this has been tried before (`git log`, related docs)
 
 ### 5. Grill — minimal
 
 Only ask about gaps the codebase can't answer. Focus on:
 
 - Ambiguous intent (multiple valid interpretations)
-- Priority conflicts (this vs competing work)
+- Priority conflicts (this vs. competing work)
 - Scope boundaries (what's explicitly out)
 
-### 5b. Default to a tracer-bullet shape
+### 6. Default to a tracer-bullet shape
 
-Shape the smallest end-to-end vertical slice that proves the whole pipeline works *before* designing the durable architecture. The slice itself follows the vertical-slice rules in `/linear` (and `/prd-to-issues` for GitHub repos) — what's mandatory here at the shape step is the **bias**:
+Shape the smallest end-to-end vertical slice that proves the whole pipeline works *before* designing the durable architecture. The slice itself follows the vertical-slice rules in `/linear` — what's mandatory here at shape time is the **bias**:
 
 - Tracer first, durable architecture second — even when the user asks for the proper version.
 - The tracer surfaces which signals actually move the metric, which informs the durable schema. Skipping it spends weeks designing the wrong abstraction.
-- Split into two top-level issues with explicit blocking: tracer unblocks the durable design.
+- In `shape.json.canvas.story_map.slices`, **Slice 1 must be a complete vertical path** through the backbone — sparse but end-to-end. Slice 2 / 3 fill in cells row by row.
 
 Skip the tracer only when (a) the pipeline shape is already proven by earlier work or production code, or (b) the work is operational / migration with a known correct end state.
 
-### 6. Write the project files
+### 7. Write the three files
 
-Output 4 numbered files to the chosen location. Files are numbered for sequential reading — highest level first, scenarios last.
+Write **`shape.json` first** — the canvas is the spine of the lifecycle and forces clarity about who does what, in which slice. Then write `details.html` (which embeds the canvas SVG), then `pitch.html` (which the canvas + details make easy to argue for).
 
-### 7. Decision gate
+Use the bundled examples as a starting point:
 
-After writing, tell the user where the files are and:
+- [`references/example_pitch.html`](references/example_pitch.html) — full-page pitch with brand styling
+- [`references/example_details.html`](references/example_details.html) — full-page details with inline-SVG canvas
+- [`references/example_shape.json`](references/example_shape.json) — worked example
+- [`references/canvas_data.md`](references/canvas_data.md) — `shape.json` schema + Brandolini palette
 
-> Review the docs, fill in the answer slots, then run `/linear` to create initiative, projects, and issues.
+**Generate the canvas SVG** via the bundled builder:
 
-Do NOT create Linear issues from this skill — that's `/linear`'s job. Implementation details, risks, feature files, and ubiquitous language land during `/linear` or in conversation, not as upfront artifacts.
-
-## Output Format
-
-### The abstraction gradient
-
-```text
-{output-location}/{feature-name}/
-  00-press-release.md     ← why this matters (user/customer perspective)
-  01-overview.md          ← problem, solution, scope, strategic fit
-  02-capabilities.md      ← verb-noun capability cards
-  03-scenarios.md         ← Gherkin acceptance criteria per capability
+```bash
+python scripts/build_canvas_svg.py shape.json --out /tmp/canvas.svg
+# then paste /tmp/canvas.svg content between the <!-- canvas:start --> / <!-- canvas:end --> markers
+# in details.html
 ```
 
-Reading top-to-bottom: from "why does this matter" → "what behaviour proves it works."
+The builder is deterministic — fixed sticky sizes, no autosize ambiguity. That's why we use inline SVG rather than `.excalidraw`: it renders correctly on first read, no app open / re-layout step. See `feedback_shape_inline_svg_canvas` for context on this trade-off.
 
-### File template
+### 8. Decision gate
 
-Every file follows this structure:
+After writing, tell the user where the files are. Suggest:
 
-```markdown
----
-date: { today }
-tags: [prd, { feature-name }]
-hubs:
-  - "[[{feature-name}]]"
----
+> Open `details.html`. The open-decisions section has empty answer slots — review and fill them. When you're ready, run `/linear` to create initiative / projects / issues.
 
-# {NN} — {Title}
+Do NOT create Linear issues from this skill — that's `/linear`'s job. Implementation details, risks, and feature files land during `/linear` or in the conversation that follows shaping, not as upfront artifacts.
 
-{Content for this section}
+## What goes in each file
 
----
+### pitch.html
 
-## Open Questions
+One page. Read in 60–90 seconds. Audience = partner / decision-maker / anyone who needs to know what we're investing in and why. Structure:
 
-### {Question 1}?
+1. **Eyebrow + Title + Subtitle** — what this is and who it's for
+2. **Headline blockquote** — the one-sentence argument (the thing that, if it doesn't excite, kills the project)
+3. **Why now** — the strategic moment + the gap we're filling
+4. **The pitch** — for whom, what we ship, what changes
+5. **Fictional quote** — what a user / partner / team-member would plausibly say after it ships. Realistic, not jargon.
+6. **How it works** — 3–4 cards, no jargon, one verb each
+7. **CTA** — "Next read: → details.html"
 
-> **Answer:**
+If pitch.html doesn't make you want to ship, the shape isn't worth building. Press-release-style. See `references/example_pitch.html`.
 
-### {Question 2}?
+### details.html
 
-> **Answer:**
-```
+Audience = the team that'll build it, plus the partner who wants to check the scope. Structure:
 
-The blockquote answer slots are empty — ready for voice-to-text input on mobile.
+1. **Header** with breadcrumb back to pitch + Table-of-contents pills
+2. **Problem** — 1–2 paragraphs, user perspective
+3. **Scope** — two cards side-by-side: scope-in, scope-out. Maximum 5 bullets per side.
+4. **Success metric** — a single, measurable outcome with the "why this number" sentence
+5. **Capabilities** — verb-noun cards, one per capability. Each carries `domain` (bounded context) and `modalities` (cli / web / mcp / cron / etc).
+6. **Lifecycle canvas** — inline SVG between `<!-- canvas:start -->` / `<!-- canvas:end -->`. Story map (slices) on top, event storm below.
+7. **Open decisions** — accordion of decisions awaiting input. Each has a severity (`ship-gate` / `owner-needed` / `spike`), a body explaining the trade-off, and an empty answer slot.
+8. **Next step** — "When the answers are in, run `/linear`."
 
-### 00-press-release.md
+The SVG carries the work of (a) scenario lists, (b) state diagrams, (c) sequencing diagrams, all in one scannable image. Don't duplicate it as text.
 
-Write a backwards press release (Amazon-style). One page max. Written as if the feature already shipped:
+### shape.json
 
-- **Headline**: one sentence, customer benefit
-- **Subheadline**: who it's for and what it enables
-- **Problem paragraph**: the pain today
-- **Solution paragraph**: what we built and why it matters
-- **Quote from user**: fictional but realistic — what would an investor/team member say?
-- **How it works**: 3-4 bullet points, no jargon
-- **Call to action**: what the user does next
-
-This is the north star. If the press release doesn't feel exciting, the feature isn't worth building.
-
-Open questions: audience, positioning, whether this is exciting enough.
-
-### 01-overview.md
-
-- **Problem**: one paragraph, from the user's perspective
-- **Solution**: one paragraph, what we'll build
-- **Scope in**: 3-5 bullets max
-- **Scope out**: what this is explicitly NOT
-- **Success metric**: single measurable outcome
-- **Strategic fit**: link to vision/strategy/roadmap (from `/prime`)
-
-Open questions: strategic alignment, priority, scope boundaries.
-
-### 02-capabilities.md
-
-List each capability as a card (from `/user-story` format):
-
-```markdown
-### `verb-noun`
-
-> One-line description.
-
-**Domain:** bounded context
-**Modalities:** web | mcp | cli | slack | cron
-```
-
-Open questions: missing capabilities, naming, domain placement.
-
-### 03-scenarios.md
-
-Gherkin acceptance criteria for each capability. 3-5 scenarios per capability.
-
-```gherkin
-Feature: verb-noun
-  As an investor
-  I want to verb noun
-  So that benefit
-
-  Scenario: happy path
-    Given precondition
-    When action through port
-    Then observable outcome
-```
-
-Open questions: missing edge cases, unclear behavior, acceptance thresholds.
+Source of truth for the canvas. See [`references/canvas_data.md`](references/canvas_data.md) for the schema. The `/linear` skill reads this directly when carving issues — slice = project, event-storm event = acceptance criterion, capability card = issue.
 
 ## Iterating with the user
 
-After writing the 4 files, walk the user through them sequentially. Each file's open questions are gating — answers shift the direction of every downstream file. Common iteration patterns:
+After the files are written, walk the user through them sequentially:
 
-- A capability rename in 02 ripples to 03 feature names and scenario language.
-- A schema decision (e.g. "no backwards compat") removes scenarios and tightens scope-out in 01.
-- A new capability emerging during 02/03 questions (e.g. "let's also add a threshold sweep UI") gets added in place — don't defer to a later round.
+1. **pitch.html** first — does the argument land?
+2. **details.html** scope card — anything in-scope that should be out, or vice versa?
+3. **details.html** capabilities — naming, domain placement, missing verbs?
+4. **details.html** canvas — does the slice ordering match the strategy? Do the events cover the failure paths?
+5. **details.html** open decisions — fill what you can answer; flag the rest.
 
-**Edit in place as answers come in.** Don't accumulate a queue of "things to update next iteration." The whole point of the 4-file ceiling is that ripple cost stays manageable.
+**Edit in place as answers come in.** Don't accumulate a queue of "next iteration" notes — the whole point of two HTML files is that ripple cost stays manageable. A capability rename in capabilities propagates by find-replace; a slice re-cut means regenerating the canvas via `build_canvas_svg.py`.
+
+## Anti-patterns
+
+- **Writing an "implementation plan" file**. That's a separate doc (`docs/plans/<date>-<slug>-design.md`). `/shape` is what you decide *to build*, not how you'll build it.
+- **Adding `.excalidraw` files**. Inline SVG is the default — render-correct on first read, no app to open, no overlap fixes. Generate `.excalidraw` only on explicit ask.
+- **Filling answer slots speculatively**. Leave them empty unless the user has answered them. Their emptiness is a forcing function.
+- **Writing scenarios as Gherkin**. The event storm replaces them — events are the acceptance criteria, the canvas shows their ordering and dependencies. `/linear` derives Gherkin from the storm when issues are cut.
+- **Letting the canvas drift from `shape.json`**. The SVG is generated. If you hand-edit the SVG, regenerate it from updated JSON instead.
 
 ## Next step: /linear
 
-When the user is ready to commit shaped work to Linear, point them to `/linear`. That skill handles:
-- Strategic placement (initiative selection)
-- Change assessment (new/changing/removing)
-- Project grouping by domain
-- Issue breakdown with AFK/HITL classification and dependency ordering
-- Implementation details, `.feature` file generation, and ubiquitous-language merging — all derived from the 4 PRD files plus the conversation context
+When the open-decision answers are in, point the user to `/linear`. That skill handles:
 
-If the project genuinely needs a separate design doc (migration spec, data model with a known correct end state, ADR-adjacent rationale), write that as a standalone file outside the shape PRD — e.g. `docs/plans/<date>-<slug>-design.md`.
+- Strategic placement (initiative selection)
+- Change assessment (new / changing / removing)
+- Project grouping by slice (from `shape.json.canvas.story_map.slices`)
+- Issue breakdown with AFK/HITL classification and dependency ordering (using the event storm)
+- Implementation details and ubiquitous-language merging — derived from the shape + the conversation context
+
+If the project genuinely needs a separate design doc (migration spec, data model with a known correct end state, ADR-adjacent rationale), write that as a standalone file outside the shape — e.g. `docs/plans/<date>-<slug>-design.md`.
