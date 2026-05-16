@@ -1,33 +1,113 @@
 # AGENTS.md
 
-Instructions for OpenCode when working in this repository.
+Guidance for AI agents (Claude Code, OpenCode, Codex, …) working in this repository. `CLAUDE.md` is a symlink to this file.
 
 ## Repository Overview
 
-Personal dotfiles using GNU Stow + XDG Base Directory Specification.
+Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification compliance. Modular, per-tool organization.
 
 ## Key Commands
 
-- `mise run help` - List tasks and packages
-- `mise run install` - Stow all packages
-- `mise run bootstrap` - Full system setup
+### Installation and Setup
+- `mise run help` - Display all available tasks and stow packages
+- `mise run install` - Install all stow packages (create symlinks)
+- `mise run install-adopt` - Install with adoption of existing files (use for initial setup)
+- `mise run bootstrap` - Complete system bootstrap (runs both stages)
+- `mise run bootstrap-stage1` - Stage 1: Install Homebrew and Stow
+- `mise run quick-bootstrap` - Quick bootstrap for development setup (essential tools only)
+- `mise run delete` - Remove all stow symlinks
+- `mise run update` - Sync dotfiles repo and handle git conflicts
 
-## Structure
+### Tool-specific Setup
+- `mise run tmux` - Setup tmux configuration
+- `mise run gpg` - Setup GPG configuration
+- `mise run nvim` - Setup Neovim configuration
+- `mise run atuin` - Setup Atuin shell history
+- `mise run zsh-xdg` - Setup Zsh XDG directories
 
-- `stow/{tool}/` - Per-tool configs following XDG paths
-- `stow/bootstrap/.system-bootstrap.d/` - Numbered setup scripts
-- `.planning/` - Sprint-based improvement plans
-- `.rules/` - Shared rules for AI assistants
+## Architecture and Structure
 
-## Patterns
+### Stow Organization
+- Each tool/language has its own stow directory: `stow/{tool}/`
+- Configuration files follow XDG Base Directory Specification
+- Structure: `stow/tool/.config/tool/`, `stow/tool/.local/share/tool/`, etc.
+- All packages listed in `PACKAGES` variable (derived from `stow/` subdirectories)
 
-- XDG paths: `.config/`, `.local/share/`, `.local/state/`, `.cache/`
-- Idempotent scripts
-- One stow package per tool
+### Bootstrap System
+- Two-stage bootstrap process via `mise run bootstrap`
+- Stage 1: Install Homebrew and Stow (`stow/bootstrap/bin/system-bootstrap.sh`)
+- Stage 2: Install all requirements (`$HOME/bin/system-bootstrap.sh`)
+- Individual setup scripts in `stow/bootstrap/.system-bootstrap.d/`
+- Scripts numbered with three digits for ordering (e.g., `001_mise.sh`)
+- All tasks managed through mise configuration in `stow/mise/.config/mise/config.toml`
+
+### Configuration Loading
+**Zsh Configuration:**
+- Main config: `stow/zsh/.zshrc`
+- Modular configs: `stow/zsh/.config/zsh/*.zsh`
+- Loading pattern with numbered prefixes (000-099):
+  - 000-009: Core environment
+  - 010-029: Package managers
+  - 030-049: Cloud tools
+  - 050-069: Programming languages
+  - 070-089: Development tools
+  - 090-099: Shell enhancements
+
+### XDG Compliance Rules
+All configurations must follow XDG Base Directory Specification:
+- Configurations → `$XDG_CONFIG_HOME` (~/.config)
+- Data files → `$XDG_DATA_HOME` (~/.local/share)
+- State files → `$XDG_STATE_HOME` (~/.local/state)
+- Cache files → `$XDG_CACHE_HOME` (~/.cache)
+
+### Key Packages
+Current stow packages: agents, atuin, bootstrap, brew, claude, gcloud, ghostty, git, mise, nvim, opencode, pi, pnpm, ruby, scripts, ssh, starship, tmux, zsh
+
+## Development Patterns
+
+### Adding New Tools
+1. Create `stow/{tool}/` directory following XDG structure
+2. Add tool-specific bootstrap script: `stow/bootstrap/.system-bootstrap.d/XXX_{tool}.sh`
+3. Add mise task for individual tool setup in `stow/mise/.config/mise/config.toml`
+4. For Zsh integration: add `stow/zsh/.oh-my-zsh/custom/zshrc.d/XXX_{tool}.zsh`
+
+### Adding Agent Skills (`npx skills add ...`)
+
+Canonical layout: real skill content lives in `stow/agents/.agents/skills/<name>/`, checked into the dotfiles repo. `~/.agents/skills/<name>` is a symlink → `../../dotfiles/stow/agents/.agents/skills/<name>`. Per-agent dirs (`~/.claude/skills/`, `~/.codex/skills/`, …) contain symlinks → `../../.agents/skills/<name>` (i.e. via `~/.agents/skills/`).
+
+The `npx skills add` tool inverts this — it puts real content at `~/.agents/skills/<name>` and writes a circular symlink into the dotfiles. Always fix after install:
+
+```sh
+NAME=<skill-name>
+rm "$HOME/dotfiles/stow/agents/.agents/skills/$NAME"   # circular symlink
+mv "$HOME/.agents/skills/$NAME" "$HOME/dotfiles/stow/agents/.agents/skills/$NAME"
+ln -s "../../dotfiles/stow/agents/.agents/skills/$NAME" "$HOME/.agents/skills/$NAME"
+```
+
+Then `git add stow/agents/.agents/skills/$NAME` to track it.
+
+### Script Organization
+- System setup scripts: `stow/bootstrap/.system-bootstrap.d/`
+- User scripts: `stow/scripts/bin/`
+- Bootstrap entry point: `stow/bootstrap/bin/system-bootstrap.sh`
+
+### Configuration Standards
+- All scripts must be idempotent (safe to run multiple times)
+- Use consistent error handling and logging
+- Follow XDG paths in all configurations
+- Keep configurations modular and tool-focused
+- Document any non-XDG compliant tools
+- Always use mise for automating tasks and as entry point
 
 ## Shared Rules
 
 Load on need-to-know basis:
-- `.rules/planning.md` - Sprint management (check when working on .planning/)
+- `.rules/planning.md` - Sprint management (check when working on `.planning/`)
 - `.rules/tools.md` - Tool preferences (rg, fd, gh, fzf, etc.)
 - `.planning/tech-radar.md` - When adding/referencing technology, review and clarify categorization
+
+## Must-Read Context
+
+Always read these before making changes:
+- `docs/adr/` - Architecture decision records
+- `docs/briefs/` - Work briefs with dated decisions
