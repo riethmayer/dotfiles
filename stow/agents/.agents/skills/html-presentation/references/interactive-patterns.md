@@ -206,13 +206,13 @@ The fill is red at 22% opacity — enough to read as a region, not so much that 
 
 ## Display type inside the result panel
 
-Score numbers, axis labels, and dimension letters (S-I-G-N-A-L) want condensed display type, same as headlines. The brand font for this is **Condensed Sans No.10**, which the template already loads — just reuse the headline stack:
+Score numbers, axis labels, and dimension letters (S-I-G-N-A-L) want condensed display type, same as headlines. The brand font for this is **Condensed Sans No10** (no period — that's the registered family name), which the template already loads — just reuse the headline stack:
 
 ```css
 .radar .axis-label,
 .result-side .band-score,
 .result-side .dim-row .val {
-  font-family: 'Condensed Sans No.10', 'Oswald', 'Untitled Sans', 'Inter', sans-serif;
+  font-family: 'Condensed Sans No10', 'Oswald', 'Untitled Sans', 'Inter', sans-serif;
   font-weight: 900;
   text-transform: uppercase;
 }

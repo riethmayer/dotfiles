@@ -144,6 +144,22 @@ header { margin-bottom: 48px; position: relative; }
   color: var(--red); font-weight: 800; letter-spacing: -0.02em;
   font-size: 14px; text-transform: lowercase;
 }
+/* Logos top-left — Earlybird always, EagleEye for EagleEye work. Light/dark
+   variants swap based on html.dark. Place SVG/PNG files in ./assets/. */
+.logo {
+  position: fixed; top: 18px; left: 18px;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 60;
+}
+.logo img { height: 22px; width: auto; display: block; }
+.logo .sep {
+  width: 1px; height: 18px;
+  background: rgba(45,26,22,0.18); display: block;
+}
+html.dark .logo .sep { background: rgba(255,255,255,0.18); }
+.logo .ee-dark-mode { display: none; }
+html.dark .logo .ee-light-mode { display: none; }
+html.dark .logo .ee-dark-mode { display: block; }
 .subtitle { color: var(--text-dim); margin-top: 14px; font-size: 16px; }
 
 /* Headline callout — the "punchline first" banner */
