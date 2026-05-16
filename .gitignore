@@ -22,3 +22,17 @@ stow/claude/.claude/plugins/known_marketplaces.json
 stow/claude/.claude/plugins/cache/
 stow/claude/.claude/plugins/install-counts-cache.json
 firebase-debug.log
+
+# Claude runtime logs
+.claudelog/
+
+# Python bytecode (skill-creator + any other Python skills)
+__pycache__/
+*.py[cod]
+
+# Packaged skill build artifacts (scripts/package_skill.py output)
+*.skill
+
+# Skill-creator workspaces — test runs, evals, snapshots; never committed.
+# Each lives next to its skill as `<skill-name>-workspace/`.
+/stow/agents/.agents/skills/*-workspace/
