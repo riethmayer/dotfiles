@@ -92,6 +92,22 @@ header { margin-bottom: 48px; position: relative; }
   color: var(--text-dim); font-size: 10px;
   text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
 }
+/* Logos top-left — Earlybird always, EagleEye for EagleEye-related artifacts.
+   Light/dark variants swap based on the html.dark class. */
+.logo {
+  position: fixed; top: 18px; left: 18px;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 60;
+}
+.logo img { height: 22px; width: auto; display: block; }
+.logo .sep {
+  width: 1px; height: 18px;
+  background: rgba(45,26,22,0.18); display: block;
+}
+html.dark .logo .sep { background: rgba(255,255,255,0.18); }
+.logo .ee-dark-mode { display: none; }
+html.dark .logo .ee-light-mode { display: none; }
+html.dark .logo .ee-dark-mode { display: block; }
 .brand { color: var(--red); font-weight: 800; letter-spacing: -0.02em; font-size: 14px; text-transform: lowercase; }
 h1 {
   font-family: 'Condensed Sans No10', 'Oswald', 'Untitled Sans', sans-serif;
@@ -314,6 +330,16 @@ body.sidebar-closed .container { margin-left: 0; }
 </head>
 <body class="has-sidebar">
 
+<!-- Logos top-left. Keep Earlybird always; remove the EagleEye block for
+     non-EagleEye artifacts. Logo files live in ./assets/. -->
+<div class="logo">
+  <img class="ee-light-mode" src="./assets/Earlybird_Logo_RGB_Red.svg" alt="Earlybird" />
+  <img class="ee-dark-mode"  src="./assets/Earlybird_Logo_RGB_White.svg" alt="Earlybird" />
+  <span class="sep"></span>
+  <img class="ee-light-mode" src="./assets/eagleeye-logo.png" alt="EagleEye" />
+  <img class="ee-dark-mode"  src="./assets/eagleeye-logo-dark.png" alt="EagleEye" />
+</div>
+
 <nav class="sidebar" id="sidebar" aria-label="Section navigation">
   <div class="sidebar-label">Sections</div>
   <div id="sidebarLinks"></div>
@@ -323,7 +349,6 @@ body.sidebar-closed .container { margin-left: 0; }
 
 <header>
   <div class="classification">Strictly Confidential · Internal</div>
-  <div class="brand">earlybird</div>
   <h1>Document title — decision-oriented, not topic</h1>
   <div class="subtitle">Document type · DD MMM YYYY · audience names</div>
   <div class="headline">
