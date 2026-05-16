@@ -14,6 +14,7 @@ No dependencies beyond the Python stdlib are required.
 
 import argparse
 import base64
+import hashlib
 import json
 import mimetypes
 import os
@@ -26,6 +27,20 @@ import webbrowser
 from functools import partial
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
+
+
+def _port_for_workspace(workspace: Path) -> int:
+    """Pick a deterministic port from the workspace path.
+
+    Same workspace → same port across runs (so the user can keep one browser
+    tab open while iterating). Different workspaces → different ports almost
+    always (so concurrent reviews don't fight for the same port).
+
+    Range 8200-8999 stays well above the common dev-server ports (3000s, 4000s,
+    5173) and below the privileged 49152+ ephemeral range.
+    """
+    digest = hashlib.sha1(str(workspace).encode("utf-8")).digest()
+    return 8200 + int.from_bytes(digest[:2], "big") % 800
 
 # Files to exclude from output listings
 METADATA_FILES = {"transcript.md", "user_notes.md", "metrics.json"}
@@ -87,8 +102,13 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
     prompt = ""
     eval_id = None
 
-    # Try eval_metadata.json
-    for candidate in [run_dir / "eval_metadata.json", run_dir.parent / "eval_metadata.json"]:
+    # Try eval_metadata.json — check the run dir, the configuration dir
+    # (with_skill / without_skill), and the eval dir (their grandparent).
+    for candidate in [
+        run_dir / "eval_metadata.json",
+        run_dir.parent / "eval_metadata.json",
+        run_dir.parent.parent / "eval_metadata.json",
+    ]:
         if candidate.exists():
             try:
                 metadata = json.loads(candidate.read_text())
@@ -277,6 +297,9 @@ def generate_html(
         embedded["benchmark"] = benchmark
 
     data_json = json.dumps(embedded)
+    # Prevent embedded HTML/text containing </script> from closing our own
+    # <script> block. <\/ is identical to </ inside a JS string literal.
+    data_json = data_json.replace("</", "<\\/")
 
     return template.replace("/*__EMBEDDED_DATA__*/", f"const EMBEDDED_DATA = {data_json};")
 
@@ -387,7 +410,10 @@ class ReviewHandler(BaseHTTPRequestHandler):
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate and serve eval review")
     parser.add_argument("workspace", type=Path, help="Path to workspace directory")
-    parser.add_argument("--port", "-p", type=int, default=3117, help="Server port (default: 3117)")
+    parser.add_argument(
+        "--port", "-p", type=int, default=None,
+        help="Server port (default: deterministic hash of workspace path, 8200–8999)",
+    )
     parser.add_argument("--skill-name", "-n", type=str, default=None, help="Skill name for header")
     parser.add_argument(
         "--previous-workspace", type=Path, default=None,
@@ -435,8 +461,11 @@ def main() -> None:
         print(f"\n  Static viewer written to: {args.static}\n")
         sys.exit(0)
 
-    # Kill any existing process on the target port
-    port = args.port
+    # Kill any existing process on the target port. The port is derived
+    # deterministically from the workspace path so the same eval keeps the
+    # same URL across iterations (one open browser tab), while concurrent
+    # reviews of *different* workspaces don't fight over a shared port.
+    port = args.port if args.port is not None else _port_for_workspace(workspace)
     _kill_port(port)
     handler = partial(ReviewHandler, workspace, skill_name, feedback_path, previous, benchmark_path)
     try:
