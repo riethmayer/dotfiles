@@ -1,6 +1,6 @@
 ---
 name: html-output
-description: Default to HTML over Markdown when Claude needs to communicate rich, scannable, or visual output back to the user. Provides the Earlybird brand base — colors, Untitled Sans + Condensed Sans No.10 typography, light/dark mode — as a copy-paste stylesheet plus a fully-loaded scrollable-document template with keyboard nav and section sidebar. Trigger on "make this an HTML page", "render as HTML", "HTML artifact", "make me an HTML file", "drop this in HTML", "highly visual output", "make it easier to reason about", "ad-hoc website for this", "quick presentation", plus specific use cases: side-by-side option comparisons, PR/code explainers with diffs and annotations, design exploration grids (mockups, pricing tables, layout variants), implementation plans with diagrams and code snippets, weekly status or research reports, throwaway editors (drag-and-drop card sorters, feature-flag editors, prompt-tuning UIs with copy-as-export), decision briefs, post-mortems, alignment memos, technical explainers with SVG flowcharts. Use proactively whenever the user asks for output that benefits from color, hierarchy, tables, diagrams, side-by-side comparisons, or interactive controls — even if they don't explicitly say HTML. Companion skills handle the deeper craft: frontend-design for bold custom aesthetic direction outside Earlybird brand, web-artifacts-builder for React/Tailwind/shadcn artifacts with state, html-presentation for slide decks, web-clone for cloning a live URL.
+description: Default to HTML over Markdown when Claude needs to communicate rich, scannable, or visual output back to the user. Provides the Earlybird brand base — colors, Untitled Sans + Condensed Sans No10 typography, light/dark mode — as a copy-paste stylesheet plus a fully-loaded scrollable-document template with keyboard nav and section sidebar. Trigger on "make this an HTML page", "render as HTML", "HTML artifact", "make me an HTML file", "drop this in HTML", "highly visual output", "make it easier to reason about", "ad-hoc website for this", "quick presentation", plus specific use cases: side-by-side option comparisons, PR/code explainers with diffs and annotations, design exploration grids (mockups, pricing tables, layout variants), implementation plans with diagrams and code snippets, weekly status or research reports, throwaway editors (drag-and-drop card sorters, feature-flag editors, prompt-tuning UIs with copy-as-export), decision briefs, post-mortems, alignment memos, technical explainers with SVG flowcharts. Use proactively whenever the user asks for output that benefits from color, hierarchy, tables, diagrams, side-by-side comparisons, or interactive controls — even if they don't explicitly say HTML. Companion skills handle the deeper craft: frontend-design for bold custom aesthetic direction outside Earlybird brand, web-artifacts-builder for React/Tailwind/shadcn artifacts with state, html-presentation for slide decks, web-clone for cloning a live URL.
 ---
 
 # HTML Output
@@ -15,8 +15,8 @@ This skill provides **the Earlybird brand base** — colors, typography, light/d
 
 **`~/.agents/skills/html-presentation/references/brand-quick.md` is the canonical brand spec.** Read it once before producing any Earlybird-shelled HTML — especially the typography section. The two non-obvious rules that produce most off-brand output:
 
-1. **Body font is Untitled Sans. Headlines are Condensed Sans No.10.** Inter and Oswald are *fallbacks only* — never defaults. The stylesheets in this skill put the brand fonts first and load them via `local()`; the Google Fonts imports are safety nets, not the primary stack.
-2. **Earlybird = refined minimalism, not maximalism.** No backdrop typography, no dotted-grid backgrounds, no noise overlays, no gradient meshes. When reaching for `frontend-design` techniques inside an Earlybird-shelled doc, "pop" means precision and restraint executed sharply — bigger Condensed Sans No.10 headlines, tighter rhythm, sharper red accents. Reserve `frontend-design`'s maximalism vocabulary for pages that deliberately break the brand (creative landing pages, distinctive marketing pieces).
+1. **Body font is Untitled Sans. Headlines are Condensed Sans No10.** Inter and Oswald are *fallbacks only* — never defaults. The stylesheets in this skill put the brand fonts first and load them via `local()`; the Google Fonts imports are safety nets, not the primary stack.
+2. **Earlybird = refined minimalism, not maximalism.** No backdrop typography, no dotted-grid backgrounds, no noise overlays, no gradient meshes. When reaching for `frontend-design` techniques inside an Earlybird-shelled doc, "pop" means precision and restraint executed sharply — bigger Condensed Sans No10 headlines, tighter rhythm, sharper red accents. Reserve `frontend-design`'s maximalism vocabulary for pages that deliberately break the brand (creative landing pages, distinctive marketing pieces).
 
 If the artifact is for an external audience, also check `brand-quick.md`'s logo + gradient + confidentiality rules.
 
@@ -56,7 +56,7 @@ This skill provides the brand shell. The other HTML skills handle deeper craft:
 |---|---|
 | Staggered fade-in on initial load (`IntersectionObserver`) | Backdrop "watermark" typography |
 | Hover lift + red glow on cards | Dotted-grid or gradient-mesh backgrounds |
-| Bigger Condensed Sans No.10 headlines, tighter line-height | Noise overlays / `feTurbulence` filters |
+| Bigger Condensed Sans No10 headlines, tighter line-height | Noise overlays / `feTurbulence` filters |
 | Asymmetric kicker + accent rule | Layered transparencies, custom cursors |
 | Sharp red accents on borders, dots, arrows | Multi-hue gradient backgrounds |
 
@@ -68,7 +68,7 @@ Use this skill's `earlybird-base.css` inside a `web-artifacts-builder` React pro
 
 ## What this skill gives you
 
-**1. `assets/template/earlybird-base.css`** — the brand shell as a standalone stylesheet (~180 lines). Drop into any HTML artifact via `<style>` tag and get Earlybird typography (Untitled Sans + Condensed Sans No.10 via `local()`, with Inter/Oswald fallback nets), colors, light/dark, base callouts. **This is the primary artifact.** Use it for XS/M artifacts where you don't need a full doc scaffold. Note: it's a shell, not the full brand spec — for logo rules, gradient usage, and confidentiality markers, read the canonical reference at #4.
+**1. `assets/template/earlybird-base.css`** — the brand shell as a standalone stylesheet (~180 lines). Drop into any HTML artifact via `<style>` tag and get Earlybird typography (Untitled Sans + Condensed Sans No10 via `local()`, with Inter/Oswald fallback nets), colors, light/dark, base callouts. **This is the primary artifact.** Use it for XS/M artifacts where you don't need a full doc scaffold. Note: it's a shell, not the full brand spec — for logo rules, gradient usage, and confidentiality markers, read the canonical reference at #4.
 
 **2. `assets/template/doc.html`** — a fully-loaded scrollable document template. Sidebar, keyboard layer (`j`/`k`/`gg`/`G`/`b`/`d`/`?`), light/dark toggle, help overlay, print-friendly media query. Use when the artifact is long enough to need section navigation (briefs, memos, alignment docs, post-mortems).
 

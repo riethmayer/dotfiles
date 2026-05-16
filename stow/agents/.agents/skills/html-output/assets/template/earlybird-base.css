@@ -5,7 +5,7 @@
    Typography (per references/brand-quick.md — canonical brand spec):
 
      - Body:      Untitled Sans      (loaded via local() lookup)
-     - Headlines: Condensed Sans No.10 (loaded via local() lookup, ALL CAPS)
+     - Headlines: Condensed Sans No10 (loaded via local() lookup, ALL CAPS)
 
    Inter and Oswald are FALLBACK fonts — Google Fonts imports kept in the
    stack strictly for viewers who don't have the brand OTFs installed.
@@ -31,8 +31,8 @@
   font-weight: 700; font-style: normal; font-display: swap;
 }
 @font-face {
-  font-family: 'Condensed Sans No.10';
-  src: local('Condensed Sans No.10 Black'), local('CondensedSansNo10-Black');
+  font-family: 'Condensed Sans No10';
+  src: local('Condensed Sans No10 Black'), local('CondensedSansNo10-Black');
   font-weight: 900; font-style: normal; font-display: swap;
 }
 
@@ -93,10 +93,10 @@ body {
 }
 .container { max-width: 1180px; margin: 0 auto; }
 
-/* Display typography — Condensed Sans No.10 for headlines, ALL CAPS, 90%
+/* Display typography — Condensed Sans No10 for headlines, ALL CAPS, 90%
    line height per brand. Oswald falls in as the safety net. */
 h1, h2.section-title, .track-title, .status-title {
-  font-family: 'Condensed Sans No.10', 'Oswald', 'Untitled Sans', sans-serif;
+  font-family: 'Condensed Sans No10', 'Oswald', 'Untitled Sans', sans-serif;
 }
 h1 {
   font-size: 52px; font-weight: 900; line-height: 0.9;
@@ -104,7 +104,7 @@ h1 {
   margin-top: 8px;
 }
 h2 {
-  font-family: 'Condensed Sans No.10', 'Oswald', 'Untitled Sans', sans-serif;
+  font-family: 'Condensed Sans No10', 'Oswald', 'Untitled Sans', sans-serif;
   font-size: 24px; font-weight: 900;
   text-transform: uppercase; letter-spacing: 0.02em;
   line-height: 0.95;
