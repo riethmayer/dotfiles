@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earlybird Prompt Library — details</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap');
+
+:root {
+  --red: #FD1A1B;
+  --red-dim: rgba(253,26,27,0.08);
+  --eb-dark: #2D1A16;
+  --eb-darker: #1a0f0d;
+  --bg: #F8FCFF;
+  --bg-card: #ffffff;
+  --bg-card-2: #f0f4f7;
+  --text: #2D1A16;
+  --text-dim: #6b6560;
+  --text-soft: #3d362f;
+  --green: #16a34a;
+  --yellow: #ca8a04;
+  --orange: #ea580c;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --border: rgba(45,26,22,0.08);
+  --shadow: 0 1px 3px rgba(45,26,22,0.05), 0 1px 2px rgba(45,26,22,0.03);
+  --canvas-bg: #FBF7EE;
+}
+html.dark {
+  --bg: var(--eb-darker);
+  --bg-card: #251c17;
+  --bg-card-2: #2f241d;
+  --text: #F8FCFF;
+  --text-dim: #8a8580;
+  --text-soft: #b5b0ab;
+  --red-dim: rgba(253,26,27,0.12);
+  --border: rgba(255,255,255,0.07);
+  --canvas-bg: #1f1814;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Untitled Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.005em;
+  background: var(--bg); color: var(--text);
+  line-height: 1.55; padding: 48px 24px 80px; font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1080px; margin: 0 auto; }
+.classification {
+  position: absolute; top: 24px; right: 28px;
+  color: var(--text-dim); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
+}
+header { margin-bottom: 40px; }
+.eyebrow {
+  color: var(--red); font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.12em;
+}
+.crumbs { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.crumbs a { color: var(--text-dim); text-decoration: none; }
+.crumbs a:hover { color: var(--red); }
+h1 {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  font-size: 48px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.005em;
+  margin-top: 6px; line-height: 0.98;
+}
+.subtitle { color: var(--text-dim); margin-top: 12px; font-size: 15px; max-width: 70ch; }
+
+.toc {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 28px; padding: 12px 14px;
+  background: var(--bg-card); border-radius: 8px;
+  border: 1px solid var(--border); font-size: 12px;
+}
+.toc a {
+  padding: 4px 10px; border-radius: 12px;
+  color: var(--text-soft); text-decoration: none;
+  background: var(--bg-card-2);
+}
+.toc a:hover { color: var(--red); }
+
+.section { margin-top: 56px; scroll-margin-top: 20px; }
+.section-title {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  color: var(--red); font-size: 22px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.02em;
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--red); display: inline-block;
+}
+.section p { color: var(--text-soft); font-size: 14px; margin-bottom: 12px; max-width: 78ch; }
+.section p strong { color: var(--text); font-weight: 600; }
+code { background: var(--bg-card-2); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: 12px; }
+
+.scope { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+.scope-card {
+  background: var(--bg-card); padding: 18px 22px; border-radius: 8px;
+  border-left: 3px solid; box-shadow: var(--shadow);
+}
+.scope-in { border-left-color: var(--green); }
+.scope-out { border-left-color: var(--text-dim); }
+.scope-card .label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.scope-in .label { color: var(--green); }
+.scope-out .label { color: var(--text-dim); }
+.scope-card ul { list-style: none; }
+.scope-card li {
+  font-size: 13px; color: var(--text-soft);
+  padding: 5px 0; border-bottom: 1px solid var(--border);
+}
+.scope-card li:last-child { border-bottom: 0; }
+.scope-card li::before { content: '→ '; color: var(--text-dim); }
+.scope-out li::before { content: '× '; color: var(--text-dim); }
+
+.metric {
+  margin-top: 18px; padding: 18px 22px;
+  background: var(--red-dim); border-left: 3px solid var(--red);
+  border-radius: 0 6px 6px 0;
+}
+.metric .label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: var(--red); text-transform: uppercase; }
+.metric .value { font-family: 'Condensed Sans No10', 'Oswald', sans-serif; font-size: 22px; font-weight: 700; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.01em; }
+.metric .why { color: var(--text-soft); margin-top: 6px; font-size: 13px; }
+
+.caps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 18px; }
+.cap {
+  background: var(--bg-card); padding: 18px 22px; border-radius: 8px;
+  border-left: 3px solid var(--blue); box-shadow: var(--shadow);
+}
+.cap-name {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em;
+}
+.cap-name code { background: transparent; color: var(--blue); padding: 0; font-size: inherit; font-family: inherit; }
+.cap-desc { font-size: 13px; color: var(--text-soft); margin-top: 6px; }
+.cap-meta { font-size: 11px; color: var(--text-dim); margin-top: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+.cap-meta span { display: inline-block; margin-right: 14px; }
+.cap-meta span strong { color: var(--text); font-weight: 600; letter-spacing: 0; text-transform: none; }
+
+/* --- Canvas section (variant A — single combined excalidraw) --- */
+.canvas-wrap {
+  margin-top: 22px; padding: 26px; border-radius: 10px;
+  background: var(--canvas-bg); border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.canvas-tile {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 26px; align-items: center;
+}
+.canvas-preview {
+  background: var(--bg-card); border-radius: 8px;
+  padding: 24px 28px; box-shadow: var(--shadow);
+  font-size: 11.5px; color: var(--text-soft);
+}
+.canvas-preview .preview-row {
+  display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.preview-sticky {
+  padding: 6px 10px; border-radius: 4px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 1px 1px 0 rgba(45,26,22,0.08);
+}
+.s-event { background: #FFB86B; color: #3d2615; }
+.s-cmd { background: #6EA8FE; color: #0d1f3d; }
+.s-actor { background: #FBE16A; color: #3d2c0d; }
+.s-policy { background: #C9A3FF; color: #2a1145; }
+.s-read { background: #87E2A8; color: #0d3d1f; }
+.preview-divider {
+  height: 1px; background: rgba(45,26,22,0.1);
+  margin: 14px 0;
+}
+.canvas-pitch { padding-left: 6px; }
+.canvas-pitch .label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--orange); text-transform: uppercase; margin-bottom: 8px;
+}
+.canvas-pitch h3 {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  font-size: 26px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.01em; line-height: 1.05;
+}
+.canvas-pitch p { font-size: 13.5px; color: var(--text-soft); margin-top: 10px; max-width: 40ch; }
+.canvas-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 16px; padding: 10px 16px;
+  background: var(--eb-dark); color: #F8FCFF;
+  text-decoration: none; border-radius: 6px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+html.dark .canvas-cta { background: var(--red); color: var(--text); }
+.canvas-cta:hover { background: var(--red); }
+.canvas-cta::after { content: '↗'; color: var(--red); font-size: 14px; }
+html.dark .canvas-cta::after { color: var(--text); }
+.canvas-foot {
+  margin-top: 14px; font-size: 11.5px; color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+.canvas-foot code { font-size: 11px; }
+
+/* Variant C: inline SVG canvas */
+.canvas-svg-frame {
+  position: relative; border-radius: 10px;
+  background: var(--canvas-bg); border: 1px solid var(--border);
+  overflow: hidden; box-shadow: var(--shadow);
+}
+.canvas-svg-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 14px; padding: 12px 16px;
+  background: rgba(45,26,22,0.04); border-bottom: 1px solid var(--border);
+}
+.canvas-svg-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--orange); text-transform: uppercase;
+}
+.canvas-svg-title {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  font-size: 16px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.canvas-svg-hint { font-size: 11px; color: var(--text-dim); letter-spacing: 0.02em; }
+.canvas-svg-scroll {
+  overflow-x: auto; overflow-y: hidden;
+  padding: 14px;
+  scrollbar-width: thin;
+}
+.canvas-svg-scroll svg {
+  width: 1700px; height: auto;
+  display: block;
+}
+@media (max-width: 1100px) {
+  .canvas-svg-scroll svg { width: 1500px; }
+}
+
+/* --- Open decisions --- */
+.gaps { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+.gap {
+  background: var(--bg-card); border-radius: 8px;
+  box-shadow: var(--shadow); overflow: hidden;
+  border-left: 3px solid var(--yellow);
+}
+.gap-head {
+  display: grid; grid-template-columns: 36px 1fr auto;
+  gap: 14px; align-items: center;
+  padding: 14px 18px; cursor: pointer;
+}
+.gap-num {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--yellow);
+  width: 32px; height: 32px; line-height: 32px; text-align: center;
+  background: rgba(202,138,4,0.08); border-radius: 50%;
+}
+.gap-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.gap-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.gap-sev {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  padding: 4px 10px; border-radius: 12px; text-transform: uppercase;
+  background: rgba(202,138,4,0.08); color: var(--yellow);
+}
+.gap-sev.shipgate { background: rgba(253,26,27,0.08); color: var(--red); }
+.gap-sev.spike { background: rgba(124,58,237,0.08); color: var(--purple); }
+.gap-body {
+  padding: 0 18px 18px 68px;
+  font-size: 13px; color: var(--text-soft);
+}
+.gap-body .answer-slot {
+  margin-top: 12px; padding: 12px 14px;
+  background: var(--bg-card-2); border-radius: 6px;
+  border-left: 2px dashed var(--text-dim);
+  font-style: italic; color: var(--text-dim); font-size: 12.5px;
+}
+
+.theme-toggle {
+  position: fixed; top: 18px; right: 18px; z-index: 60;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 6px 12px; font-size: 11px;
+  font-weight: 600; color: var(--text-soft); cursor: pointer;
+  letter-spacing: 0.04em;
+}
+.theme-toggle:hover { color: var(--red); border-color: var(--red); }
+
+footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+.next-step {
+  margin-top: 56px; padding: 22px 26px;
+  background: var(--eb-dark); color: #F8FCFF;
+  border-radius: 8px;
+}
+html.dark .next-step { background: var(--bg-card-2); color: var(--text); }
+.next-step .label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: var(--red); text-transform: uppercase; }
+.next-step p { color: inherit; margin-top: 8px; font-size: 14px; }
+.next-step code { background: rgba(255,255,255,0.08); color: inherit; }
+html.dark .next-step code { background: var(--bg-card); }
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle theme</button>
+<div class="classification">Internal · details</div>
+<div class="container">
+  <header>
+    <div class="crumbs"><a href="./pitch.html">← Pitch</a></div>
+    <div class="eyebrow">Earlybird Internal · Q2 2026 · AI Adoption</div>
+    <h1>Prompt Library — Details</h1>
+    <p class="subtitle">Scope, capabilities, lifecycle canvas, and open decisions for the v1 of <code>skills.earlybird.com</code> + the <code>ebsk</code> CLI. Read the pitch first if you haven't.</p>
+    <div class="toc">
+      <a href="#problem">Problem</a>
+      <a href="#scope">Scope</a>
+      <a href="#metric">Success metric</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#canvas">Lifecycle canvas</a>
+      <a href="#decisions">Open decisions</a>
+    </div>
+  </header>
+
+  <section class="section" id="problem">
+    <div class="section-title">Problem</div>
+    <p>Skills and prompts that materially improve our work live on individual laptops with no path to sharing, vetting, or maintenance. The bigger miss is that we don't have a shared layer for <strong>how Earlybird actually works</strong> — the workflows that move the needle aren't codified, so onboarding stays manual and the team can't compound on its own conventions.</p>
+    <p>Generic catalogs can't fix this. Skills get their value from referencing <strong>our</strong> tables, <strong>our</strong> stages, <strong>our</strong> jargon. Once they reference Earlybird specifics, distribution + safety + maintenance become the actual product. That's what we're shipping.</p>
+  </section>
+
+  <section class="section" id="scope">
+    <div class="section-title">Scope</div>
+    <div class="scope">
+      <div class="scope-card scope-in">
+        <div class="label">In</div>
+        <ul>
+          <li>Open-source CLI (<code>ebsk</code>) + Cloud Run registry + Next.js web library, Apache 2.0</li>
+          <li>Earlybird as tenant zero on <code>skills.earlybird.com</code></li>
+          <li>Manual blessing workflow (engineering admin reviews PRs against <code>earlybirdvc/skills</code>)</li>
+          <li>Two install tracks: CLI sync (Claude Code · Codex) and manual zip (ChatGPT · Perplexity)</li>
+          <li>Opt-in cloud backup for personal namespace + <code>ebsk share</code> preview URLs</li>
+        </ul>
+      </div>
+      <div class="scope-card scope-out">
+        <div class="label">Out (roadmap)</div>
+        <ul>
+          <li>Zero-knowledge architecture (operator-readable for now)</li>
+          <li>Multi-tenant SaaS sign-up flow — other firms self-host until hosted opens</li>
+          <li>Full LLM-judge eval framework wired into CI (manual eval for MVP)</li>
+          <li>Chrome extension that injects prompts into chatgpt.com</li>
+          <li>OpenAI Custom GPT API auto-provisioning</li>
+          <li>Cross-workspace subscription / syndication (workspace-scoped v1)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="metric">
+    <div class="section-title">Success metric</div>
+    <div class="metric">
+      <div class="label">Single measurable outcome</div>
+      <div class="value">≥ 15 blessed skills · ≥ 8 authors across ≥ 3 departments, by end of Q3 2026</div>
+      <div class="why">Coverage signals that the library has crossed from "engineering's project" to "how the org works." Depth (per-skill usage) and velocity (time-to-bless) become KRs in Q4 once we have the volume to measure them.</div>
+    </div>
+  </section>
+
+  <section class="section" id="capabilities">
+    <div class="section-title">Capabilities</div>
+    <p>Verb-noun cards. Each maps to one or more CLI commands or web surfaces; modalities (cli / web / sync-policy) tell you where they live.</p>
+    <div class="caps">
+      <div class="cap">
+        <div class="cap-name"><code>install-skill</code></div>
+        <div class="cap-desc">Pull a blessed skill from the registry into the local skill loader (Claude Code / Codex / manual zip for others).</div>
+        <div class="cap-meta"><span><strong>Domain:</strong> distribution</span><span><strong>Modalities:</strong> cli · web · cron-sync</span></div>
+      </div>
+      <div class="cap">
+        <div class="cap-name"><code>author-skill</code></div>
+        <div class="cap-desc">Scaffold and iterate locally with <code>ebsk init</code>. Opt-in private cloud backup; share via non-guessable preview URL on demand.</div>
+        <div class="cap-meta"><span><strong>Domain:</strong> authoring</span><span><strong>Modalities:</strong> cli</span></div>
+      </div>
+      <div class="cap">
+        <div class="cap-name"><code>submit-skill</code></div>
+        <div class="cap-desc">Conscious-gate promotion from personal → workspace / public. Opens a PR against <code>earlybirdvc/skills</code> with the blessing checklist.</div>
+        <div class="cap-meta"><span><strong>Domain:</strong> authoring</span><span><strong>Modalities:</strong> cli</span></div>
+      </div>
+      <div class="cap">
+        <div class="cap-name"><code>bless-skill</code></div>
+        <div class="cap-desc">Admin merges the blessing PR after hooks / PII / eval / visibility checks. Blessing = deployment.</div>
+        <div class="cap-meta"><span><strong>Domain:</strong> governance</span><span><strong>Modalities:</strong> cli · gh</span></div>
+      </div>
+      <div class="cap">
+        <div class="cap-name"><code>fork-skill</code></div>
+        <div class="cap-desc">Personal copy with auto-update tracking; checksum-tracked divergence pins the fork at the diverged version.</div>
+        <div class="cap-meta"><span><strong>Domain:</strong> authoring</span><span><strong>Modalities:</strong> cli</span></div>
+      </div>
+      <div class="cap">
+        <div class="cap-name"><code>unbless-skill</code></div>
+        <div class="cap-desc">Admin removes a blessed skill. Next <code>ebsk sync</code> on every workspace laptop deletes it; users prompted to fork before sync removes the file.</div>
+        <div class="cap-meta"><span><strong>Domain:</strong> governance</span><span><strong>Modalities:</strong> cli · cron-sync</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="canvas">
+    <div class="section-title">Lifecycle canvas</div>
+    <p>Inline SVG. Story map on top — actors, activities, and which slice each task belongs to (MVP · v1 · v2). Event storm below — left-to-right time, Brandolini palette, showing the lifecycle events emitted as users walk the story map. The whole canvas is part of this page (no external file to open).</p>
+    <div class="canvas-svg-frame">
+      <div class="canvas-svg-toolbar">
+        <div>
+          <div class="canvas-svg-label">Canvas · Variant C</div>
+          <div class="canvas-svg-title">User story map (top) · event storm (bottom) · all inline</div>
+        </div>
+        <div class="canvas-svg-hint">↔ scroll horizontally · regenerate via /shape</div>
+      </div>
+      <div class="canvas-svg-scroll">
+<!-- canvas:start (do not edit by hand — regenerate via scripts/build_canvas_svg.py shape.json) -->
+<svg viewBox="0 0 2900 1370" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="USM and event storm canvas">
+<rect width="100%" height="100%" fill="#FBF7EE" rx="0" />
+<text x="60" y="84" font-size="24" font-family="'Untitled Sans', Inter, sans-serif" font-weight="700" text-anchor="start" fill="#7a1a1a">USER STORY MAP — Prompt Library v1</text>
+<text x="60" y="106" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="500" text-anchor="start" fill="#6b6560">Backbone = activity flow · Columns = activities · Horizontal swimlanes = release slices</text>
+<rect x="50" y="200" width="1736" height="156" rx="10" ry="10" fill="#fff7e6" stroke="#7a3b09" stroke-width="1" opacity="0.45" stroke-dasharray="6 5" />
+<text x="64" y="218" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="700" text-anchor="start" fill="#7a3b09">SLICE 1 · MVP — Browse + sync ↓ + use</text>
+<rect x="50" y="370" width="1736" height="220" rx="10" ry="10" fill="#e8f5e9" stroke="#7a3b09" stroke-width="1" opacity="0.45" stroke-dasharray="6 5" />
+<text x="64" y="388" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="700" text-anchor="start" fill="#7a3b09">SLICE 2 · v1 — Author + submit + bless</text>
+<rect x="50" y="604" width="1736" height="156" rx="10" ry="10" fill="#e3f2fd" stroke="#7a3b09" stroke-width="1" opacity="0.45" stroke-dasharray="6 5" />
+<text x="64" y="622" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="700" text-anchor="start" fill="#7a3b09">SLICE 3 · v2 — Governance + forks</text>
+<rect x="60" y="116" width="270" height="56" rx="6" ry="6" fill="#ffe8a3" stroke="#1e1e1e" stroke-width="2" /><text x="195" y="150" font-size="20" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Browse</text>
+<rect x="346" y="116" width="270" height="56" rx="6" ry="6" fill="#ffe8a3" stroke="#1e1e1e" stroke-width="2" /><text x="481" y="150" font-size="20" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Install</text>
+<rect x="632" y="116" width="270" height="56" rx="6" ry="6" fill="#ffe8a3" stroke="#1e1e1e" stroke-width="2" /><text x="767" y="150" font-size="20" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Use</text>
+<rect x="918" y="116" width="270" height="56" rx="6" ry="6" fill="#ffe8a3" stroke="#1e1e1e" stroke-width="2" /><text x="1053" y="150" font-size="20" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Author</text>
+<rect x="1204" y="116" width="270" height="56" rx="6" ry="6" fill="#ffe8a3" stroke="#1e1e1e" stroke-width="2" /><text x="1339" y="150" font-size="20" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Share</text>
+<rect x="1490" y="116" width="270" height="56" rx="6" ry="6" fill="#ffe8a3" stroke="#1e1e1e" stroke-width="2" /><text x="1625" y="150" font-size="20" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Govern</text>
+<rect x="60" y="232" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="195" y="264" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Search public</text>
+<rect x="60" y="296" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="195" y="328" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Search workspace</text>
+<rect x="60" y="402" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="195" y="434" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">See screenshots</text>
+<rect x="346" y="232" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="481" y="264" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">ebsk sync ↓</text>
+<rect x="346" y="296" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="481" y="328" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Download .skills zip</text>
+<rect x="346" y="402" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="481" y="434" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Per-tool training</text>
+<rect x="632" y="232" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="767" y="264" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Run in Claude</text>
+<rect x="632" y="296" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="767" y="328" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Run in Codex</text>
+<rect x="632" y="402" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="767" y="434" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Run in ChatGPT</text>
+<rect x="918" y="402" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1053" y="434" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">ebsk init</text>
+<rect x="918" y="466" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1053" y="498" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Edit SKILL.md</text>
+<rect x="918" y="530" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1053" y="562" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Backup on/off</text>
+<rect x="1204" y="402" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1339" y="434" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">ebsk share</text>
+<rect x="1204" y="466" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1339" y="498" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">ebsk submit</text>
+<rect x="1204" y="636" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1339" y="668" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">ebsk fork</text>
+<rect x="1490" y="402" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1625" y="434" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Bless PR</text>
+<rect x="1490" y="636" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1625" y="668" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Unbless</text>
+<rect x="1490" y="700" width="270" height="56" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1625" y="732" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Archive</text>
+<text x="60" y="830" font-size="14" font-family="'Untitled Sans', Inter, sans-serif" font-weight="700" text-anchor="start" fill="#7a1a1a">↓  Domain events emitted as users walk the story map</text>
+<text x="60" y="888" font-size="24" font-family="'Untitled Sans', Inter, sans-serif" font-weight="700" text-anchor="start" fill="#7a1a1a">EVENT STORM — Skill lifecycle (Brandolini)</text>
+<text x="60" y="910" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="500" text-anchor="start" fill="#6b6560">Left → right is time. Orange = domain event · Blue = command · Purple = policy · Green = read model · Yellow = actor</text>
+<text x="60" y="940" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="800" text-anchor="start" fill="#7a1a1a">ACTORS</text>
+<rect x="120" y="952" width="160" height="56" rx="6" ry="6" fill="#ffec99" stroke="#1e1e1e" stroke-width="2" /><text x="200" y="986" font-size="18" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Author</text>
+<rect x="1260" y="952" width="160" height="56" rx="6" ry="6" fill="#ffec99" stroke="#1e1e1e" stroke-width="2" /><text x="1340" y="986" font-size="18" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Eng Admin</text>
+<rect x="2360" y="952" width="160" height="56" rx="6" ry="6" fill="#ffec99" stroke="#1e1e1e" stroke-width="2" /><text x="2440" y="986" font-size="18" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Member</text>
+<text x="60" y="1030" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="800" text-anchor="start" fill="#7a1a1a">TIMELINE (commands → events → policies → read models)</text>
+<rect x="100" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="165" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Init</text>
+<rect x="220" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="285" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Drafted</text>
+<rect x="360" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="425" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Edit</text>
+<rect x="480" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="545" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Draft Updated</text>
+<rect x="620" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="685" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Share</text>
+<rect x="740" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="805" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Shared</text>
+<rect x="880" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="945" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Submit</text>
+<rect x="1000" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="1065" y="1156" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Submitted</text>
+<rect x="1120" y="1200" width="130" height="60" rx="6" ry="6" fill="#d0bfff" stroke="#1e1e1e" stroke-width="2" /><text x="1185" y="1234" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Open PR</text>
+<rect x="1240" y="1278" width="130" height="60" rx="6" ry="6" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="2" /><text x="1305" y="1312" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Hooks·PII·Evals</text>
+<rect x="1360" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1425" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Merge PR</text>
+<rect x="1480" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="1545" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Blessed</text>
+<rect x="1620" y="1200" width="130" height="60" rx="6" ry="6" fill="#d0bfff" stroke="#1e1e1e" stroke-width="2" /><text x="1685" y="1234" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Push ↓</text>
+<rect x="1740" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="1805" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Auto-Installed</text>
+<rect x="1860" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="1925" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Unbless</text>
+<rect x="1980" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="2045" y="1156" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Unblessed</text>
+<rect x="2100" y="1200" width="130" height="60" rx="6" ry="6" fill="#d0bfff" stroke="#1e1e1e" stroke-width="2" /><text x="2165" y="1234" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Force sync ↓</text>
+<rect x="2220" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="2285" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Uninstalled</text>
+<rect x="2360" y="1278" width="130" height="60" rx="6" ry="6" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="2" /><text x="2425" y="1312" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Checksum ≠</text>
+<rect x="2480" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="2545" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Diverged</text>
+<rect x="2620" y="1044" width="130" height="60" rx="6" ry="6" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2" /><text x="2685" y="1078" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Fork</text>
+<rect x="2740" y="1122" width="130" height="60" rx="6" ry="6" fill="#ffb86b" stroke="#1e1e1e" stroke-width="2" /><text x="2805" y="1156" font-size="13" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="middle" fill="#1e1e1e">Skill Forked</text>
+<rect x="2528" y="64" width="340" height="168" rx="8" ry="8" fill="#ffffff" stroke="#2D1A16" stroke-width="1" opacity="0.9" />
+<text x="2544" y="84" font-size="11" font-family="'Untitled Sans', Inter, sans-serif" font-weight="800" text-anchor="start" fill="#7a1a1a">LEGEND</text>
+<rect x="2544" y="102" width="26" height="18" rx="4" ry="4" fill="#ffb86b" stroke="#1e1e1e" stroke-width="1" /><text x="2580" y="116" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="start" fill="#1e1e1e">Domain event</text>
+<rect x="2544" y="128" width="26" height="18" rx="4" ry="4" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1" /><text x="2580" y="142" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="start" fill="#1e1e1e">Command</text>
+<rect x="2544" y="154" width="26" height="18" rx="4" ry="4" fill="#ffec99" stroke="#1e1e1e" stroke-width="1" /><text x="2580" y="168" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="start" fill="#1e1e1e">Actor</text>
+<rect x="2544" y="180" width="26" height="18" rx="4" ry="4" fill="#d0bfff" stroke="#1e1e1e" stroke-width="1" /><text x="2580" y="194" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="start" fill="#1e1e1e">Policy</text>
+<rect x="2544" y="206" width="26" height="18" rx="4" ry="4" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="1" /><text x="2580" y="220" font-size="12" font-family="'Untitled Sans', Inter, sans-serif" font-weight="600" text-anchor="start" fill="#1e1e1e">Read model</text>
+</svg>
+<!-- canvas:end -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="decisions">
+    <div class="section-title">Open decisions</div>
+    <p>Each gap below is something we'd like input on before we start cutting issues with <code>/linear</code>. Answer slots are intentionally empty.</p>
+    <div class="gaps">
+      <div class="gap">
+        <div class="gap-head">
+          <div class="gap-num">1</div>
+          <div>
+            <div class="gap-title">Auth scope for non-Earlybird users</div>
+            <div class="gap-sub">No-auth on public skills + earlybird.com-gated OAuth for workspace skills · alternatives below</div>
+          </div>
+          <div class="gap-sev shipgate">Ship-gate</div>
+        </div>
+        <div class="gap-body">
+          <p>Public path: no auth. Workspace path: Google OAuth restricted to <code>@earlybird.com</code> (mirrors the <code>ee-webapp-auth</code> pattern). Alternative: loosen OAuth to any Google identity. Alternative: shared passcode handed out by admin — lightweight but theatrical.</p>
+          <div class="answer-slot">Answer:</div>
+        </div>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head">
+          <div class="gap-num">2</div>
+          <div>
+            <div class="gap-title">Day-1 catalog beyond <code>/grill-me</code></div>
+            <div class="gap-sub">Confirm or rule out: <code>interview-designer</code>, <code>brief</code>, <code>solution-evaluator</code>, <code>experiment-designer</code>, <code>opportunity-mapper</code></div>
+          </div>
+          <div class="gap-sev">Owner needed</div>
+        </div>
+        <div class="gap-body">
+          <p>Intentional positioning ("one skill is the workflow") vs port-2-more for breadth. The five above are workspace-portable (no Earlybird-internal infra references). Picking 2–3 gives the catalog real coverage at launch.</p>
+          <div class="answer-slot">Answer:</div>
+        </div>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head">
+          <div class="gap-num">3</div>
+          <div>
+            <div class="gap-title">Public marketplace publishing flow</div>
+            <div class="gap-sub">Earlybird-only on <code>skills.earlybird.com</code>, or cross-list to <code>skills.sh</code>?</div>
+          </div>
+          <div class="gap-sev">Owner needed</div>
+        </div>
+        <div class="gap-body">
+          <p>Cross-listing buys distribution but commits us to two registries (and to the upstream's quality policies). The OSS angle complicates: <code>npx skills</code> could choose to add Earlybird as a default registry source, which inverts the relationship.</p>
+          <div class="answer-slot">Answer:</div>
+        </div>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head">
+          <div class="gap-num">4</div>
+          <div>
+            <div class="gap-title">OpenAI Teams / Custom GPT API spike</div>
+            <div class="gap-sub">If Earlybird's OpenAI org is on Teams, programmatic Custom GPT creation could replace copy-paste install</div>
+          </div>
+          <div class="gap-sev spike">1-hour spike</div>
+        </div>
+        <div class="gap-body">
+          <p>Worth a 60-minute investigation before we ship the manual-zip path. If it works, ChatGPT install becomes one-click instead of "download, upload to Project, paste into instructions."</p>
+          <div class="answer-slot">Answer:</div>
+        </div>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head">
+          <div class="gap-num">5</div>
+          <div>
+            <div class="gap-title">Eval framework v0 timing</div>
+            <div class="gap-sub">Ship manual eval at v1, or block on the LLM-judge CI?</div>
+          </div>
+          <div class="gap-sev">Owner needed</div>
+        </div>
+        <div class="gap-body">
+          <p>Manual eval at v1 = author posts golden inputs in the PR, reviewer eyeballs. Honest if labelled. LLM-judge CI adds ~3 days of work and gives the trust strip more credibility on day one.</p>
+          <div class="answer-slot">Answer:</div>
+        </div>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head">
+          <div class="gap-num">6</div>
+          <div>
+            <div class="gap-title">OSS repo + license</div>
+            <div class="gap-sub">New org <code>earlybird-skills/</code> + Apache 2.0 vs other shapes</div>
+          </div>
+          <div class="gap-sev shipgate">Pick before public release</div>
+        </div>
+        <div class="gap-body">
+          <p>Recommendation: new GitHub org <code>earlybird-skills/</code> with repos <code>cli</code> / <code>server</code> / <code>web</code>, Apache 2.0. Brand attribution in each README. Stands as its own project, points back to Earlybird. Alternative: keep under <code>earlybirdvc/</code> namespace.</p>
+          <div class="answer-slot">Answer:</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="next-step">
+    <div class="label">When the answers are in</div>
+    <p>Run <code>/linear</code> to break this shape into initiative + projects + issues. The canvas is the source for AFK/HITL classification and dependency ordering.</p>
+  </div>
+
+  <footer>
+    Earlybird Venture Capital · Strictly Confidential · Drafted by /shape · 2026-05-16
+  </footer>
+</div>
+</body>
+</html>
