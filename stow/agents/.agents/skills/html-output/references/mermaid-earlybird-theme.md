@@ -133,6 +133,66 @@ sequenceDiagram
 
 The block re-renders automatically when the user presses `d` to toggle light/dark.
 
+## ⚠️ Critical: HTML-escape `<`, `>`, `&` inside every `<pre class="mermaid">` block
+
+The browser parses `<pre>` content as HTML *before* Mermaid reads `.textContent`. Any raw `<<port>>`, `<<usecase>>`, `<ws>`, `<name>`, or `<br/>` is interpreted as a (malformed) HTML tag and either stripped or rewritten. Mermaid then sees garbage and throws **"Syntax error in text"** — even on syntactically valid Mermaid source.
+
+The trap: `mmdc` reads source files directly and never hits this. A diagram that validates locally with `mmdc -i foo.mmd` can still fail in the browser. Always escape before injecting into HTML.
+
+| Raw Mermaid | Inside `<pre class="mermaid">` |
+|---|---|
+| `<<port>>` (class stereotype) | `&lt;&lt;port&gt;&gt;` |
+| `<<usecase>>` (class stereotype) | `&lt;&lt;usecase&gt;&gt;` |
+| `<ws>`, `<name>` (sequence message text) | `&lt;ws&gt;`, `&lt;name&gt;` |
+| `<br/>` (flowchart / note labels) | `&lt;br/&gt;` |
+| `&` (any label) | `&amp;` |
+
+Mermaid decodes the entities on read; the rendered diagram is identical to the unescaped source.
+
+**Python one-liner** for escaping when generating HTML programmatically:
+
+```python
+def escape_mermaid(body: str) -> str:
+    return body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+```
+
+**Bash sweep** to escape all mermaid blocks in an existing HTML file:
+
+```python
+python3 - <<'PY'
+import re, pathlib
+p = pathlib.Path("your-doc.html")
+def esc(m):
+    body = m.group(1).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    # Un-double-escape any entities that were already escaped
+    body = body.replace("&amp;lt;", "&lt;").replace("&amp;gt;", "&gt;").replace("&amp;amp;", "&amp;")
+    return f'<pre class="mermaid">\n{body}\n</pre>'
+p.write_text(re.sub(r'<pre class="mermaid">\n(.*?)\n</pre>', esc, p.read_text(), flags=re.DOTALL))
+PY
+```
+
+### v10 → v11 grammar gotchas worth knowing alongside the escape rule
+
+- **Stereotype hyphens.** `<<use-case>>` parses in `mmdc` but breaks in some browser parsers — drop the hyphen (`<<usecase>>`) and document the canonical hyphenated form in surrounding prose.
+- **Optional parameters.** `(memberId?)` is not in the classDiagram grammar — drop the `?` and put optional-ness in the package description.
+- **Array return types.** `Skill[]` renders inconsistently; prefer plain `Skill` or `List~Skill~`.
+- **CDN pin.** `mermaid@10` is `10.9.6` and rejects classDiagram constructs that `mermaid@11` accepts. Always pin to `@11` for new artifacts.
+
+### Verifying before sharing — two-step
+
+```bash
+# 1. Validate source — confirms well-formed Mermaid (independent of HTML embedding)
+python3 -c "import re,pathlib; [pathlib.Path(f'/tmp/m_{i}.mmd').write_text(b) for i,b in enumerate(re.findall(r'<pre class=\"mermaid\">\n(.*?)\n</pre>', pathlib.Path('your-doc.html').read_text(), re.DOTALL))]"
+for f in /tmp/m_*.mmd; do mmdc -i "$f" -o "${f%.mmd}.svg" || echo "FAILED: $f"; done
+
+# 2. Inspect in a real browser — catches HTML-parsing breakage that mmdc misses
+agent-browser open file://$(pwd)/your-doc.html
+agent-browser wait 2000
+agent-browser eval "Array.from(document.querySelectorAll('svg[id^=mermaid]')).map((s,i) => ({i, ok: !s.innerHTML.includes('Syntax error')}))"
+```
+
+If step 1 passes but step 2 fails, you forgot to escape. If step 1 fails, the Mermaid source itself is wrong — fix the source first.
+
 ## Server-side rendered (the 10% case)
 
 When the artifact must be 100% static — no client JS, no Mermaid runtime — use the `beautiful-mermaid` skill to render Mermaid source to SVG **before** embedding. The Earlybird theme isn't a `beautiful-mermaid` preset, so render with `default` and then post-process the SVG with these find-replace passes (or inject a `<style>` block at the top of the SVG to recolor):

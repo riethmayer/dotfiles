@@ -22,7 +22,8 @@ The brand chrome (colors, typography, light/dark, sidebar, keyboard layer) comes
 12. [Owners grid](#owners)
 13. [Next steps (multi-column)](#steps)
 14. [Parked grid (future workstreams)](#parked)
-15. [Footer](#footer)
+15. [Mermaid diagram (inline, escape required)](#mermaid)
+16. [Footer](#footer)
 
 ---
 
@@ -456,6 +457,120 @@ Use 3-5 nodes. More than 5 gets cluttered. Use approximate dates (`~May 29`) whe
 ```
 
 The transcript quote inside a parked card is opt-in — include when the source quote helps justify why it's parked, omit when the prose is enough.
+
+---
+
+## Mermaid diagram (inline, escape required) <a id="mermaid"></a>
+
+For class diagrams, sequence diagrams, ER diagrams, flowcharts, state machines — anything Mermaid renders. Use this when an SVG is the right artifact and you want the source editable inline. (For pre-rendered SVG output, see the `beautiful-mermaid` skill.)
+
+### CSS — drop into the `<style>` block
+
+```css
+.diagram-frame {
+  margin: 16px 0; border-radius: 10px;
+  background: var(--bg-card-2); border: 1px solid var(--border);
+  overflow: hidden; box-shadow: var(--shadow);
+}
+.diagram-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 14px; padding: 10px 16px;
+  background: rgba(45,26,22,0.04); border-bottom: 1px solid var(--border);
+}
+.diagram-label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: var(--orange); text-transform: uppercase; }
+.diagram-title { font-family: 'Condensed Sans No10', 'Oswald', sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; }
+.diagram-body { padding: 16px; overflow-x: auto; }
+.diagram-body svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+```
+
+### HTML pattern — wrap each diagram in a frame
+
+```html
+<div class="diagram-frame">
+  <div class="diagram-toolbar">
+    <div>
+      <div class="diagram-label">Class diagram</div>
+      <div class="diagram-title">Ports + adapters per ADR-022</div>
+    </div>
+  </div>
+  <div class="diagram-body">
+<pre class="mermaid">
+classDiagram
+  class SkillsRegistryPort {
+    &lt;&lt;port&gt;&gt;
+    +listPublicSkills() Skill
+  }
+</pre>
+  </div>
+</div>
+```
+
+### Script — pin to v11, init once
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+  themeVariables: { fontFamily: "'Untitled Sans', 'Inter', sans-serif" },
+  sequence: { useMaxWidth: true },
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  er: { useMaxWidth: true },
+});
+</script>
+```
+
+For theme toggling: store the source on first render (`el.dataset.original = el.textContent`), then on theme change restore from `dataset.original`, remove `data-processed`, and call `mermaid.run({ nodes })`. Otherwise theme swap leaves SVGs in the previous theme.
+
+### The escape rule — non-negotiable
+
+> **HTML-escape `<`, `>`, `&` inside every `<pre class="mermaid">` block.**
+
+The browser parses `<pre>` content as HTML *before* Mermaid reads `textContent`. Any raw `<<port>>`, `<<usecase>>`, `<ws>`, `<name>`, or `<br/>` is interpreted as a (malformed) HTML tag and either stripped or rewritten — Mermaid then sees garbage and throws "Syntax error in text."
+
+`mmdc` reads source files directly and never hits this, so a diagram that validates locally can still error in the browser. Always escape:
+
+| Raw Mermaid | Inside `<pre class="mermaid">` |
+|---|---|
+| `<<port>>` | `&lt;&lt;port&gt;&gt;` |
+| `<<usecase>>` (no hyphen — see below) | `&lt;&lt;usecase&gt;&gt;` |
+| `<ws>`, `<name>` in sequence messages | `&lt;ws&gt;`, `&lt;name&gt;` |
+| `<br/>` in flowchart labels | `&lt;br/&gt;` |
+| `&` in any label text | `&amp;` |
+
+Mermaid decodes the entities on read; the rendered diagram is identical.
+
+**Python one-liner** to escape an extracted block before injecting it back into the HTML:
+
+```python
+def escape(body: str) -> str:
+    return body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+```
+
+### Other v10 → v11 gotchas worth knowing
+
+- **Stereotype hyphens.** `<<use-case>>` parses fine in mmdc but breaks the v10 / some v11 browser parsers — drop the hyphen (`<<usecase>>`) and document the canonical hyphenated form in surrounding prose.
+- **Optional parameters.** `(memberId?)` is not valid classDiagram grammar — drop the `?` and document optional-ness in the package description.
+- **Array return types.** `Skill[]` works in mmdc but renders inconsistently; prefer plain `Skill` or `List~Skill~`. Multiplicity is usually obvious from port semantics.
+- **CDN pin.** `mermaid@10` from CDN is `10.9.6` and rejects some classDiagram constructs that `mermaid@11` accepts. Always pin to `@11` for new artifacts.
+
+### Verifying before sharing
+
+Two reliable checks:
+
+```bash
+# 1. Validate the source — confirms it's well-formed Mermaid
+python3 -c "import re,pathlib; [pathlib.Path(f'/tmp/m_{i}.mmd').write_text(b) for i,b in enumerate(re.findall(r'<pre class=\"mermaid\">\n(.*?)\n</pre>', pathlib.Path('your-doc.html').read_text(), re.DOTALL))]"
+for f in /tmp/m_*.mmd; do mmdc -i "$f" -o "${f%.mmd}.svg"; done
+
+# 2. Open in a real browser and inspect for "Syntax error" in any SVG
+agent-browser open file://$(pwd)/your-doc.html
+agent-browser wait 2000
+agent-browser eval "Array.from(document.querySelectorAll('svg[id^=mermaid]')).map((s,i) => ({i, ok: !s.innerHTML.includes('Syntax error')}))"
+```
+
+If step 1 passes but step 2 fails, you forgot to escape. If step 1 fails, the Mermaid source itself is wrong — fix and re-validate.
 
 ---
 
