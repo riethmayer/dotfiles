@@ -38,4 +38,8 @@ export CLAUDE_SKIP_PERMS="1"
 export GEMRC="${XDG_CONFIG_HOME:-$HOME/.config}/gem/gemrc"
 export GEM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/gem"
 export GEM_SPEC_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/gem"
-export PATH="$GEM_HOME/bin:$PATH" 
+export PATH="$GEM_HOME/bin:$PATH"
+
+# Obsidian — daily-obsidian skill activates only when this is set.
+# Points at the Journal root; the skill files HTML briefs under YYYY/MM-MonthName/attachments/.
+export OBSIDIAN_VAULT_DAILY_JOURNAL="$HOME/obsidian/riethmayer/2 - Areas/Journal"
