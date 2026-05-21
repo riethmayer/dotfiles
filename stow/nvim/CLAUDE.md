@@ -27,7 +27,7 @@ Tools: claudecode, yanky, fzf, mini-hipatterns
 
 ## Custom Plugins
 
-- **Theme**: dracula.nvim (overrides tokyonight)
+- **Theme**: dracula (dark) + tokyonight-day (light), swapped by `auto-dark-mode.nvim` following macOS appearance — paired with `toggle-mode`.
 
 ## Formatting
 
