@@ -1,0 +1,66 @@
+{
+  "title": "Online Shop — Big-Picture Event Storm",
+  "subtitle": "Happy path along the top. Each branch below explores one alternative or failure mode.",
+  "happy_path": [
+    {"kind": "actor", "label": "Visitor"},
+    {"kind": "event", "label": "Customer Registered"},
+    {"kind": "event", "label": "Product Viewed"},
+    {"kind": "event", "label": "Item Added to Cart"},
+    {"kind": "event", "label": "Checkout Started"},
+    {"kind": "event", "label": "Payment Authorized"},
+    {"kind": "event", "label": "Order Placed"},
+    {"kind": "event", "label": "Package Shipped"},
+    {"kind": "event", "label": "Delivery Confirmed"},
+    {"kind": "event", "label": "Customer Happy", "outcome": "happy"}
+  ],
+  "branches": [
+    {
+      "from": 1,
+      "label": "What if signup verification fails?",
+      "beats": [
+        {"kind": "hotspot", "label": "Email verification required?"},
+        {"kind": "event",   "label": "Verification Email Sent"},
+        {"kind": "event",   "label": "Verification Failed", "outcome": "sad"}
+      ]
+    },
+    {
+      "from": 4,
+      "label": "What about coupons + guest checkout?",
+      "beats": [
+        {"kind": "event",   "label": "Coupon Applied"},
+        {"kind": "hotspot", "label": "Stackable coupons?"},
+        {"kind": "hotspot", "label": "Guest checkout vs login?"}
+      ]
+    },
+    {
+      "from": 5,
+      "label": "What if payment fails?",
+      "beats": [
+        {"kind": "system",  "label": "Stripe"},
+        {"kind": "event",   "label": "Payment Declined", "outcome": "sad"},
+        {"kind": "hotspot", "label": "3DS step-up vs hard decline?"}
+      ]
+    },
+    {
+      "from": 6,
+      "label": "What if we can't fulfil?",
+      "beats": [
+        {"kind": "event",   "label": "Inventory Check Failed"},
+        {"kind": "event",   "label": "Order Cancelled", "outcome": "sad"},
+        {"kind": "event",   "label": "Refund Issued"},
+        {"kind": "hotspot", "label": "Partial fulfillment allowed?"}
+      ]
+    },
+    {
+      "from": 8,
+      "label": "What if the customer returns?",
+      "beats": [
+        {"kind": "actor",   "label": "Customer"},
+        {"kind": "event",   "label": "Return Requested"},
+        {"kind": "event",   "label": "Return Received"},
+        {"kind": "event",   "label": "Refund Issued", "outcome": "happy"},
+        {"kind": "hotspot", "label": "30-day window enforced?"}
+      ]
+    }
+  ]
+}

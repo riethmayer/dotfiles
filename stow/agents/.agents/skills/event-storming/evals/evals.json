@@ -1,0 +1,19 @@
+{
+  "skill_name": "event-storming",
+  "evals": [
+    {
+      "id": 0,
+      "name": "checkout-refinement",
+      "prompt": "Here's a Process-Modeling event storm of an online shop: assets/ecommerce.storm.json. I want to zoom into the Checkout & Payment bounded context at Software-Design level — finer events (cart freezing, tax calc, fraud screening, 3DS step-up), explicit aggregates (Checkout, Payment, Order), and the failure paths a real team would care about. Write the result as checkout.storm.json plus a rendered checkout.svg in my current directory.",
+      "expected_output": "A storm.json valid against schema (event required, contiguous aggregates), with: Checkout/Payment/Order aggregates clearly separated; at least one failure event (Payment Declined or Address Validation Failed) with its policy; at least 12 timeline events; rendered SVG that opens cleanly.",
+      "files": ["assets/ecommerce.storm.json"]
+    },
+    {
+      "id": 1,
+      "name": "insurance-claims-fnol",
+      "prompt": "I'm onboarding to a P&C insurance claims platform and need to make sense of how a claim flows end-to-end. Run an event storm at Process-Modeling level: customer reports loss (FNOL), claim gets triaged, adjuster investigates, decision made, payout (or denial). Include the obvious failure paths (fraud flagged, claim denied, customer disputes). Write claims.storm.json plus claims.svg to my current directory.",
+      "expected_output": "A storm.json valid against schema with at least 15 timeline events spanning FNOL → triage → investigation → decision → payout. Includes failure paths, at least one external system (e.g., fraud database, payment processor), policies on key transitions. Bounded contexts named appropriately (Intake / Investigation / Settlement or similar).",
+      "files": []
+    }
+  ]
+}
