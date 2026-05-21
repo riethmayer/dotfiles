@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Toggle macOS appearance (Light ↔ Dark).
+#
+# Followers and their behavior:
+#   - Ghostty: instant. `theme = light:...,dark:...` switches on system appearance change.
+#   - tmux:    instant. Status bar uses ANSI palette indices, so colors flip with Ghostty.
+#   - Claude:  lazy. `theme: "auto"` detects bg at session start only — running Claude
+#              sessions keep the old theme until restarted.
+set -euo pipefail
+
+osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to not dark mode'
+
+# Report new state. AppleInterfaceStyle key only exists in Dark mode.
+if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
+  STATE="dark"
+else
+  STATE="light"
+fi
+
+echo "$STATE"
+
+# Hint about Claude — only if a Claude process is detected.
+if pgrep -qf '[c]laude' 2>/dev/null; then
+  echo "(restart any running Claude session to pick up the new theme)" >&2
+fi
