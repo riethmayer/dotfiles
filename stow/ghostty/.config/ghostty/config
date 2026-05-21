@@ -2,8 +2,8 @@
 font-family = GeistMono Nerd Font Mono
 font-size = 14
 
-# Theme
-theme = Dracula
+# Theme (follows macOS appearance)
+theme = light:Earlybird Light,dark:Earlybird Dark
 
 # Window
 window-decoration = false
@@ -12,6 +12,9 @@ macos-non-native-fullscreen = true
 # Cursor
 cursor-style = block
 cursor-style-blink = true
+# Invert fg/bg of whatever cell the cursor is on — guarantees visibility
+# regardless of theme or text color (overrides per-theme cursor-color).
+cursor-invert-fg-bg = true
 
 # Mouse & Selection
 copy-on-select = true
