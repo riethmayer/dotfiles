@@ -24,7 +24,19 @@ return {
     name = "catppuccin",
     lazy = false,
     priority = 1000,
-    opts = { flavour = "latte" },
+    opts = {
+      flavour = "latte",
+      integrations = {
+        snacks = true,
+        treesitter = true,
+        native_lsp = { enabled = true },
+        mini = { enabled = true },
+        which_key = true,
+        markdown = true,
+        gitsigns = true,
+        mason = true,
+      },
+    },
   },
   { "LazyVim/LazyVim", opts = { colorscheme = "dracula" } },
   {
