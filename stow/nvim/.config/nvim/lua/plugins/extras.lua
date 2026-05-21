@@ -1,44 +1,13 @@
 return {
-  -- Dracula (dark) + catppuccin-latte (light), swapped by auto-dark-mode
-  -- in lockstep with macOS appearance / toggle-mode / Ghostty. Catppuccin
-  -- chosen over tokyonight-day for stronger snacks.explorer + devicon
-  -- contrast on light bg.
+  -- oxocarbon (IBM Carbon-inspired) handles both dark and light via
+  -- vim.opt.background. auto-dark-mode flips it in lockstep with macOS
+  -- appearance / toggle-mode / Ghostty.
   {
-    "Mofiqul/dracula.nvim",
+    "nyoom-engineering/oxocarbon.nvim",
     lazy = false,
     priority = 1000,
-    config = function()
-      require("dracula").setup({
-        overrides = function(colors)
-          return {
-            -- Fix dark-on-dark gitignored files in snacks explorer
-            SnacksPickerPathIgnored = { fg = colors.bright_blue },
-            SnacksPickerGitStatusIgnored = { fg = colors.bright_blue },
-          }
-        end,
-      })
-    end,
   },
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
-    lazy = false,
-    priority = 1000,
-    opts = {
-      flavour = "latte",
-      integrations = {
-        snacks = true,
-        treesitter = true,
-        native_lsp = { enabled = true },
-        mini = { enabled = true },
-        which_key = true,
-        markdown = true,
-        gitsigns = true,
-        mason = true,
-      },
-    },
-  },
-  { "LazyVim/LazyVim", opts = { colorscheme = "dracula" } },
+  { "LazyVim/LazyVim", opts = { colorscheme = "oxocarbon" } },
   {
     "f-person/auto-dark-mode.nvim",
     lazy = false,
@@ -47,11 +16,11 @@ return {
       update_interval = 3000,
       set_dark_mode = function()
         vim.opt.background = "dark"
-        vim.cmd.colorscheme("dracula")
+        vim.cmd.colorscheme("oxocarbon")
       end,
       set_light_mode = function()
         vim.opt.background = "light"
-        vim.cmd.colorscheme("catppuccin-latte")
+        vim.cmd.colorscheme("oxocarbon")
       end,
     },
   },

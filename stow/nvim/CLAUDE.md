@@ -27,7 +27,7 @@ Tools: claudecode, yanky, fzf, mini-hipatterns
 
 ## Custom Plugins
 
-- **Theme**: dracula (dark) + catppuccin-latte (light), swapped by `auto-dark-mode.nvim` following macOS appearance — paired with `toggle-mode`.
+- **Theme**: `nyoom-engineering/oxocarbon.nvim` for both dark and light. `auto-dark-mode.nvim` flips `vim.opt.background` and reapplies `:colorscheme oxocarbon` following macOS appearance — paired with `toggle-mode`.
 
 ## Formatting
 
