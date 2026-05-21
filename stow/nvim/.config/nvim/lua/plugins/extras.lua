@@ -1,7 +1,8 @@
 return {
-  -- Dracula for dark mode. tokyonight-day handles light mode (LazyVim ships
-  -- tokyonight; no extra spec needed). auto-dark-mode swaps them based on
-  -- macOS appearance, in lockstep with toggle-mode / Ghostty.
+  -- Dracula (dark) + catppuccin-latte (light), swapped by auto-dark-mode
+  -- in lockstep with macOS appearance / toggle-mode / Ghostty. Catppuccin
+  -- chosen over tokyonight-day for stronger snacks.explorer + devicon
+  -- contrast on light bg.
   {
     "Mofiqul/dracula.nvim",
     lazy = false,
@@ -18,6 +19,13 @@ return {
       })
     end,
   },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = false,
+    priority = 1000,
+    opts = { flavour = "latte" },
+  },
   { "LazyVim/LazyVim", opts = { colorscheme = "dracula" } },
   {
     "f-person/auto-dark-mode.nvim",
@@ -31,7 +39,7 @@ return {
       end,
       set_light_mode = function()
         vim.opt.background = "light"
-        vim.cmd.colorscheme("tokyonight-day")
+        vim.cmd.colorscheme("catppuccin-latte")
       end,
     },
   },
