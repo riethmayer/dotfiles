@@ -1,14 +1,18 @@
 # Earlybird Dark — brand palette from packages/ui
 #
 # Primary:  #FD1A1B (eb-red)
-# Base:     #2D1A16 (eb-off-black)
+# Base:     #2D1A16 (eb-off-black, used in ANSI palette only)
 # Earthy:   #483D34 → #CCB4A1
 # Accents:  #319CFF (blue), #A458BF (purple)
+#
+# Background is darker than brand "eb-off-black" — the official #2D1A16 reads
+# noticeably brown next to peer dark themes (Dracula+ #212121). #1A0E0A keeps
+# a whisper of brand warmth but crushes luminance ~6% so it sits with the dark-theme cohort.
 
-background = #2D1A16
+background = #1A0E0A
 foreground = #F8FCFF
 cursor-color = #FD1A1B
-cursor-text = #2D1A16
+cursor-text = #1A0E0A
 selection-background = #675952
 selection-foreground = #F8FCFF
 
@@ -20,9 +24,9 @@ palette = 3=#F59E0B
 palette = 4=#319CFF
 palette = 5=#A458BF
 palette = 6=#5CB8A0
-palette = 7=#CCB4A1
+palette = 7=#D8D6D4
 palette = 8=#6B5F58
-palette = 9=#FF5F5F
+palette = 9=#FF7B85
 palette = 10=#34D399
 palette = 11=#FBBF24
 palette = 12=#60B3FF
