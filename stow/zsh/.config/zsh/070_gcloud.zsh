@@ -1,6 +1,7 @@
 # Google Cloud SDK Configuration
 # Command-line interface for Google Cloud Platform
-# Requires: gcloud (installed via brew)
+# Optional: detected from brew, cask, or a tarball install at
+# $XDG_DATA_HOME/google-cloud-sdk (see GCLOUD_*_PATH below). No-op if absent.
 
 # Set Google Cloud SDK paths following XDG specification
 export CLOUDSDK_CONFIG="${XDG_CONFIG_HOME}/gcloud"
