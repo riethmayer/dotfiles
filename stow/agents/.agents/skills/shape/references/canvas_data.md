@@ -46,6 +46,7 @@ Paste the `<svg>...</svg>` block into the marked canvas section of `details.html
       "timeline": [
         { "kind": "cmd",    "label": "Init" },         // imperative, present tense
         { "kind": "event",  "label": "Skill Drafted" },// past tense
+        { "kind": "event",  "label": "Index Updated", "parallel": true }, // stacks below the previous sticky (same logical time)
         { "kind": "policy", "label": "Open PR" },      // automatic/process step
         { "kind": "read",   "label": "Hooks · PII" }   // read model / view
       ]
@@ -72,6 +73,7 @@ If you find yourself wanting another color, you probably want a different `kind`
 - **Tasks under an activity are the concrete steps the user takes through it.** Three is usually enough.
 - **Slices are release cuts**, not roadmap quarters. Slice 1 must be a complete vertical path through the backbone — sparse but end-to-end. Slice 2 / 3 fill in the boxes a row at a time.
 - **Event-storm timeline is causally ordered left → right.** A command produces an event; a policy reacts to an event and triggers the next command. Read models exist to make a decision.
+- **Parallel events stack vertically.** Set `"parallel": true` on a timeline item to keep it in the previous column (same x), stacking below within its row band. Use when one command emits multiple events at the same logical time (e.g. a migration script that seeds users + groups + members in one go). The first item of a parallel group has no `parallel` flag — subsequent siblings carry it.
 - **Aim for ~20–30 stickies on the storm.** More gets cluttered at SVG scale; less and you probably haven't thought about reversibility / failure paths.
 
 ## Re-generation

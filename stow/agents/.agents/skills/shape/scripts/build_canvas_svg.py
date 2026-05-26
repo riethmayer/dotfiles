@@ -178,9 +178,20 @@ def _build_event_storm(es: dict, origin_x: float, origin_y: float) -> tuple[list
     sticky_h = 60
     col_x_gap = 130  # so columns nudge into each other; the y-row separation makes it readable
     row_h = 78
+    stack_gap = 4  # vertical gap between stacked stickies within the same row
 
     out.append(_text(origin_x, origin_y + 24, "EVENT STORM (Brandolini)", size=24, anchor="start", weight="700", color=HEADING))
     out.append(_text(origin_x, origin_y + 46, "Left → right is time · orange=event · blue=command · purple=policy · green=read model · yellow=actor", size=13, anchor="start", weight="500", color=DIM))
+
+    # Group timeline into columns. Items with parallel=true stack into the
+    # previous column instead of advancing the x cursor — same logical time,
+    # stacked vertically within their row band.
+    columns: list[list[dict]] = []
+    for item in timeline:
+        if item.get("parallel") and columns:
+            columns[-1].append(item)
+        else:
+            columns.append([item])
 
     # Actor lane: spread evenly across timeline width
     actor_y = origin_y + 70
@@ -189,7 +200,7 @@ def _build_event_storm(es: dict, origin_x: float, origin_y: float) -> tuple[list
     out.append(_text(origin_x, actor_y - 10, "ACTORS", size=12, anchor="start", weight="800", color=HEADING))
 
     timeline_x_start = origin_x + 40
-    timeline_total_w = len(timeline) * col_x_gap + sticky_w
+    timeline_total_w = len(columns) * col_x_gap + sticky_w
     for i, actor in enumerate(actors):
         # Spread actors across the timeline width
         x = timeline_x_start + (timeline_total_w - actor_w) * (i / max(1, actor_count - 1)) if actor_count > 1 else timeline_x_start
@@ -199,18 +210,26 @@ def _build_event_storm(es: dict, origin_x: float, origin_y: float) -> tuple[list
     timeline_top = actor_y + 110
     out.append(_text(origin_x, timeline_top - 14, "TIMELINE (commands → events → policies → read models)", size=12, anchor="start", weight="800", color=HEADING))
 
-    # Stickies
-    for i, item in enumerate(timeline):
-        kind = item.get("kind", "event")
-        label = item.get("label", "")
-        color = KIND_TO_COLOR.get(kind, CLR_EVENT)
-        row = KIND_ROW.get(kind, 1)
-        x = timeline_x_start + i * col_x_gap
-        y = timeline_top + row * row_h
-        size = 12 if len(label) > 14 else 13
-        out.append(_sticky(x, y, sticky_w, sticky_h, color, label, size=size))
+    # Render columns; within each column, stack same-row stickies vertically
+    max_stack_per_row: dict[int, int] = {}
+    for col_idx, col_items in enumerate(columns):
+        x = timeline_x_start + col_idx * col_x_gap
+        row_offsets: dict[int, int] = {}
+        for item in col_items:
+            kind = item.get("kind", "event")
+            label = item.get("label", "")
+            color = KIND_TO_COLOR.get(kind, CLR_EVENT)
+            row = KIND_ROW.get(kind, 1)
+            offset = row_offsets.get(row, 0)
+            y = timeline_top + row * row_h + offset * (sticky_h + stack_gap)
+            row_offsets[row] = offset + 1
+            max_stack_per_row[row] = max(max_stack_per_row.get(row, 1), row_offsets[row])
+            size = 12 if len(label) > 14 else 13
+            out.append(_sticky(x, y, sticky_w, sticky_h, color, label, size=size))
 
-    total_h = timeline_top + 4 * row_h - origin_y + 20
+    # Account for the deepest stack in each row when sizing the canvas
+    extra_h = sum(max(0, max_stack_per_row.get(r, 1) - 1) * (sticky_h + stack_gap) for r in range(4))
+    total_h = timeline_top + 4 * row_h - origin_y + 20 + extra_h
     total_w = max(actor_w + (actor_count - 1) * 40, timeline_total_w) + 60
     return out, total_w, total_h
 
