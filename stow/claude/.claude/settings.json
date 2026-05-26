@@ -17,7 +17,8 @@
       "Write(/Users/janriethmayer/code/**)",
       "Edit(/Users/janriethmayer/.claude/**)",
       "Write(/Users/janriethmayer/.claude/**)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "hooks": {
     "PreToolUse": [
@@ -105,7 +106,8 @@
   "effortLevel": "xhigh",
   "fastMode": true,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "auto",
+  "theme": "light-ansi",
   "editorMode": "vim",
-  "verbose": true
+  "verbose": true,
+  "skipAutoPermissionPrompt": true
 }
