@@ -5,6 +5,9 @@ metadata:
   version: 0.1.0
   workspace: eb
   visibility: workspace
+  shape: leaf
+  used-by-skills:
+    - deep-dive
 ---
 
 # /portfolio-catalysts

@@ -148,6 +148,37 @@ The orchestrator's `SKILL.md` body should explicitly contain:
 
 `/deep-dive`'s SKILL.md is the canonical reference — see `eb/ic/deep-dive/SKILL.md` and its `references/dag.md`.
 
+## Composition metadata — three fields per skill
+
+The orchestrator graph is navigable without a registry or build step: every skill carries its place in the graph in its own frontmatter. Three fields, all under `metadata:`:
+
+```yaml
+metadata:
+  version: 0.2.0           # semver
+  shape: leaf              # leaf | orchestrator
+  used-by-skills:          # informational; drift-tolerant
+    - deep-dive
+    - ic-memo
+```
+
+**`version`** — semver. Bump rules:
+
+| Bump  | When |
+|-------|------|
+| MAJOR | Contract break: required input renamed/removed, return shape changed, behavior incompatible with prior callers. |
+| MINOR | Additive: new optional input, new field in evidence pack, new tool in `tools-used`. |
+| PATCH | Docs, wording, rubric tweaks, bug fixes that don't change the contract. |
+
+**`shape`** — `leaf` if invoked as a sub-task in someone else's DAG; `orchestrator` if it composes leaves. Skills without `shape:` are conventional workflow skills outside the composition graph (`/standup`, `/toggle-mode`, `/handoff`).
+
+**`used-by-skills:`** — the orchestrators known to compose this leaf. Drift-tolerant — when an orchestrator gains or drops a leaf, the leaf's list may go stale. That's OK. The canonical source remains each orchestrator's own SKILL.md body. This field is for **discovery from the leaf side**: when you're about to change a leaf, you want to know who will feel it.
+
+Orchestrators don't need a mirror `composes:` field — their body already names the leaves they call. The leaf-side pointer is the one worth pinning because it's harder to derive otherwise.
+
+Inputs, outputs, evidence-pack shape, rubric — all stay as prose in the SKILL.md body, not as structured frontmatter fields. The composition graph deserves machine-readable metadata; the leaf's internal contract does not. Promote a field to frontmatter only when something other than a human reader needs to consume it.
+
+**Worked example:** `/portfolio-catalysts` is the first leaf tagged with this metadata. See its frontmatter.
+
 ## When the orchestrator pattern is wrong
 
 Not every skill should be an orchestrator. **Use the leaf pattern (one `SKILL.md`, no subagents) when:**
