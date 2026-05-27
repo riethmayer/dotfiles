@@ -93,8 +93,7 @@ IDs to resolve and propagate:
 | `affinity_org_id`       | Affinity organisations table                 | All CRM writes (`update_deal`, notes)    |
 | `affinity_list_entry_id`| Affinity list-entries (per round)            | Round-specific writes                    |
 | `harmonic_urn`          | `gold.harmonic_companies_act`                | Similar-companies, PII reveal             |
-| `dealroom_company_id`   | `gold.dealroom_companies_act`                | European funding follow-ups               |
-| `crunchbase_permalink`  | `gold.crunchbase_organisation_act`           | Crunchbase round-by-round lookups         |
+| `dealroom_company_id`   | `gold.dealroom_companies_act`                | Funding + rounds (source of record)        |
 | `linkedin_company_url`  | Echoed or resolved from website              | Founder lookups                           |
 | `founder_linkedin_urls[]`| LinkedIn enrichment + Affinity person table | `founder_deep_dive`, `founder_score`      |
 | `thesis_node_slug`      | Investment-thesis classifier (Block 2)       | Sub-sector filters, eval labelling        |
@@ -105,14 +104,15 @@ Embed as an inline JSON block in the rendered HTML header (machine-readable, inv
 
 The MCP surface (`mcp__claude_ai_EagleEye__sql_*`) is the primary data source. Every block starts with `sql_discover_tables` → `sql_get_table_schema` → `sql_query` on the curated `gold` layer before reaching for the web. This inverts the search-first pattern most research skills default to.
 
-**The four enrichment tables that appear in nearly every deep-dive:**
+**The three enrichment tables that appear in nearly every deep-dive:**
 
 | Table                              | Source     | What it provides                                                              |
 |-----------------------------------|------------|-------------------------------------------------------------------------------|
 | `gold.harmonic_companies_act`     | Harmonic   | Sector, customer type, country, headcount, tags + highlights (Harmonic's analyst layer) |
-| `gold.dealroom_companies_act`     | Dealroom   | Industry + sub-industries, technologies, client focus, tags, employees_latest, HQ country |
+| `gold.dealroom_companies_act` (+ `gold.dealroom_*`) | Dealroom | Industry + sub-industries, technologies, client focus, employees_latest, HQ country — **and funding / rounds: this is the funding source of record** |
 | `gold.linkedin_organisation_act`  | LinkedIn   | Headcount, industry, country, short description                              |
-| `gold.crunchbase_organisation_act`| Crunchbase | Industry list, category groups, country, funding history                      |
+
+> ⛔ **Do NOT query Crunchbase tables (`gold.crunchbase_*`).** The Crunchbase licence is winding down and that data must be deleted — **use Dealroom for funding / rounds**, not Crunchbase. (Directive 2026-05-26.)
 
 **Cross-source validation is the moat.** When sources agree, ship confidently. When they disagree (e.g. LinkedIn 18 / Harmonic 47 / Dealroom 31 employees), surface the disagreement as a Block 6 question — don't average it away.
 
@@ -124,6 +124,22 @@ The MCP surface (`mcp__claude_ai_EagleEye__sql_*`) is the primary data source. E
 **Affinity write surface for the footer CTA:** `add_deal` (new), `update_deal` (existing, surfaces `disagreements[]`), `add_note_to_deal` (attach the brief as a note).
 
 **Deal semantics — load-bearing:** treat each row in Affinity deals as **one financing round for one company, not one company**. A company appears multiple times across rounds. When answering company-level questions, group by company identifier; preserve stage/round/status/date fields so distinct rounds are not collapsed. (See `~/code/skills/eb/ic/affinity-read/SKILL.md` if and when that primitive lands; this skill internally applies the same rule.)
+
+## Founder-centric / stealth entry path
+
+When the input is a **stealth founder** (a LinkedIn person URL with no resolvable company — the common output of `/find` stealth sourcing), the company-first ID-resolution above does not apply. Use this path instead:
+
+1. **Entry table is `gold.people_signal_log`, keyed by `linkedin_endpoint`** — not the company tables. One row carries `experience_json`, `education_json`, `score_explanation`, `unicorn_score` + `unicorn_score_explanation`, and the unicorn flags, in a ~200 MB scan. **Do not scan `gold.harmonic_jobs_log` (≈23 GB, unclustered) or join `gold.harmonic_people_act` for this** — both blow the 1 GB cap. Always `sql_estimate` first.
+2. **The warehouse cannot bridge a stealth person to their company.** `people_signal_log.company_name` is often just `"Stealth"` with `company_linkedin_endpoint = NULL`. So the canonical flow is: signal → **web de-anonymise the company name** (Perplexity / search) → **re-query `gold.company_entity_resolution` by `website_domain`** → Dealroom for funding. The web step is **not optional** for stealth founders — pure-warehouse stalls at "ex-BigLab person at some unnamed stealth co."
+3. **Prior touch uses `gold.people_signal_affinity_check`** (keyed by `linkedin_endpoint`), not the company Affinity lookup. It surfaces the common failure mode: *logged but unworked, on the wrong list, under the "Stealth" placeholder name.* Report that explicitly.
+4. **Always surface signal age.** `signal_dt` is an as-of date. Treat any signal older than ~3 months as **stale and re-qualify** — the company may have raised since (it often has). Make staleness a first-class line in the brief, not a footnote.
+5. **`founder_score` fallback.** If the `founder_score` MCP tool errors or returns nothing, fall back to `people_signal_log.unicorn_score` + `unicorn_score_explanation` for the Block 3 widget (label it "unicorn-signal score"), and the Evertrace/Harmonic `score` + `score_explanation` for the headline signal score.
+
+### Known warehouse gaps (roadmap, not skill-fixable)
+
+- **Person↔company bridge is missing.** We can hold *both* a stealth person-signal *and* the resolved funded company and never link them. The fix is a new gold model (e.g. `gold.stealth_signal_company_resolution`) that re-links a signal to its `company_entity_resolution` row once it de-anonymises. Until it lands, do step 2 manually.
+- **`harmonic_jobs_log` / `linkedin_jobs_hist` are unclustered** → company- and person-filters full-scan (~23 GB). Real fix: cluster on company key + `linkedin_endpoint`. Until then, never use them for alumni discovery in a deep-dive.
+- **Triage sector mis-tags research-tooling founders as "AI Apps"** — treat the signal's sector as a routing artefact, re-derive the real sub-sector in Block 2.
 
 ## Rubrics + self-correction
 
@@ -153,7 +169,7 @@ Every factual claim in the brief carries an inline citation marker:
 | `[H]`          | Harmonic (`gold.harmonic_companies_act`)                                          |
 | `[D]`          | Dealroom (`gold.dealroom_companies_act`)                                          |
 | `[L]`          | LinkedIn (`gold.linkedin_organisation_act` or web LinkedIn)                       |
-| `[C]`          | Crunchbase (`gold.crunchbase_organisation_act` or web Crunchbase)                  |
+| `[C]`          | Crunchbase — **deprecated; do not use `gold.crunchbase_*`. Funding cites use `[D]` Dealroom.** |
 | `[A·<date>]`   | Affinity entry or note (date stamp identifies the touch)                          |
 | `[W]`          | Web search, with URL in the footer cite list                                       |
 | `[F]`          | Founder's own deck or paste                                                        |
