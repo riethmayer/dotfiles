@@ -2,7 +2,6 @@
 name: writing-orchestrator-skills
 description: Companion to /skill-creator for skills that orchestrate multiple sub-skills, tools, or queries — the pattern that makes /deep-dive, /ic-memo, /quarterly-portfolio-review, and any future multi-block skill cheap to build. Encodes the dependency DAG, parallel fan-out via subagents, the rendered+evidence-pack return shape, context-budget rules, and which work stays in the caller vs gets dispatched. Use whenever a user is writing a skill that says "orchestrates", "composes", "fans out to", or names other skills it calls — and whenever the skill they're writing has more than one logical block that runs different queries or hits different sources. Use proactively when the skill being authored has subagents, parallelism, multiple data sources, or a long-running structure where context budget matters.
 metadata:
-  version: 0.1.0
   workspace: shared
   visibility: shared
 ---
@@ -148,26 +147,17 @@ The orchestrator's `SKILL.md` body should explicitly contain:
 
 `/deep-dive`'s SKILL.md is the canonical reference — see `eb/ic/deep-dive/SKILL.md` and its `references/dag.md`.
 
-## Composition metadata — three fields per skill
+## Composition metadata — two fields per skill
 
-The orchestrator graph is navigable without a registry or build step: every skill carries its place in the graph in its own frontmatter. Three fields, all under `metadata:`:
+The orchestrator graph is navigable without a registry or build step: every skill carries its place in the graph in its own frontmatter. Two fields, both under `metadata:`:
 
 ```yaml
 metadata:
-  version: 0.2.0           # semver
   shape: leaf              # leaf | orchestrator
   used-by-skills:          # informational; drift-tolerant
     - deep-dive
     - ic-memo
 ```
-
-**`version`** — semver. Bump rules:
-
-| Bump  | When |
-|-------|------|
-| MAJOR | Contract break: required input renamed/removed, return shape changed, behavior incompatible with prior callers. |
-| MINOR | Additive: new optional input, new field in evidence pack, new tool in `tools-used`. |
-| PATCH | Docs, wording, rubric tweaks, bug fixes that don't change the contract. |
 
 **`shape`** — `leaf` if invoked as a sub-task in someone else's DAG; `orchestrator` if it composes leaves. Skills without `shape:` are conventional workflow skills outside the composition graph (`/standup`, `/toggle-mode`, `/handoff`).
 

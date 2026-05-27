@@ -2,7 +2,6 @@
 name: deep-dive
 description: Produces an IC-grade pre-call brief on a company or founder in roughly 20 minutes — pulls the EagleEye data warehouse (Affinity + Harmonic + Dealroom + Crunchbase + LinkedIn enrichment via BigQuery), applies the Earlybird investment-thesis taxonomy, surfaces comparable deals from our own history including historical underperformers, identifies catalysts Portfolio Excellence can offer the founder, and ends with the ten questions worth asking on the call. Every block self-scores against an explicit rubric, every claim cites its source, and the whole brief is designed against EU AI Act + GDPR obligations. Use whenever an investor wants a deep dive on a founder or company — also trigger on "/deep-dive", "prep me for the [company] call", "what do we know about [founder]", "I'm meeting [company] tomorrow", "give me the read on [company]", or whenever the user pastes a LinkedIn company URL or website URL in the context of pre-call preparation.
 metadata:
-  version: 0.1.0
   workspace: eb
   visibility: workspace
   executable: false
