@@ -2,7 +2,6 @@
 name: portfolio-catalysts
 description: Surfaces concrete Portfolio Excellence catalysts (workshops, 1-on-1 deal reviews, advisor sessions, tactical playbooks) that Earlybird can offer a specific founder or portfolio company at first contact. Reads the canonical catalogue at `catalogue.md` and matches against a target company's sub-sector, stage, and current situation. Used as Block 7 of `/deep-dive` and as a standalone skill when an investor asks "what can we offer this founder right now?" or a portfolio company asks "what's available for me?". Use whenever the user mentions catalysts, workshops, advisor sessions, Portfolio Excellence offerings, or asks what value-adds Earlybird can bring to a founder.
 metadata:
-  version: 0.1.0
   workspace: eb
   visibility: workspace
   shape: leaf
