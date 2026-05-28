@@ -64,6 +64,17 @@
             "statusMessage": "Checking skill location..."
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.html) v=$($HOME/bin/html-self-contained-check \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"decision\":\"block\",\"reason\":\"html-self-contained-check failed for %s. Per /html-output, briefs must be single-file: <img> via data: URIs, fonts via @font-face local()+Google Fonts fallback, no external <script src=> or <link rel=stylesheet> (Google Fonts excepted). Fix and re-write:\\n%s\"}' \"$f\" \"$v\"; exit 1; fi ;; esac; }",
+            "timeout": 10,
+            "statusMessage": "Checking HTML is self-contained..."
+          }
+        ]
       }
     ]
   },

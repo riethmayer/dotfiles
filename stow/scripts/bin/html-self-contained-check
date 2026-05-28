@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# html-self-contained-check — validate that an HTML file is fully self-contained.
+#
+# Rules (enforces /html-output skill's "single-file artifact" promise):
+#   - <img src=…>           must be data: (or fragment #…)
+#   - <script src=…>        forbidden — scripts must be inline
+#   - <link rel=stylesheet> only allowed to fonts.googleapis.com / fonts.gstatic.com
+#   - url(…) in CSS         must be data: or the Google Fonts hosts
+#
+# Exit codes:
+#   0 — clean
+#   2 — violations (printed to stdout, one per line)
+#  64 — usage error
+#  66 — file not found
+
+set -euo pipefail
+
+file="${1:-}"
+[ -z "$file" ] && { echo "usage: html-self-contained-check <file.html>" >&2; exit 64; }
+[ -f "$file" ] || { echo "not a file: $file" >&2; exit 66; }
+
+violations=()
+
+# 1. <img src=…> not data: / not fragment
+while IFS= read -r m; do
+  violations+=("img src not inlined (must be data:URI): $m")
+done < <(rg -nP --no-heading -i '<img\b[^>]*\bsrc\s*=\s*["'"'"'](?!data:|#)' "$file" 2>/dev/null || true)
+
+# 2. <script src=…> — any external script
+while IFS= read -r m; do
+  violations+=("external <script src=…> (must be inline): $m")
+done < <(rg -nP --no-heading -i '<script\b[^>]*\bsrc\s*=' "$file" 2>/dev/null || true)
+
+# 3. <link rel=stylesheet href=…> not Google Fonts
+while IFS= read -r m; do
+  violations+=("external stylesheet (only Google Fonts allowed): $m")
+done < <(rg -nP --no-heading -i '<link\b[^>]*\brel\s*=\s*["'"'"']?stylesheet\b[^>]*\bhref\s*=\s*["'"'"'](?!https?://fonts\.(googleapis|gstatic)\.com)' "$file" 2>/dev/null || true)
+
+# 4. url(…) in CSS not data: / not Google Fonts / not fragment
+# Optional quote stays INSIDE the lookahead so the regex can't sneak past it
+# and check the wrong position. See git history if you remove this comment.
+while IFS= read -r m; do
+  violations+=("url() reference not inlined (only data: and Google Fonts allowed): $m")
+done < <(rg -nP --no-heading -i 'url\(\s*(?!["'"'"']?(data:|#|https?://fonts\.(googleapis|gstatic)\.com))' "$file" 2>/dev/null || true)
+
+if [ ${#violations[@]} -eq 0 ]; then
+  exit 0
+fi
+
+printf '%s\n' "${violations[@]}"
+exit 2
