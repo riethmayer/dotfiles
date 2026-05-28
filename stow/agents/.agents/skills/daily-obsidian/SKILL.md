@@ -39,12 +39,8 @@ Check the env var with `printenv OBSIDIAN_VAULT_DAILY_JOURNAL` via Bash. If empt
 
 ## Writing principles (apply to every brief)
 
-The HTML brief uses the **Smart Brevity** writing system (Axios/Mike Allen) — invoke the principles, do NOT produce the `/smart-brevity` diff artifact:
+Apply the `/smart-brevity` skill for prose. One additional rule specific to this skill's OKR injection:
 
-- **Front-load the punchline.** The headline answers "what's the one load-bearing fact?" — not "what topic does the brief cover?"
-- **Why it matters, explicitly.** Signal sections close with the implication, not just the data point.
-- **Jargon-free, scannable.** Bullets + bold + tight headlines. Paragraphs only where nuance demands them.
-- **Headlines describe the decision, not the topic.** "Resolve the 15:30 collision" beats "Calendar".
 - **OKRs push, never parrot.** Every OKR mention closes with one concrete action today that moves it forward — not a status read-out. If health is `atRisk` or `offTrack`, flag it explicitly.
 
 The HTML uses the `html-output` skill's `doc.html` template — logos inlined as `data:` URIs, brand fonts via `@font-face { src: local(...) }` with Google-Fonts fallback. **Single-file artifact, shareable as-is.** Every brief is self-contained — no sibling `assets/` directory, no missing-asset breakage on a recipient's machine.
