@@ -110,6 +110,17 @@ If only the dotfiles arm is broken ("Too many levels of symbolic links" on `stow
 - Document any non-XDG compliant tools
 - Always use mise for automating tasks and as entry point
 
+### Boyscout Rule — leave the repo 100% clean
+
+**Before ending any session that touched dotfiles, `git status` must be empty.** No stray untracked files, no leftover modifications, no "I'll deal with it later".
+
+For every leftover, pick exactly one:
+1. **Commit it** — if it's a real dotfile change (config edit, new script, new stow package). Bundle it into the session's commit when topical, or make a separate `chore(scope):` commit when not.
+2. **Gitignore it** — if it's tooling runtime output that will recur (MCP runtime dirs, plugin caches, build artifacts). Add the pattern to `.gitignore` with a one-line comment explaining what produces it.
+3. **Delete it** — if it's a one-off artifact (a stray PNG, a debug log, a scratch file) that shouldn't recur. If it might recur, gitignore the pattern instead.
+
+Never leave `?? something` or ` M something` behind for the next agent — the dotfiles repo is a high-traffic shared workspace, and every leftover poisons the next session's `git status` signal.
+
 ## Shared Rules
 
 Load on need-to-know basis:

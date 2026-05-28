@@ -26,6 +26,9 @@ firebase-debug.log
 # Claude runtime logs
 .claudelog/
 
+# Playwright MCP runtime artifacts (console logs, page snapshots)
+.playwright-mcp/
+
 # Python bytecode (skill-creator + any other Python skills)
 __pycache__/
 *.py[cod]
