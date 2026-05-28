@@ -1,11 +1,11 @@
 ---
 name: daily-obsidian
-description: Personal extension of the team's /daily skill — drops the polished HTML brief into an Obsidian vault's daily-note folder and adds a wikilink from the markdown daily note. Use when the user says "/daily-obsidian", "daily into obsidian", or asks to file the daily brief into their vault. Only activates when the OBSIDIAN_VAULT_DAILY_JOURNAL environment variable is set.
+description: Personal extension of the team's /daily skill — files the polished HTML brief into an Obsidian vault's per-date folder. Use when the user says "/daily-obsidian", "daily into obsidian", or asks to file the daily brief into their vault. Only activates when the OBSIDIAN_VAULT_DAILY_JOURNAL environment variable is set.
 ---
 
 # Daily — Obsidian extension
 
-A personal extension of the team's `/daily` skill that files the polished HTML brief next to the markdown daily note in an Obsidian vault — so the searchable notes and the shareable brief live in one place.
+A personal extension of the team's `/daily` skill that drops the polished HTML brief into the Obsidian vault under a **per-date folder**, so every artifact produced that day (brief + meeting notes + ad-hoc HTMLs) lives in one place — and each filename carries the date so any single file is shareable standalone.
 
 ## Why this skill exists — and why it's a template
 
@@ -16,8 +16,8 @@ This skill is a worked example of that pattern. Teammates can copy this folder, 
 The whole pattern: **detect → delegate → augment.**
 
 1. **Detect** — read an env var that the personal user (not the team) sets.
-2. **Delegate** — invoke the team skill verbatim. Don't reimplement.
-3. **Augment** — do the personal step (in this case, file into Obsidian).
+2. **Delegate** — invoke the team skill with an explicit output path. Don't reimplement.
+3. **Augment** — do the personal step (in this case, ensure the per-date folder exists; the team skill writes directly into it).
 
 If `OBSIDIAN_VAULT_DAILY_JOURNAL` is unset, the skill no-ops with one line of explanation. Teammates who don't use Obsidian see no behavior change.
 
@@ -33,6 +33,17 @@ Check the env var with `printenv OBSIDIAN_VAULT_DAILY_JOURNAL` via Bash. If empt
 - For `/daily-obsidian`: respond with one sentence — "Set `OBSIDIAN_VAULT_DAILY_JOURNAL` to your journal folder (e.g. `~/obsidian/<vault>/Journal`) and re-run." — and stop. Do not run `/daily` from this skill in that case.
 - For `/daily` itself: this skill does nothing; let the team skill run alone.
 
+## Writing principles (apply to every brief)
+
+The HTML brief uses the **Smart Brevity** writing system (Axios/Mike Allen) — invoke the principles, do NOT produce the `/smart-brevity` diff artifact:
+
+- **Front-load the punchline.** The headline answers "what's the one load-bearing fact?" — not "what topic does the brief cover?"
+- **Why it matters, explicitly.** Signal sections close with the implication, not just the data point.
+- **Jargon-free, scannable.** Bullets + bold + tight headlines. Paragraphs only where nuance demands them.
+- **Headlines describe the decision, not the topic.** "Resolve the 15:30 collision" beats "Calendar".
+
+The HTML uses the `html-output` skill's `doc.html` template — logos inlined as `data:` URIs, brand fonts via `@font-face { src: local(...) }` with Google-Fonts fallback. **Single-file artifact, shareable as-is.** Every brief is self-contained — no sibling `assets/` directory, no missing-asset breakage on a recipient's machine.
+
 ## What this skill does — three phases
 
 ### Phase 1 — Detect
@@ -43,62 +54,67 @@ VAULT_JOURNAL="${OBSIDIAN_VAULT_DAILY_JOURNAL:-}"
 [ -d "$VAULT_JOURNAL" ] || { echo "OBSIDIAN_VAULT_DAILY_JOURNAL=$VAULT_JOURNAL does not exist; daily-obsidian inactive."; exit 0; }
 ```
 
-### Phase 2 — Delegate
+### Phase 2 — Delegate (with explicit output path)
 
-Invoke the team's `/daily` skill. Let it run end-to-end and write the HTML wherever it normally writes (today: `briefs/YYYY-MM-DD-daily/daily.html` in the working repo, with assets in `briefs/YYYY-MM-DD-daily/assets/`).
+Invoke the team's `/daily` skill. **Tell it to write the HTML directly to the vault** — there is no scratch step in the working repo.
 
-Do not duplicate the team skill's logic here. The whole point is that this layer stays thin.
+The output path is:
 
-### Phase 3 — Augment (file into the vault)
+```
+$OBSIDIAN_VAULT_DAILY_JOURNAL/$YEAR/$MONTH/$DATE/$DATE-$DAYNAME-daily.html
+```
 
-After `/daily` has produced `briefs/<date>-daily/daily.html`:
+Where:
 
-1. Compute the target path inside the vault. Given today is `YYYY-MM-DD-DayName` (e.g. `2026-05-19-Tuesday`), and `OBSIDIAN_VAULT_DAILY_JOURNAL` points at the journal root, the target attachments directory is:
+| Variable | Example value | How |
+|---|---|---|
+| `$DATE` | `2026-05-28` | `$(date +%Y-%m-%d)` |
+| `$DAYNAME` | `Thursday` | `$(date +%A)` |
+| `$YEAR` | `2026` | `$(date +%Y)` |
+| `$MONTH` | `05-May` | `$(date +%m-%B)` |
 
-   ```
-   $OBSIDIAN_VAULT_DAILY_JOURNAL/YYYY/MM-MonthName/attachments/YYYY-MM-DD-daily.html
-   ```
+The per-date folder `$DATE/` is the day's container — daily brief + meeting notes + ad-hoc HTMLs all live there. The filename always carries `$DATE-$DAYNAME` so any single HTML is shareable standalone with full provenance ("that's `2026-05-28-Thursday-jochen-cfo-meeting-notes.html`").
 
-   Mirror the existing `YYYY/MM-MonthName/` layout — the user already organizes daily `.md` notes that way; the HTML sibling stays alongside.
+The `/daily` skill produces a single self-contained HTML via `html-output`'s `doc.html` template. Logos + fonts are handled by the template — do not duplicate that logic here.
 
-2. Copy the HTML + the entire `assets/` folder (logos) into the vault:
+### Phase 3 — Augment (ensure folder exists; that's it)
 
-   ```bash
-   DATE="$(date +%Y-%m-%d)"
-   DAYNAME="$(date +%A)"
-   YEAR="$(date +%Y)"
-   MONTH="$(date +%m-%B)"   # e.g. 05-May
-   SRC_DIR="briefs/${DATE}-daily"
-   VAULT_DIR="${OBSIDIAN_VAULT_DAILY_JOURNAL}/${YEAR}/${MONTH}/attachments"
-   mkdir -p "${VAULT_DIR}/${DATE}-daily-assets"
-   cp "${SRC_DIR}/daily.html" "${VAULT_DIR}/${DATE}-daily.html"
-   cp -R "${SRC_DIR}/assets/." "${VAULT_DIR}/${DATE}-daily-assets/"
-   ```
+```bash
+DATE="$(date +%Y-%m-%d)"
+DAYNAME="$(date +%A)"
+YEAR="$(date +%Y)"
+MONTH="$(date +%m-%B)"
+DAY_DIR="${OBSIDIAN_VAULT_DAILY_JOURNAL}/${YEAR}/${MONTH}/${DATE}"
+mkdir -p "$DAY_DIR"
+# /daily writes to:  ${DAY_DIR}/${DATE}-${DAYNAME}-daily.html
+```
 
-   Then rewrite the HTML's logo paths so they resolve inside the vault:
+That's the whole step. **No `.md` daily note. No wikilink insertion.** The HTML is the artifact; the per-date folder is the index.
 
-   ```bash
-   sed -i '' "s|./assets/|./${DATE}-daily-assets/|g" "${VAULT_DIR}/${DATE}-daily.html"
-   ```
-
-3. Insert a wikilink at the top of the daily note's `## Morning Standup` section, **above** `### Intentions`. Format:
-
-   ```markdown
-   📎 Polished brief: [[attachments/YYYY-MM-DD-daily.html|HTML]]
-   ```
-
-   The Edit tool is the right tool — find `## Morning Standup\n` and append the link. Don't duplicate the line if it's already there (idempotent re-runs).
-
-4. Report back to the user: vault target path + one-sentence confirmation.
+Report back to the user: the vault path that was written + a one-sentence summary of what the brief covers.
 
 ## Idempotency
 
-`/daily-obsidian` should be safe to re-run during the day (e.g. after the standup, when more outcomes land). Specifically:
+`/daily-obsidian` should be safe to re-run during the day (e.g. after the standup, when more outcomes land).
 
-- Overwriting `${DATE}-daily.html` is fine — that's the whole point; the brief evolves.
-- Re-copying the `assets/` folder is fine.
-- The wikilink insertion check: grep the daily note for `${DATE}-daily.html` before inserting. If present, skip.
-- The team `/daily` skill already handles idempotent appends to `### Done` — let it.
+- **Overwrite is fine.** `${DATE}-${DAYNAME}-daily.html` is meant to evolve through the day. Re-runs replace it.
+- **`mkdir -p` is a no-op** on an existing folder.
+- **Other files in the per-date folder are untouched.** Meeting notes and ad-hoc HTMLs Jan dropped into `$DATE/` stay where they are.
+
+### Legacy-layout migration (run once per old format you find)
+
+The vault has been through several conventions. If you encounter any of these, normalize before adding new artifacts:
+
+| You find | Action |
+|---|---|
+| HTML at month root (e.g. `2026-05-28-Thursday.html`) | Create `2026-05-28/` folder, rename file to `2026-05-28-Thursday-daily.html`, move it inside |
+| Filename with `-daily-brief` suffix (e.g. `2026-05-28-Thursday-daily-brief.html`) | Rename to `2026-05-28-Thursday-daily.html` in the per-date folder |
+| Filename like `2026-05-27-daily.html` (no DayName) | Compute the DayName and rename to `2026-05-27-Wednesday-daily.html` |
+| Sibling `<date>-daily-assets/` directory | Inline the four logos into the matching HTML's `<img src=...>` attributes, then `rm -rf` the assets dir |
+| Old wikilinks in any remaining `.md` files | Rewrite each `[[<old-name>.html]]` → `[[<new-name>.html]]`; preserve the `|HTML` display label if present |
+| `.md` daily notes at month root | Move into the per-date folder unchanged. Going forward `/daily-obsidian` doesn't create new ones, but pre-existing ones stay for history. |
+
+A one-shot Python script for the May 2026 migration is at `/tmp/restructure_may_journal.py` (used 2026-05-28). Adapt the `moves` list for subsequent months.
 
 ## Configuration
 
@@ -107,7 +123,7 @@ After `/daily` has produced `briefs/<date>-daily/daily.html`:
 export OBSIDIAN_VAULT_DAILY_JOURNAL="$HOME/obsidian/<vault>/2 - Areas/Journal"
 ```
 
-Unset to disable the extension. The team `/daily` continues to work unchanged.
+Unset to disable the extension. The team `/daily` continues to work unchanged (it just writes its default output and stops).
 
 ## Extension pattern for the team
 
@@ -115,14 +131,14 @@ If you want to write a similar personal layer over a team skill:
 
 1. **Drop a SKILL.md in `~/.agents/skills/<your-skill>/`** (or in `~/dotfiles/stow/agents/.agents/skills/<your-skill>/` if you stow your dotfiles).
 2. **Gate the skill on an env var** so the team skill stays the default for everyone else.
-3. **Don't reimplement the team skill.** Reference it by name in your skill's instructions; delegate to it. When the team skill changes, your layer keeps working.
-4. **Be additive only.** Your skill writes new artifacts; it doesn't mutate the team skill's output (beyond cosmetic path rewrites like the logo `sed` above).
+3. **Don't reimplement the team skill.** Reference it by name in your skill's instructions; delegate to it with an explicit output path when you need to redirect its writes. When the team skill changes, your layer keeps working.
+4. **Be additive only.** Your skill writes new artifacts; it doesn't mutate the team skill's output.
 5. **Keep the description trigger-rich.** The skill router needs to know when to activate. Mention `/your-skill` plus the natural-language phrases the user actually says.
 
 This file is itself the template: read it back, swap "Obsidian" for "Notion" / "Slack" / "Confluence" / "private wiki", swap Phase 3 for whatever filing you want, and you have your own personal extension in ~30 minutes.
 
 ## Known limitations
 
-- **Date computed from `date(1)` in the user's local TZ.** If you run `/daily-obsidian` for yesterday's brief, override `DATE` manually in the Bash block above.
+- **Date computed from `date(1)` in the user's local TZ.** If you run `/daily-obsidian` for yesterday's brief, override `DATE` (and `DAYNAME`) manually in the Bash blocks above.
 - **Month folder naming assumes `MM-MonthName` (e.g. `05-May`).** If your vault uses a different convention, edit the `MONTH=...` line. Don't make the team skill care about this — it's a personal preference.
-- **No conflict resolution on the wikilink.** If you have two `attachments/` link styles (relative vs Obsidian-resolved), pick one and stick with it; the skill writes the `[[attachments/...]]` form which Obsidian resolves vault-locally.
+- **Per-date folder layout assumes one folder per calendar day.** Some teams prefer a flat month folder; either works, change Phase 2's output path and Phase 3's `mkdir -p` if you swap. Keep the `$DATE-$DAYNAME-<topic>.html` filename convention regardless — that's what makes individual files shareable standalone.

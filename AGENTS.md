@@ -73,18 +73,29 @@ Current stow packages: agents, atuin, bootstrap, brew, claude, gcloud, ghostty, 
 
 ### Adding Agent Skills (`npx skills add ...`)
 
-Canonical layout: real skill content lives in `stow/agents/.agents/skills/<name>/`, checked into the dotfiles repo. `~/.agents/skills/<name>` is a symlink → `../../dotfiles/stow/agents/.agents/skills/<name>`. Per-agent dirs (`~/.claude/skills/`, `~/.codex/skills/`, …) contain symlinks → `../../.agents/skills/<name>` (i.e. via `~/.agents/skills/`).
+**Canonical layout** — one real directory in dotfiles, surfaced to every agent by stow:
 
-The `npx skills add` tool inverts this — it puts real content at `~/.agents/skills/<name>` and writes a circular symlink into the dotfiles. Always fix after install:
+```
+stow/agents/.agents/skills/<name>/         real dir + files (commit this)
+stow/claude/.claude/skills        →  ../../agents/.agents/skills   (committed cross-package symlink)
+~/.claude/skills                  →  ../dotfiles/stow/claude/.claude/skills   (created by `mise run install`)
+~/.agents/skills/<name>           →  ../../dotfiles/stow/agents/.agents/skills/<name>   (created by `mise run install`, stow folds into the existing ~/.agents/skills/ dir)
+```
+
+Net effect: agents that read `~/.claude/skills/` (and `~/.codex/skills/`, etc.) resolve every skill through dotfiles. Editing `stow/agents/.agents/skills/<name>/SKILL.md` updates every alias instantly.
+
+The `npx skills add` tool ignores this — it drops real content at `~/.agents/skills/<name>` and writes a back-symlink into the dotfiles checkout, creating a cycle. Fix it by moving the content into dotfiles and letting stow rebuild the symlinks:
 
 ```sh
 NAME=<skill-name>
-rm "$HOME/dotfiles/stow/agents/.agents/skills/$NAME"   # circular symlink
-mv "$HOME/.agents/skills/$NAME" "$HOME/dotfiles/stow/agents/.agents/skills/$NAME"
-ln -s "../../dotfiles/stow/agents/.agents/skills/$NAME" "$HOME/.agents/skills/$NAME"
+cd "$HOME/dotfiles"
+rm stow/agents/.agents/skills/$NAME                       # the circular symlink
+mv "$HOME/.agents/skills/$NAME" stow/agents/.agents/skills/$NAME
+mise run install                                          # stow recreates ~/.agents/skills/$NAME → dotfiles
+git add stow/agents/.agents/skills/$NAME
 ```
 
-Then `git add stow/agents/.agents/skills/$NAME` to track it.
+If only the dotfiles arm is broken ("Too many levels of symbolic links" on `stow/agents/.agents/skills/<name>` but `~/.agents/skills/<name>` still resolves), the other arms are fine — just `rm` the dotfiles symlink, recreate as a real dir with SKILL.md inside, and `mise run install` to be safe.
 
 ### Script Organization
 - System setup scripts: `stow/bootstrap/.system-bootstrap.d/`
