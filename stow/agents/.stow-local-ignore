@@ -1,0 +1,28 @@
+# Stow ignore for the `agents` package.
+# NOTE: providing this file REPLACES stow's built-in default ignore list,
+# so the defaults are reproduced below, then our package-specific additions.
+
+# --- stow built-in defaults (keep in sync with `info stow 'Types And Syntax Of Ignore Lists'`) ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING
+
+# --- package-specific ---
+# Claude Desktop rewrites this file at runtime (device name, account UUID,
+# epitaxyPrefs, sidebarMode). Symlinking it would either clobber live state or
+# pump runtime churn back into the repo. We keep the committed copy as a seed
+# reference but do NOT stow it; the live ~/Library copy is left untouched.
+claude_desktop_config\.json
