@@ -83,6 +83,24 @@ Then keep entries where `name.startsWith(PERIOD_PREFIX)`. For each surviving ini
 
 **If zero matches:** log "No OKR initiatives match `${PERIOD_PREFIX}` for owner=me." and proceed without an OKR section. **Never synthesize fake OKRs.** A missing-OKR brief is a real signal — go set them in Linear.
 
+### Phase 2.5 — Load recently-shipped projects (for the standup top)
+
+Shipped workstreams are logged by the `/debrief` skill in an append-only index at
+the Journal root. Surface the recent ones at the top of the standup so the brief
+opens with "here's what just landed", each linking its debrief.
+
+```bash
+SHIPPED_INDEX="${OBSIDIAN_VAULT_DAILY_JOURNAL}/shipped-projects.md"
+# Take the most recent 5 entries (file is newest-first; entries start with "- ").
+[ -f "$SHIPPED_INDEX" ] && grep -m 5 '^- ' "$SHIPPED_INDEX"
+```
+
+If the file is absent or empty, skip the shipped block entirely — no placeholder.
+Pass the captured lines to `/daily` in Phase 3. Keep the debrief links intact
+(they're relative to the Journal root; the brief lives two levels deeper, so
+prefix each with `../../` when rendering, or render the link text only if the
+relative path is fiddly — the filename carries enough provenance).
+
 ### Phase 3 — Delegate (with OKR context + explicit output path)
 
 Invoke the team's `/daily` skill. **Tell it to write the HTML directly to the vault** — there is no scratch step in the working repo.
@@ -116,6 +134,21 @@ The `/daily` skill produces a single self-contained HTML via `html-output`'s `do
 > ```
 
 If Phase 2 produced zero matches, skip this paragraph entirely — `/daily` runs without an OKR section.
+
+**Pass the shipped-projects lines (Phase 2.5) as context with this instruction:**
+
+> The following are recently-shipped projects (newest first), each with a link to
+> its debrief. **Render them as a `Recently shipped` block at the very top of the
+> standup section** — a tight bullet per project: `**<Project>** (<date>) — <one-clause
+> result> · [debrief](<link>)`. This opens the brief with what just landed. Skip
+> the block entirely if no lines were provided.
+>
+> Shipped projects:
+> ```
+> <the `- ...` lines from Phase 2.5, verbatim>
+> ```
+
+If Phase 2.5 produced no lines, skip this paragraph — no `Recently shipped` block.
 
 ### Phase 4 — Augment (ensure folder exists; that's it)
 
