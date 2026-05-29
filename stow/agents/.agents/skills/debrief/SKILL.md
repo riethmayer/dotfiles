@@ -5,7 +5,7 @@ description: >-
   that explains what shipped, the non-obvious root cause behind any bug or
   decision (verified, not assumed), the learning, and the wider impact. Files it
   into the Obsidian vault's per-date journal folder and adds it to the
-  shipped-projects index that the daily brief renders. Use when the user says
+  recently-shipped index that the daily brief renders. Use when the user says
   "/debrief", "debrief this", "write a debrief", "ship debrief", "project
   debrief", "post-mortem this", "do a debrief on the X work", or has just landed
   a workstream / merged a set of PRs and wants the wrap-up captured. Also trigger
@@ -73,7 +73,7 @@ because skipping it produced a worse artifact:
    issues — any ID with a canonical URL. The reader jumps straight there.
    (See `feedback_link_prs_to_github` in memory.)
 7. **Ship a self-contained, brand-styled HTML artifact** filed where it's
-   findable, and register it in the shipped-projects index so it surfaces in the
+   findable, and register it in the recently-shipped index so it surfaces in the
    daily brief.
 
 ## Workflow
@@ -166,17 +166,17 @@ per-date folder with `mkdir -p` (idempotent). Re-running overwrites the same fil
 After writing, verify it parses (`python3 -c "import html.parser;
 html.parser.HTMLParser().feed(open(p).read())"`) and `open` it.
 
-### 5. Register it in the shipped-projects index
+### 5. Register it in the recently-shipped index
 
-Append one line to `$VAULT_JOURNAL/shipped-projects.md` (create it if absent —
-see `references/shipped-projects-template.md`). Newest entries go at the top so
+Append one line to `$VAULT_JOURNAL/recently-shipped.md` (create it if absent —
+see `references/recently-shipped-template.md`). Newest entries go at the top so
 the daily brief shows the most recent first:
 
 ```markdown
 - 2026-05-29 · **Canonical Tier-1 Observability** — [debrief](2026/05-May/2026-05-29/2026-05-29-Friday-canonical-tier-1-observability-debrief.html) · 5/6 Tier-1 apps probed
 ```
 
-The link path is relative to the Journal root (where `shipped-projects.md` lives).
+The link path is relative to the Journal root (where `recently-shipped.md` lives).
 The `daily-obsidian` skill reads this file and renders the recent entries at the
 top of the standup section. Keep the one-line summary to a single clause — the
 debrief itself holds the detail.
@@ -189,4 +189,4 @@ is now in the shipped index (so it'll appear at the top of the next daily).
 ## Reference files
 
 - `references/table-style.css` — brand table CSS to inject into cloned chrome.
-- `references/shipped-projects-template.md` — the index file's initial content.
+- `references/recently-shipped-template.md` — the index file's initial content.

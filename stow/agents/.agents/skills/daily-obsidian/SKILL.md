@@ -90,7 +90,7 @@ the Journal root. Surface the recent ones at the top of the standup so the brief
 opens with "here's what just landed", each linking its debrief.
 
 ```bash
-SHIPPED_INDEX="${OBSIDIAN_VAULT_DAILY_JOURNAL}/shipped-projects.md"
+SHIPPED_INDEX="${OBSIDIAN_VAULT_DAILY_JOURNAL}/recently-shipped.md"
 # Take the most recent 5 entries (file is newest-first; entries start with "- ").
 [ -f "$SHIPPED_INDEX" ] && grep -m 5 '^- ' "$SHIPPED_INDEX"
 ```
@@ -135,7 +135,7 @@ The `/daily` skill produces a single self-contained HTML via `html-output`'s `do
 
 If Phase 2 produced zero matches, skip this paragraph entirely — `/daily` runs without an OKR section.
 
-**Pass the shipped-projects lines (Phase 2.5) as context with this instruction:**
+**Pass the recently-shipped lines (Phase 2.5) as context with this instruction:**
 
 > The following are recently-shipped projects (newest first), each with a link to
 > its debrief. **Render them as a `Recently shipped` block at the very top of the
