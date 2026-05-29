@@ -1,0 +1,44 @@
+/* Brand-matched table styling for debrief HTML artifacts.
+   The html-output doc.html template ships only a PRINT rule for tables, so a
+   bare <table> renders as raw, dividerless columns on screen. Inject this block
+   immediately before the closing </style> of the cloned chrome.
+
+   Pair every table with a <colgroup> so the ID column stays narrow and the last
+   column doesn't sprawl, e.g.:
+     <table>
+       <colgroup><col class="c-pr"><col class="c-what"><col></colgroup>
+       <thead><tr><th>PR</th><th>What</th><th>Outcome</th></tr></thead>
+       ...
+     </table>
+   Adjust the col classes/widths to the table's actual first two columns. */
+
+.section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: .6em 0 .4em;
+  font-size: .96em;
+  table-layout: fixed;
+}
+.section table th,
+.section table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.section table thead th {
+  font-family: 'Condensed Sans No10', 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .82em;
+  color: var(--text-dim);
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 8px;
+}
+.section table tbody tr:last-child td { border-bottom: none; }
+.section table tbody tr:hover { background: var(--red-dim); }
+.section table td:first-child { white-space: nowrap; color: var(--red); font-weight: 600; }
+/* Narrow first (ID) column, medium second; the rest takes remaining width. */
+.section table col.c-pr   { width: 9%; }
+.section table col.c-what { width: 24%; }
+.section table code { font-size: .92em; }
