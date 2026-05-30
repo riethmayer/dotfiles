@@ -1,0 +1,26 @@
+# Per-machine git identity & machine-specific settings. TEMPLATE — tracked.
+#
+# This file is the seam between machines (e.g. work laptop vs private laptop).
+# On each machine:
+#   cp local.example local      # inside stow/git/.config/git/
+#   $EDITOR local               # fill in this machine's identity
+#   cd ~/dotfiles && mise run install   # stow links ~/.config/git/local
+#
+# `local` is gitignored and MUST stay untracked. Secrets never go here in
+# plaintext — reference Keychain / 1Password / GCP Secret Manager instead.
+
+[user]
+	name = Your Name
+	# Work laptop:    you@company.com
+	# Private laptop: you@personal.example
+	email = you@example.com
+	signingkey = ~/.ssh/id_ed25519.pub
+
+# allowedSignersFile takes an absolute path; keep it per-machine so a different
+# $HOME (different macOS username) doesn't break SSH-signature verification.
+[gpg "ssh"]
+	allowedSignersFile = /Users/CHANGEME/.ssh/allowed_signers
+
+# CodeRabbit CLI stamps a per-install machine id — never share across machines.
+[coderabbit]
+	machineId = cli/REPLACE-WITH-YOUR-OWN

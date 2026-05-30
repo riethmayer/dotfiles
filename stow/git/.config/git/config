@@ -18,10 +18,6 @@
   hide   = update-index --assume-unchanged
   unhide = update-index --no-assume-unchanged
   undo = reset --soft HEAD^
-[user]
-  name = Jan Riethmayer
-	email = jan@earlybird.com
-	signingkey = ~/.ssh/id_ed25519.pub
 [hub]
   protocol = https
 [color]
@@ -42,14 +38,16 @@
 	program = gpg
 	format = ssh
   # GPG program will be found in PATH (works for both Intel and ARM Macs)
-
-[coderabbit]
-	machineId = cli/3cce15a84a4547f8935b5b09d2aa7f3e
 [credential "https://github.com"]
 	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://gist.github.com"]
 	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
-[gpg "ssh"]
-	allowedSignersFile = /Users/janriethmayer/.ssh/allowed_signers
+
+# Per-machine identity & machine-specific settings live in an untracked file.
+# See local.example. Loaded last, so it overrides anything above.
+# Never commit ~/.config/git/local — it carries the work-vs-private identity
+# (user.email/signingkey), the coderabbit machineId, and absolute home paths.
+[include]
+	path = ~/.config/git/local

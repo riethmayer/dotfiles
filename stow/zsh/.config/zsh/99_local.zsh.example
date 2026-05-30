@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+# Per-machine zsh overrides. TEMPLATE — tracked.
+#
+# On each machine:
+#   cp 99_local.zsh.example 99_local.zsh   # inside stow/zsh/.config/zsh/
+#   $EDITOR 99_local.zsh
+# (~/.config/zsh is a stow symlink into this dir, so the file is picked up
+#  automatically by the `*.zsh` glob in ~/.zshrc — no install step needed.)
+#
+# `99_local.zsh` is gitignored and MUST stay untracked.
+
+# --- Machine-specific PATH ----------------------------------------------------
+# export PATH="$HOME/work/bin:$PATH"
+
+# --- Work-only aliases / env --------------------------------------------------
+# alias vpn="sudo openconnect ..."
+# export HTTPS_PROXY="http://proxy.corp:8080"
+
+# --- Secrets: reference a store, never hardcode -------------------------------
+# export GITHUB_TOKEN="$(security find-generic-password -s github-token -w)"  # macOS Keychain
+# export OPENAI_API_KEY="$(op read op://Private/openai/key)"                  # 1Password CLI

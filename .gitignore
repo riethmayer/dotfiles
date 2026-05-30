@@ -8,6 +8,12 @@
 private.key
 public.key
 
+# Per-machine local overrides (the work-vs-private seam) — never shared.
+# Carries machine identity (git user/email/signingkey), machine ids, and any
+# secret references. Tracked `*.example` templates show what goes in each.
+stow/git/.config/git/local
+stow/zsh/.config/zsh/99_local.zsh
+
 # GPG
 .gnupg/
 

@@ -53,6 +53,42 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
   - 050-069: Programming languages
   - 070-089: Development tools
   - 090-099: Shell enhancements
+  - `99_local.zsh`: untracked per-machine overrides, sourced last (see below)
+
+### Multi-Machine Setup — Local Overrides
+
+This single repo is checked out identically on multiple machines (e.g. a work
+laptop and a private one). Everything tracked is **shared and identical**;
+anything that differs per machine — identity, work-only tooling, secrets —
+lives in **gitignored `*.local` files** that each machine fills in for itself.
+The local file *is* the machine's identity; no `hostname` detection is needed.
+
+Three tiers:
+- **Tracked (shared):** all tool configs, aliases, keymaps, structure, and
+  declarative intent (e.g. `enabledPlugins` in `settings.json`).
+- **Gitignored local (the seam, plaintext, per-machine):** the `*.local` files.
+- **Never on disk in the repo (secrets):** keep in macOS Keychain / 1Password /
+  GCP Secret Manager. Local files *reference* them, never store them.
+
+Seams currently wired:
+
+| Tool | Tracked | Untracked local (gitignored) | How it loads |
+|------|---------|------------------------------|--------------|
+| git  | `stow/git/.config/git/config` (ends in `[include] path = ~/.config/git/local`) | `stow/git/.config/git/local` | git reads the include last, so local overrides everything. Holds `[user]`, `coderabbit.machineId`, and absolute-path `allowedSignersFile`. |
+| zsh  | `stow/zsh/.config/zsh/*.zsh` | `stow/zsh/.config/zsh/99_local.zsh` | `~/.config/zsh` is a stow symlink into the repo dir, so the `*.zsh` glob in `.zshrc` sources `99_local.zsh` last automatically (the `.example` is skipped — glob requires `.zsh`). |
+| Claude | `stow/claude/.claude/settings.json` (shared intent) | `~/.claude/settings.local.json` + plugin runtime (`installed_plugins.json`, `known_marketplaces.json`, `cache/`) | runtime plugin state is gitignored — it carries absolute install paths that break across machines (different `$HOME`), so it must never be committed. |
+
+Each seam ships a tracked `*.example` template showing what to put in it.
+**Setup on a new machine:** `cp <file>.example <file>` next to it, edit in this
+machine's values, then `mise run install` (git needs the restow to link
+`~/.config/git/local`; zsh picks it up with no install step).
+
+**Rules of thumb when editing tracked config:**
+- Never commit an absolute home path (`/Users/<name>/…`) — a different macOS
+  username breaks it. Use `~`/`$HOME`, or move it to the `*.local` file.
+- Never commit identity, machine ids, tokens, or anything work-specific.
+- Adding a new per-machine knob? Extend the right `*.local` file + its
+  `*.example`, and add the real file to `.gitignore`.
 
 ### XDG Compliance Rules
 All configurations must follow XDG Base Directory Specification:
