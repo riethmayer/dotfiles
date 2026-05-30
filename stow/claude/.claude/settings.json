@@ -83,20 +83,14 @@
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
   },
   "enabledPlugins": {
-    "eb@earlybird-marketplace": true,
-    "ee@earlybird-marketplace": true,
-    "frontend-design@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "sentry@claude-plugins-official": true,
-    "firebase@claude-plugins-official": true,
     "posthog@claude-plugins-official": true,
     "notion@claude-plugins-official": true
   },
@@ -111,6 +105,12 @@
       "source": {
         "source": "github",
         "repo": "anthropics/skills"
+      }
+    },
+    "earlybird-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "earlybirdvc/skills"
       }
     }
   },
