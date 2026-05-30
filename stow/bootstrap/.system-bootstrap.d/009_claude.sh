@@ -13,6 +13,34 @@ fi
 cd "$(dirname "$0")/../../.."
 stow -d stow -t ~ claude
 
+# Repair stale plugin runtime state. installed_plugins.json caches absolute
+# installPaths; this repo is shared across machines with different $HOME values,
+# so a path baked on one laptop (e.g. /Users/jan/...) dangles on another
+# (/Users/janriethmayer/...) and Claude fails to load plugins. enabledPlugins in
+# settings.json is the source of truth — Claude re-resolves runtime state on
+# launch — so resetting the cache when any installPath is missing is safe.
+# Idempotent: a healthy (or already-empty) install is a no-op.
+plugins_dir="$HOME/.claude/plugins"
+installed="$plugins_dir/installed_plugins.json"
+if [ -f "$installed" ]; then
+    stale=0
+    if command -v jq &> /dev/null; then
+        while IFS= read -r path; do
+            if [ -n "$path" ] && [ ! -e "$path" ]; then stale=1; break; fi
+        done < <(jq -r '.plugins // {} | to_entries[] | .value[]?.installPath // empty' "$installed")
+    elif grep -q '"installPath"' "$installed" && grep '"installPath"' "$installed" | grep -vq "$HOME"; then
+        # No jq: flag any installPath that isn't under the current $HOME.
+        stale=1
+    fi
+    if [ "$stale" -eq 1 ]; then
+        echo "Repairing stale Claude plugin runtime state..."
+        printf '{\n  "version": 2,\n  "plugins": {}\n}\n' > "$installed"
+        rm -f "$plugins_dir/known_marketplaces.json"
+        [ -d "$plugins_dir/cache" ] && rm -rf "${plugins_dir:?}/cache"/* 2>/dev/null || true
+        echo "  Reset runtime state; Claude will re-resolve from enabledPlugins on next launch."
+    fi
+fi
+
 # Seed Claude Desktop config. It is deliberately NOT stowed (the app rewrites it
 # at runtime — device name, account UUID, epitaxyPrefs; see
 # stow/agents/.stow-local-ignore), so copy the committed seed only when absent.
