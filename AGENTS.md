@@ -39,7 +39,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - Stage 1: Install Homebrew and Stow (`stow/bootstrap/bin/system-bootstrap.sh`)
 - Stage 2: Install all requirements (`$HOME/bin/system-bootstrap.sh`)
 - Individual setup scripts in `stow/bootstrap/.system-bootstrap.d/`
-- Scripts numbered with three digits for ordering (e.g., `001_mise.sh`)
+- Scripts numbered with three digits for ordering, spaced in tens (`010_homebrew.sh`, `020_mise.sh`, …) so new steps slot between without renaming. Keep three digits — the sequence runs past 100, and a two-digit `20` would sort before `130`.
 - All tasks managed through mise configuration in `stow/mise/.config/mise/config.toml`
 
 ### Configuration Loading
