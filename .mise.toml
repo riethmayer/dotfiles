@@ -167,3 +167,11 @@ echo "Installing LSP servers..."
 chmod +x stow/bootstrap/.system-bootstrap.d/008_lsp_servers.sh
 ./stow/bootstrap/.system-bootstrap.d/008_lsp_servers.sh
 '''
+
+[tasks.gws]
+description = "Install the Google Workspace CLI (gws) for the gws-* skills"
+run = '''
+echo "Setting up gws..."
+chmod +x stow/bootstrap/.system-bootstrap.d/010_gws.sh
+./stow/bootstrap/.system-bootstrap.d/010_gws.sh
+'''

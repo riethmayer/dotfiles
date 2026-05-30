@@ -24,6 +24,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run nvim` - Setup Neovim configuration
 - `mise run atuin` - Setup Atuin shell history
 - `mise run zsh-xdg` - Setup Zsh XDG directories
+- `mise run gws` - Install the Google Workspace CLI (gws) for the gws-* skills
 
 ## Architecture and Structure
 
