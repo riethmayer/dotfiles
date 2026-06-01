@@ -61,6 +61,26 @@ Discover what already exists:
 - What interfaces could be extended vs. built from scratch
 - Whether this has been tried before (`git log`, related docs)
 
+#### Primitive-existence check (non-skippable)
+
+Any time the shape names a port, helper, adapter, type, mapper, schema, renderer, or any architectural primitive, **grep for it before writing the capability cards**. The check is cheap — 30 seconds of `rg` plus, if the surface is unclear, a fan-out of read-only agents. Skipping it is how shapes invent abstractions the codebase already provides.
+
+A useful default sweep, adapted to whatever the shape names:
+
+```bash
+rg -l "EnrichmentPort" packages/ apps/*/src/      # the exact symbol
+rg -l "enrichment\\.port|enrichment-port" packages/ apps/*/src/   # path-style variants
+rg -l "normaliseDomain|normalizeDomain" packages/ apps/*/src/     # likely-named helpers
+```
+
+If a primitive turns up:
+
+- The shape pivots from **"build X"** to **"compose X"** for that primitive. The capability card's Layer/Modality line should say `(reuse from @scope/pkg)` so the reader (and `/linear`) sees at a glance which work is wiring vs. new code.
+- The path the shape walks usually collapses by a slice or two — what looked like "PR-1: build the port, PR-2: wire it" becomes "PR-1: compose + wire," because the port already exists.
+- If the primitive is *almost* what's needed but not quite, the shape names the gap explicitly (a single new method on the existing port, or a thin wrapper) instead of duplicating the whole abstraction.
+
+**Worked example (EAG-1016 Slice 2, classify-company enrichment).** The handoff said "add an `EnrichmentPort` to `packages/sourcing/classify-company`." The shape-time grep found `EnrichmentPort`, `EnrichmentSignals`, `EnrichmentLookup`, `normaliseDomain()`, a `CompositeEnrichmentAdapter`, three live BigQuery adapters, and a matching `SourceBadges` renderer — all in `@eagleeye/eval` and `apps/investment-thesis/src/db/`. Slice 2 collapsed from "build the abstraction + wire it" to "compose what's there + drop Crunchbase per the licence wind-down + add the source-coverage UI row." A duplicate port in classify-company would have been a maintenance hazard nobody asked for, with no boundary justification to defend it.
+
 ### 5. Grill — minimal
 
 Only ask about gaps the codebase can't answer. Focus on:
@@ -168,6 +188,7 @@ After the files are written, walk the user through them sequentially:
 - **Filling answer slots speculatively**. Leave them empty unless the user has answered them. Their emptiness is a forcing function.
 - **Writing scenarios as Gherkin**. The event storm replaces them — events are the acceptance criteria, the canvas shows their ordering and dependencies. `/linear` derives Gherkin from the storm when issues are cut.
 - **Letting the canvas drift from `shape.json`**. The SVG is generated. If you hand-edit the SVG, regenerate it from updated JSON instead.
+- **Inventing a primitive the codebase already provides.** Naming a port / helper / adapter / type without first `rg`-ing for it across `packages/` and `apps/*/src/`. The 30-second pre-shape check (see step 4 · Primitive-existence check) prevents a duplicate abstraction nobody asked for.
 
 ## Next step: /linear
 
