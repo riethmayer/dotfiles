@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# claude-warehouse refresh: sync sessions into ~/.claude/claude.duckdb, then
+# embed any new content for /claude-warehouse:recall. Driven by the
+# com.claude-warehouse.sync LaunchAgent every 10 min (see
+# stow/bootstrap/.system-bootstrap.d/140_claude_warehouse.sh); also safe to run
+# by hand.
+#
+# Why one script does both: DuckDB is single-writer. Running sync and embed
+# sequentially in ONE process means they never contend for the write lock (no
+# retry hack, no log noise). embed.py is cheap when idle - it connects, counts,
+# and returns before importing torch - so running it every cycle costs ~1s when
+# there is nothing new and keeps recall fresh within ~10 min.
+#
+# Portable + defensive: resolves the plugin version by glob (survives updates),
+# uses the standalone uv binary, and no-ops if the plugin is not installed yet.
+
+export PATH="/opt/homebrew/bin:/usr/bin:/bin"
+
+UV="$HOME/.local/bin/uv"
+BASE="$HOME/.claude/plugins/cache/sderosiaux-claude-plugins/claude-warehouse"
+
+[ -x "$UV" ] || exit 0
+
+sync=$(ls "$BASE"/*/scripts/sync.py 2>/dev/null | sort | tail -1)
+embed=$(ls "$BASE"/*/scripts/embed.py 2>/dev/null | sort | tail -1)
+
+# No plugin yet (e.g. fresh machine before Claude's first launch): nothing to do.
+[ -n "$sync" ] || exit 0
+
+timeout 240 "$UV" run --quiet --script "$sync"
+[ -n "$embed" ] && timeout 1800 "$UV" run --quiet --script "$embed"
+
+exit 0
