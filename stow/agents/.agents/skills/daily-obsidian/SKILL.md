@@ -42,6 +42,7 @@ Check the env var with `printenv OBSIDIAN_VAULT_DAILY_JOURNAL` via Bash. If empt
 Apply the `/smart-brevity` skill for prose. One additional rule specific to this skill's OKR injection:
 
 - **OKRs push, never parrot.** Every OKR mention closes with one concrete action today that moves it forward — not a status read-out. If health is `atRisk` or `offTrack`, flag it explicitly.
+- **Quick links in the header.** Always surface Jan's Claude dashboard as a one-click chip in the brief header: [Claude dashboard](http://localhost:3141/). It is a local link (resolves only on Jan's machine), so omit it from any shared or exported copy.
 
 The HTML uses the `html-output` skill's `doc.html` template — logos inlined as `data:` URIs, brand fonts via `@font-face { src: local(...) }` with Google-Fonts fallback. **Single-file artifact, shareable as-is.** Every brief is self-contained — no sibling `assets/` directory, no missing-asset breakage on a recipient's machine.
 
