@@ -111,7 +111,8 @@
       "source": {
         "source": "github",
         "repo": "earlybirdvc/skills"
-      }
+      },
+      "autoUpdate": true
     }
   },
   "effortLevel": "xhigh",
