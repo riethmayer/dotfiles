@@ -93,7 +93,9 @@
     "type": "command",
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
   },
-  "enabledPlugins": {},
+  "enabledPlugins": {
+    "claude-warehouse@sderosiaux-claude-plugins": true
+  },
   "extraKnownMarketplaces": {
     "earlybirdvc-skills": {
       "source": {
@@ -113,6 +115,12 @@
         "repo": "earlybirdvc/skills"
       },
       "autoUpdate": true
+    },
+    "sderosiaux-claude-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "sderosiaux/claude-plugins"
+      }
     }
   },
   "effortLevel": "xhigh",
