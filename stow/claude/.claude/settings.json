@@ -30,6 +30,17 @@
             "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && echo 'Note: piping to head/tail can truncate exploration output (git log, grep, find). For status-checks (gh/git/jq one-liners) it is fine. For long output, prefer run_in_background + Read the output file.' >&2; exit 0"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$HOME/.claude/hooks/no-emdash.py\"; if [ -f \"$f\" ]; then python3 \"$f\"; else exit 0; fi",
+            "timeout": 5,
+            "statusMessage": "Checking for em-dashes..."
+          }
+        ]
       }
     ],
     "PostToolUse": [
