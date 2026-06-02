@@ -177,7 +177,7 @@ chmod +x stow/bootstrap/.system-bootstrap.d/120_gws.sh
 '''
 
 [tasks.claude-warehouse]
-description = "Install the launchd agent that keeps the claude-warehouse DuckDB synced"
+description = "Install the launchd agent that keeps the claude-warehouse DuckDB synced + embedded"
 run = '''
 echo "Setting up claude-warehouse sync agent..."
 chmod +x stow/bootstrap/.system-bootstrap.d/140_claude_warehouse.sh
