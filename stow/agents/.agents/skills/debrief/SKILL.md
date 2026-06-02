@@ -4,8 +4,10 @@ description: >-
   Write a shipped-project debrief — a self-contained, brand-styled HTML artifact
   that explains what shipped, the non-obvious root cause behind any bug or
   decision (verified, not assumed), the learning, and the wider impact. Files it
-  into the Obsidian vault's per-date journal folder and adds it to the
-  recently-shipped index that the daily brief renders. Use when the user says
+  into the Obsidian vault's per-date journal folder, links it directly into
+  today's daily brief, and adds it to the recently-shipped index. Every run also
+  writes a forward-looking handoff for the next session and copies it to the
+  clipboard so you can immediately start a clean session. Use when the user says
   "/debrief", "debrief this", "write a debrief", "ship debrief", "project
   debrief", "post-mortem this", "do a debrief on the X work", or has just landed
   a workstream / merged a set of PRs and wants the wrap-up captured. Also trigger
@@ -45,7 +47,7 @@ If the var is set, write to the vault (default). If unset, fall back to
 `docs/debriefs/<project>.html` in the current repo and skip the index step — tell
 the user that's what you did.
 
-## The seven learnings this skill encodes
+## The eight learnings this skill encodes
 
 These are non-negotiable defaults distilled from real debriefs. Each one is here
 because skipping it produced a worse artifact:
@@ -73,8 +75,16 @@ because skipping it produced a worse artifact:
    issues — any ID with a canonical URL. The reader jumps straight there.
    (See `feedback_link_prs_to_github` in memory.)
 7. **Ship a self-contained, brand-styled HTML artifact** filed where it's
-   findable, and register it in the recently-shipped index so it surfaces in the
-   daily brief.
+   findable. Make it visible two ways: link it directly into today's daily brief
+   (so it shows up *now*, not only when the daily is next regenerated), and
+   register it in the recently-shipped index (so future dailies keep linking it).
+   The index alone isn't enough: a debrief written after the daily was built
+   would otherwise never appear in that day's brief.
+8. **End with a handoff for the next session.** Shipping one thing is the moment
+   you have the most context about what comes next. Capture it as a
+   forward-looking handoff and put it on the clipboard, so starting a clean
+   session is a paste away. The debrief looks back; the handoff it leaves looks
+   forward.
 
 ## Workflow
 
@@ -181,12 +191,71 @@ The `daily-obsidian` skill reads this file and renders the recent entries at the
 top of the standup section. Keep the one-line summary to a single clause — the
 debrief itself holds the detail.
 
-### 6. Report back
+### 6. Link it into today's daily brief
 
-Tell the user the vault path written, that the browser opened, and that the entry
-is now in the shipped index (so it'll appear at the top of the next daily).
+Registering in the index (step 5) only surfaces the debrief when the daily is
+*next regenerated*. If today's daily already exists, the debrief you just wrote
+won't show up in it - which is the common case when you debrief after the
+morning brief. So link it in directly with the bundled script. It owns a
+marker-delimited `Debriefs filed today` block: it creates that section on the
+first debrief of the day and prepends to it on later ones (newest first, deduped
+on re-run):
+
+```bash
+DAILY="$VAULT_JOURNAL/$(date +%Y)/$(date +%m-%B)/$(date +%Y-%m-%d)/$(date +%Y-%m-%d)-$(date +%A)-daily.html"
+python3 ~/.claude/skills/debrief/scripts/link_into_daily.py \
+  --daily "$DAILY" \
+  --href "$(date +%Y-%m-%d)-$(date +%A)-<project-slug>-debrief.html" \
+  --title "<project title>" \
+  --result "<one-clause outcome>" \
+  --date "$(date +%Y-%m-%d)"
+```
+
+`--href` is just the debrief filename - the daily lives in the same per-date
+folder, so a bare filename resolves. The script is non-fatal: if today's daily
+doesn't exist yet it says so and exits clean, and the index (step 5) still feeds
+the daily whenever it's next built. The daily's sidebar auto-builds from the
+section's `<h2>`, so the new block lands in nav for free.
+
+### 7. Write the next-session handoff and copy it
+
+Shipping is the high-context moment to capture what comes next, so every debrief
+ends by leaving a handoff for a clean restart. Build it using the `/handoff`
+skill's structure (Objective, State of play, Relevant artifacts, Next steps,
+Suggested skills, Open questions, Gotchas - see its `SKILL.md`), but bias every
+section toward *what to do after this ship*: the debrief's open follow-ups, the
+next slice, the branch / PR state. Draw "what's next" from local state - branch,
+open PRs, worktree, TODOs, this conversation - not from Linear unprompted.
+
+File it beside the debrief, same naming:
+
+```
+$VAULT_JOURNAL/$(date +%Y)/$(date +%m-%B)/$(date +%Y-%m-%d)/$(date +%Y-%m-%d)-$(date +%A)-<project-slug>-handoff.md
+```
+
+Then copy it so a fresh session is one paste away - raw markdown, no code fences:
+
+```bash
+pbcopy < "$VAULT_JOURNAL/$(date +%Y)/$(date +%m-%B)/$(date +%Y-%m-%d)/$(date +%Y-%m-%d)-$(date +%A)-<project-slug>-handoff.md"
+```
+
+macOS `pbcopy`; the clipboard gets the file's raw content, so don't wrap it in
+fences. If `OBSIDIAN_VAULT_DAILY_JOURNAL` is unset, skip the vault file: write the
+handoff to `$TMPDIR`/`/tmp` (the `/handoff` default) and still `pbcopy` it - the
+clipboard step never depends on the vault.
+
+### 8. Report back
+
+One tight block:
+- the debrief vault path + that the browser opened
+- that it's linked into today's daily (or that the daily didn't exist yet, so
+  only the index was updated)
+- that it's in the recently-shipped index
+- that the next-session handoff is filed AND on the clipboard, ready to paste
+  into a clean session
 
 ## Reference files
 
-- `references/table-style.css` — brand table CSS to inject into cloned chrome.
-- `references/recently-shipped-template.md` — the index file's initial content.
+- `scripts/link_into_daily.py` - injects the direct debrief link into today's daily HTML (step 6). Idempotent, non-fatal if no daily exists yet.
+- `references/table-style.css` - brand table CSS to inject into cloned chrome.
+- `references/recently-shipped-template.md` - the index file's initial content.
