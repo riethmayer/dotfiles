@@ -28,6 +28,11 @@ End plans with unresolved questions (extremely concise).
 - Create under `.claude/worktrees/<short-name>` inside the repo (not sibling dirs)
 - Copy `.claude/settings.local.json` and `.env`
 
+## Pull Requests
+
+- After `gh pr create` (non-draft), default to `/ship` (runs `/check-pr`, then squash-merge + deploy-monitor) unless told otherwise this turn.
+- Enforcement is deterministic, not memory: a PostToolUse hook (`~/.claude/hooks/gh-pr-create-ship.sh`) surfaces this on every create in earlybirdvc/eagleeye; GitHub branch protection is the hard gate that blocks merging anything red or behind.
+
 ## Presentation & Visuals
 
 - Always apply brand guidelines (earlybird plugin) for any visual
