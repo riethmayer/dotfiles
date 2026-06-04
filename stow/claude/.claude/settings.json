@@ -45,6 +45,17 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$HOME/.claude/hooks/gh-pr-create-ship.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
+            "timeout": 5,
+            "statusMessage": "Checking for gh pr create..."
+          }
+        ]
+      },
+      {
         "matcher": "mcp__.*",
         "hooks": [
           {
