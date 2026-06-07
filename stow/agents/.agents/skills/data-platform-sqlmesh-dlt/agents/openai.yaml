@@ -1,4 +1,0 @@
-interface:
-  display_name: "Data Platform (SQLMesh + dlt)"
-  short_description: "Repo-specific ingestion and transformation workflows"
-  default_prompt: "Use $data-platform-sqlmesh-dlt for SQLMesh, dlt-extension, and audit-gated pipeline updates in this repo."

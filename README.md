@@ -20,6 +20,7 @@ The following tools are managed via GNU Stow:
 
 | Package | Description | XDG Compliant |
 |---------|-------------|---------------|
+| agents | Shared AI agent instructions and personal-skill symlinks | ✅ |
 | atuin | Shell history sync | ✅ |
 | bootstrap | System setup scripts | N/A |
 | brew | Homebrew bundle | N/A |
@@ -56,8 +57,17 @@ mise run install        # Install all stow packages
 mise run bootstrap      # Full system setup
 mise run quick-bootstrap # Minimal dev setup (mise, atuin, zsh-xdg, LSP)
 mise run lsp            # Install LSP servers (bash, lua, yaml, toml, json, md)
+mise run skills         # Install/update personal skills for Claude and Codex
 mise run update         # Sync and update dotfiles
 ```
+
+## Personal Skills
+
+Personal agent skills live in `~/src/my-skills` and are exposed through
+`~/.agents/skills` for Claude and Codex. `mise run install` prepares that
+checkout before stow; `mise run skills` installs the Git-backed Codex
+`jan-skills` marketplace and a LaunchAgent that fast-forwards the checkout
+hourly when it is clean.
 
 ## Directory Structure
 
