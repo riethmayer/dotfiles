@@ -1,0 +1,198 @@
+#!/bin/bash
+#
+# Keep Jan's personal skills repo available to Claude and Codex.
+#
+# The repo is the source of truth; dotfiles owns only setup, symlinks, and
+# runtime registration. Normal runs clone or fast-forward when the checkout is
+# clean. Dirty worktrees are fetched but never overwritten.
+
+set -euo pipefail
+
+MODE="full"
+case "${1:-}" in
+    "")
+        ;;
+    --pre-stow)
+        MODE="pre-stow"
+        ;;
+    --git-only)
+        MODE="git-only"
+        ;;
+    --check)
+        MODE="check"
+        ;;
+    *)
+        echo "Usage: personal-skills-sync [--pre-stow|--git-only|--check]" >&2
+        exit 2
+        ;;
+esac
+
+REPO_URL="${MY_SKILLS_REPO:-git@github.com:riethmayer/skills.git}"
+REPO_REF="${MY_SKILLS_REF:-main}"
+CODEX_MARKETPLACE_SOURCE="${MY_SKILLS_CODEX_MARKETPLACE_SOURCE:-git}"
+SKILLS_REPO="${MY_SKILLS_DIR:-$HOME/src/my-skills}"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+SKILLS_DIR="$SKILLS_REPO/skills"
+MARKETPLACE_JSON="$SKILLS_REPO/.agents/plugins/marketplace.json"
+HOME_SKILLS="$HOME/.agents/skills"
+DOTFILES_SKILLS="$DOTFILES_DIR/stow/agents/.agents/skills"
+
+log() { printf '%s personal-skills-sync: %s\n' "$(date '+%Y-%m-%dT%H:%M:%S')" "$*"; }
+die() { log "ERROR: $*" >&2; exit 1; }
+
+is_dirty() {
+    [ -n "$(git -C "$SKILLS_REPO" status --porcelain)" ]
+}
+
+ensure_repo() {
+    mkdir -p "$(dirname "$SKILLS_REPO")"
+
+    if [ -d "$SKILLS_REPO/.git" ]; then
+        current_remote="$(git -C "$SKILLS_REPO" remote get-url origin 2>/dev/null || true)"
+        if [ "$current_remote" != "$REPO_URL" ]; then
+            log "origin is $current_remote, expected $REPO_URL; leaving checkout in place"
+        fi
+
+        git -C "$SKILLS_REPO" fetch --prune origin "$REPO_REF" || die "fetch failed for $REPO_URL"
+
+        current_branch="$(git -C "$SKILLS_REPO" branch --show-current)"
+        if is_dirty; then
+            log "$SKILLS_REPO has local changes; fetched latest but skipped fast-forward"
+        elif [ "$current_branch" = "$REPO_REF" ]; then
+            git -C "$SKILLS_REPO" pull --ff-only origin "$REPO_REF" || die "fast-forward failed"
+        else
+            log "$SKILLS_REPO is on $current_branch, not $REPO_REF; fetched latest but skipped checkout"
+        fi
+    elif [ -e "$SKILLS_REPO" ]; then
+        die "$SKILLS_REPO exists but is not a git checkout"
+    else
+        git clone --branch "$REPO_REF" "$REPO_URL" "$SKILLS_REPO" || die "clone failed for $REPO_URL"
+    fi
+
+    [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
+    [ -f "$SKILLS_DIR/skill/SKILL.md" ] || die "$SKILLS_DIR does not look like the personal skills tree"
+}
+
+prepare_legacy_home_skills() {
+    mkdir -p "$HOME/.agents"
+
+    if [ -L "$HOME_SKILLS" ]; then
+        return
+    fi
+
+    if [ -e "$HOME_SKILLS" ]; then
+        backup="$HOME/.agents/skills.pre-my-skills-$(date '+%Y%m%d%H%M%S')"
+        if [ -d "$HOME_SKILLS" ] && [ -z "$(find "$HOME_SKILLS" -mindepth 1 -maxdepth 1 ! -type l -print -quit)" ]; then
+            rm -rf "$HOME_SKILLS"
+            log "removed legacy ~/.agents/skills directory containing only stow symlinks"
+        else
+            mv "$HOME_SKILLS" "$backup"
+            log "moved legacy ~/.agents/skills to $backup"
+        fi
+    fi
+}
+
+ensure_home_symlink() {
+    prepare_legacy_home_skills
+
+    if [ -L "$HOME_SKILLS" ]; then
+        return
+    fi
+
+    [ -e "$DOTFILES_SKILLS" ] || die "$DOTFILES_SKILLS is missing; run from the updated dotfiles checkout"
+    ln -s "$DOTFILES_SKILLS" "$HOME_SKILLS"
+    log "linked ~/.agents/skills to dotfiles personal-skills symlink"
+}
+
+ensure_codex_marketplace() {
+    command -v codex >/dev/null 2>&1 || {
+        log "codex CLI not found; skipping Codex marketplace registration"
+        return
+    }
+
+    [ -f "$MARKETPLACE_JSON" ] || die "$MARKETPLACE_JSON is missing; Codex marketplace generation has not run"
+
+    if [ "$CODEX_MARKETPLACE_SOURCE" = "local" ]; then
+        desired_source="$SKILLS_REPO"
+    elif [ "$CODEX_MARKETPLACE_SOURCE" = "git" ]; then
+        desired_source="$REPO_URL"
+    else
+        die "unsupported MY_SKILLS_CODEX_MARKETPLACE_SOURCE=$CODEX_MARKETPLACE_SOURCE"
+    fi
+
+    current_root="$(codex plugin marketplace list | awk '$1 == "jan-skills" { print $2; exit }')"
+    if [ -n "$current_root" ]; then
+        if [ "$CODEX_MARKETPLACE_SOURCE" = "local" ] && [ "$current_root" = "$SKILLS_REPO" ]; then
+            log "Codex marketplace jan-skills already points at $SKILLS_REPO"
+            return
+        fi
+        if [ "$CODEX_MARKETPLACE_SOURCE" = "git" ] && [ "$current_root" != "$SKILLS_REPO" ]; then
+            log "Codex marketplace jan-skills already registered ($current_root)"
+            upgrade_codex_marketplace
+            return
+        fi
+        codex plugin marketplace remove jan-skills
+    fi
+
+    if [ "$CODEX_MARKETPLACE_SOURCE" = "local" ]; then
+        codex plugin marketplace add "$desired_source"
+    else
+        codex plugin marketplace add "$desired_source" --ref "$REPO_REF"
+    fi
+    log "registered Codex marketplace jan-skills from $desired_source"
+}
+
+upgrade_codex_marketplace() {
+    command -v codex >/dev/null 2>&1 || return
+    codex plugin marketplace list | awk '$1 == "jan-skills" { found=1 } END { exit found ? 0 : 1 }' || return
+
+    current_root="$(codex plugin marketplace list | awk '$1 == "jan-skills" { print $2; exit }')"
+    if [ "$current_root" != "$SKILLS_REPO" ]; then
+        codex plugin marketplace upgrade jan-skills || die "Codex marketplace upgrade failed"
+        log "upgraded Codex marketplace jan-skills"
+    fi
+}
+
+check_state() {
+    [ -d "$SKILLS_REPO/.git" ] || die "$SKILLS_REPO is not cloned"
+    [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
+    [ -L "$DOTFILES_SKILLS" ] || die "$DOTFILES_SKILLS is not a symlink"
+    [ "$(readlink "$DOTFILES_SKILLS")" = "../../../../src/my-skills/skills" ] || die "$DOTFILES_SKILLS points at $(readlink "$DOTFILES_SKILLS")"
+    [ -L "$HOME/.claude/skills" ] || die "~/.claude/skills is not linked"
+    [ -e "$HOME/.claude/skills/skill/SKILL.md" ] || die "Claude cannot resolve personal skills"
+    [ -L "$HOME_SKILLS" ] || die "~/.agents/skills is not linked"
+    [ -e "$HOME_SKILLS/skill/SKILL.md" ] || die "Codex/shared agents cannot resolve personal skills"
+    if command -v codex >/dev/null 2>&1; then
+        codex plugin marketplace list | awk '$1 == "jan-skills" { found=1 } END { exit found ? 0 : 1 }' || die "Codex marketplace jan-skills is not registered"
+        plugin_list="$(mktemp)"
+        codex plugin list > "$plugin_list" || {
+            rm -f "$plugin_list"
+            die "Codex plugin list failed"
+        }
+        grep -q '^jan-engineering@jan-skills' "$plugin_list" || {
+            rm -f "$plugin_list"
+            die "Codex cannot see generated jan-skills plugins"
+        }
+        rm -f "$plugin_list"
+    fi
+    log "OK"
+}
+
+case "$MODE" in
+    check)
+        check_state
+        ;;
+    pre-stow)
+        ensure_repo
+        prepare_legacy_home_skills
+        ;;
+    git-only)
+        ensure_repo
+        upgrade_codex_marketplace
+        ;;
+    full)
+        ensure_repo
+        ensure_home_symlink
+        ensure_codex_marketplace
+        ;;
+esac

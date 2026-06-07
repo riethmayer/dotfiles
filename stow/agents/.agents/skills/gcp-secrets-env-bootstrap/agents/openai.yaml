@@ -1,4 +1,0 @@
-interface:
-  display_name: "GCP Secrets + Env Bootstrap"
-  short_description: "Secret Manager and env bootstrap conventions for this repo"
-  default_prompt: "Use $gcp-secrets-env-bootstrap to wire Secret Manager-backed env bootstrapping safely in this monorepo."

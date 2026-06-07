@@ -108,31 +108,33 @@ Current stow packages: agents, atuin, bootstrap, brew, claude, gcloud, ghostty, 
 3. Add mise task for individual tool setup in `stow/mise/.config/mise/config.toml`
 4. For Zsh integration: add `stow/zsh/.oh-my-zsh/custom/zshrc.d/XXX_{tool}.zsh`
 
-### Adding Agent Skills (`npx skills add ...`)
+### Adding Agent Skills
 
-**Canonical layout** — one real directory in dotfiles, surfaced to every agent by stow:
+Personal skill content now lives outside dotfiles in `~/src/my-skills`
+(`git@github.com:riethmayer/skills.git`). Dotfiles owns only setup and entry
+points:
 
 ```
-stow/agents/.agents/skills/<name>/         real dir + files (commit this)
-stow/claude/.claude/skills        →  ../../agents/.agents/skills   (committed cross-package symlink)
-~/.claude/skills                  →  ../dotfiles/stow/claude/.claude/skills   (created by `mise run install`)
-~/.agents/skills/<name>           →  ../../dotfiles/stow/agents/.agents/skills/<name>   (created by `mise run install`, stow folds into the existing ~/.agents/skills/ dir)
+~/src/my-skills/skills/<name>/            real skill files (edit/commit there)
+stow/agents/.agents/skills                →  ../../../../src/my-skills/skills
+stow/claude/.claude/skills                →  ../../agents/.agents/skills
+~/.agents/skills                          →  ../dotfiles/stow/agents/.agents/skills
+~/.claude/skills                          →  ../dotfiles/stow/claude/.claude/skills
+Codex jan-skills marketplace              →  git@github.com:riethmayer/skills.git --ref main
 ```
 
-Net effect: agents that read `~/.claude/skills/` (and `~/.codex/skills/`, etc.) resolve every skill through dotfiles. Editing `stow/agents/.agents/skills/<name>/SKILL.md` updates every alias instantly.
+Run `mise run skills` to clone/update the repo, register the Codex marketplace,
+and install the background updater. `mise run install` prepares the external
+checkout before stow so the single `~/.agents/skills` symlink is present by
+default.
 
-The `npx skills add` tool ignores this — it drops real content at `~/.agents/skills/<name>` and writes a back-symlink into the dotfiles checkout, creating a cycle. Fix it by moving the content into dotfiles and letting stow rebuild the symlinks:
+When adding or editing a skill, work in `~/src/my-skills`, not under
+`stow/agents/.agents/skills`. If a tool writes a real directory into
+`~/.agents/skills/<name>`, move that content into `~/src/my-skills/skills/<name>`
+and rerun `mise run install`.
 
-```sh
-NAME=<skill-name>
-cd "$HOME/dotfiles"
-rm stow/agents/.agents/skills/$NAME                       # the circular symlink
-mv "$HOME/.agents/skills/$NAME" stow/agents/.agents/skills/$NAME
-mise run install                                          # stow recreates ~/.agents/skills/$NAME → dotfiles
-git add stow/agents/.agents/skills/$NAME
-```
-
-If only the dotfiles arm is broken ("Too many levels of symbolic links" on `stow/agents/.agents/skills/<name>` but `~/.agents/skills/<name>` still resolves), the other arms are fine — just `rm` the dotfiles symlink, recreate as a real dir with SKILL.md inside, and `mise run install` to be safe.
+For in-progress local Codex marketplace testing before pushing the skills repo,
+run with `MY_SKILLS_CODEX_MARKETPLACE_SOURCE=local`.
 
 ### Script Organization
 - System setup scripts: `stow/bootstrap/.system-bootstrap.d/`

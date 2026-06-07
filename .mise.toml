@@ -13,6 +13,10 @@ mise tasks
 [tasks.install]
 description = "Install all stow packages"
 run = '''
+if [ -f stow/scripts/bin/personal-skills-sync ]; then
+  bash stow/scripts/bin/personal-skills-sync --pre-stow
+fi
+
 STOW_DIR=$(pwd)/stow
 PACKAGES=$(ls -d stow/* | xargs basename -a)
 stow --dir $STOW_DIR --target ~ $PACKAGES
@@ -118,6 +122,20 @@ if [[ ! -z $unmerged_files ]]; then
 fi
 
 echo -e "${GREEN}Dotfiles sync completed successfully!${NC}"
+
+if [ -f stow/scripts/bin/personal-skills-sync ]; then
+  echo -e "${BLUE}Syncing personal skills...${NC}"
+  bash stow/scripts/bin/personal-skills-sync
+fi
+'''
+
+[tasks.skills]
+description = "Install/update personal skills for Claude and Codex"
+run = '''
+echo "Setting up personal skills..."
+chmod +x stow/scripts/bin/personal-skills-sync
+chmod +x stow/bootstrap/.system-bootstrap.d/115_personal_skills.sh
+./stow/bootstrap/.system-bootstrap.d/115_personal_skills.sh
 '''
 
 [tasks.tmux]

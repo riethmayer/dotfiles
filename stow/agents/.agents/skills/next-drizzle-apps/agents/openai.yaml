@@ -1,4 +1,0 @@
-interface:
-  display_name: "Next + Drizzle Apps"
-  short_description: "Patterns for Next.js apps using Drizzle in this repo"
-  default_prompt: "Use $next-drizzle-apps to implement schema/query/auth changes in time-to-meeting and investment-thesis."

@@ -3,6 +3,10 @@
 **Date:** 2026-04-12
 **Status:** Accepted
 
+**Update 2026-06-07:** ADR-007 supersedes the skill-content ownership part of
+this decision. The package split remains, but personal skill bodies now live in
+`~/src/my-skills`; dotfiles keeps only symlinks and setup.
+
 ## Context
 
 `.claude/` config (settings.json, plugins, MCP config) was originally part of the `agents` stow package alongside `.agents/` skills. This caused stow conflicts when the two needed different lifecycle management — skills change frequently, Claude settings are stable.
