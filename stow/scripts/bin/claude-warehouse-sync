@@ -4,7 +4,7 @@
 # embed any new content for /claude-warehouse:recall. Driven by the
 # com.claude-warehouse.sync LaunchAgent every 10 min (see
 # stow/bootstrap/.system-bootstrap.d/140_claude_warehouse.sh); also safe to run
-# by hand.
+# by hand, or with --check to verify wiring without paying for a sync.
 #
 # Why one script does both: DuckDB is single-writer. Running sync and embed
 # sequentially in ONE process means they never contend for the write lock (no
@@ -12,23 +12,75 @@
 # and returns before importing torch - so running it every cycle costs ~1s when
 # there is nothing new and keeps recall fresh within ~10 min.
 #
-# Portable + defensive: resolves the plugin version by glob (survives updates),
-# uses the standalone uv binary, and no-ops if the plugin is not installed yet.
+# Portable + defensive (assertions, not assumptions):
+#   - uv is resolved from mise (declared `uv = "latest"` in the global mise
+#     config, so it is provisioned on every machine) with a standalone-install
+#     fallback. A MISSING uv is FATAL and logged loudly - never a silent no-op,
+#     because a hardcoded ~/.local/bin/uv path that nothing installed once hid a
+#     permanently stale warehouse on a mise-only machine.
+#   - The plugin version is resolved by glob (survives plugin updates).
+#   - The ONLY legitimate no-op is "plugin not cached yet" (fresh machine before
+#     Claude's first launch). Everything else that goes wrong exits non-zero.
+#   - After a real sync it asserts the DuckDB file actually exists.
 
-export PATH="/opt/homebrew/bin:/usr/bin:/bin"
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin"
 
-UV="$HOME/.local/bin/uv"
 BASE="$HOME/.claude/plugins/cache/sderosiaux-claude-plugins/claude-warehouse"
+DB="$HOME/.claude/claude.duckdb"
 
-[ -x "$UV" ] || exit 0
+log() { printf '%s claude-warehouse-sync: %s\n' "$(date '+%Y-%m-%dT%H:%M:%S')" "$*"; }
+
+# Print a usable uv path on stdout, or return 1. Preference favours the
+# mise-managed install (the declared source of truth) but accepts a standalone
+# uv if a machine has one. Stays silent so `UV=$(resolve_uv)` captures only the path.
+resolve_uv() {
+    [ -x "$HOME/.local/bin/uv" ] && { printf '%s\n' "$HOME/.local/bin/uv"; return 0; }
+    [ -x "$HOME/.local/share/mise/shims/uv" ] && { printf '%s\n' "$HOME/.local/share/mise/shims/uv"; return 0; }
+    m=$(ls "$HOME/.local/share/mise/installs/uv"/*/uv-*/uv 2>/dev/null | sort | tail -1)
+    [ -n "$m" ] && { printf '%s\n' "$m"; return 0; }
+    command -v uv 2>/dev/null && return 0
+    return 1
+}
+
+# timeout(1) (coreutils) caps a runaway sync/embed; degrade to no-cap if absent.
+TIMEOUT=$(command -v timeout || command -v gtimeout || true)
+run_capped() { # secs cmd...
+    secs=$1
+    shift
+    if [ -n "$TIMEOUT" ]; then "$TIMEOUT" "$secs" "$@"; else "$@"; fi
+}
 
 sync=$(ls "$BASE"/*/scripts/sync.py 2>/dev/null | sort | tail -1)
 embed=$(ls "$BASE"/*/scripts/embed.py 2>/dev/null | sort | tail -1)
 
-# No plugin yet (e.g. fresh machine before Claude's first launch): nothing to do.
-[ -n "$sync" ] || exit 0
+UV=$(resolve_uv) || {
+    log "FATAL: no uv found (checked ~/.local/bin, mise shim, mise installs, PATH). uv is declared in mise config.toml - run 'mise install'."
+    exit 1
+}
 
-timeout 240 "$UV" run --quiet --script "$sync"
-[ -n "$embed" ] && timeout 1800 "$UV" run --quiet --script "$embed"
+# Plugin not cached yet: the only legitimate no-op.
+if [ -z "$sync" ]; then
+    [ "${1:-}" = "--check" ] && log "OK: uv=$UV; plugin not cached yet (no-op until Claude installs claude-warehouse)."
+    exit 0
+fi
 
+# --check verifies wiring (uv + plugin resolvable) without running a sync.
+if [ "${1:-}" = "--check" ]; then
+    log "OK: uv=$UV; sync=$sync; embed=${embed:-<none>}; db=$( [ -f "$DB" ] && echo present || echo absent )."
+    exit 0
+fi
+
+# 1200s, not the ~47s a warm full backfill takes: the FIRST run on a fresh
+# machine must also provision uv's environment (download/install the duckdb
+# wheel) before any ETL, which once blew past a 240s cap and tripped the FATAL
+# below. Steady-state incremental syncs finish in seconds; this cap only ever
+# bounds a genuinely hung sync.
+run_capped 1200 "$UV" run --quiet --script "$sync" || { rc=$?; log "FATAL: sync.py failed (rc=$rc)"; exit "$rc"; }
+if [ -n "$embed" ]; then
+    run_capped 1800 "$UV" run --quiet --script "$embed" || { rc=$?; log "FATAL: embed.py failed (rc=$rc)"; exit "$rc"; }
+fi
+
+# A successful sync must have produced the warehouse; assert it.
+[ -f "$DB" ] || { log "FATAL: sync+embed completed but $DB is missing"; exit 1; }
+log "OK: synced + embedded ($(du -h "$DB" 2>/dev/null | cut -f1) db)."
 exit 0

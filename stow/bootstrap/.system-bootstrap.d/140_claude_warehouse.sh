@@ -35,6 +35,15 @@ if [ ! -x "$WRAPPER" ]; then
     exit 0
 fi
 
+# Pre-flight: assert the wrapper can resolve its dependencies (uv + plugin)
+# BEFORE wiring it to launchd. Otherwise the agent would silently no-op every
+# 10 min - the exact stale-warehouse failure this setup exists to prevent. A
+# not-yet-cached plugin is fine (--check exits 0); a missing uv is fatal.
+if ! "$WRAPPER" --check; then
+    echo "claude-warehouse: wrapper self-check failed (see above) - not installing the agent" >&2
+    exit 1
+fi
+
 mkdir -p "$HOME/Library/LaunchAgents" "$(dirname "$LOG")"
 
 cat > "$PLIST" <<PLIST
@@ -67,4 +76,11 @@ uid="$(id -u)"
 launchctl bootout "gui/$uid/$LABEL" 2>/dev/null || true
 launchctl bootstrap "gui/$uid" "$PLIST"
 
-echo "claude-warehouse: launchd agent $LABEL installed (sync + embed every 600s, log: $LOG)"
+# Assert the agent actually registered; bootstrap can fail to load a bad plist
+# without a non-zero exit, so verify rather than trust.
+if ! launchctl print "gui/$uid/$LABEL" >/dev/null 2>&1; then
+    echo "claude-warehouse: ERROR - $LABEL did not load after bootstrap" >&2
+    exit 1
+fi
+
+echo "claude-warehouse: launchd agent $LABEL installed + verified loaded (sync + embed every 600s, log: $LOG)"
