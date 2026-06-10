@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Symlink today's Obsidian journal folder onto the Desktop and remove
-# the symlinks of previous days. Safe to run repeatedly (e.g. via launchd).
+# Put a Finder alias to today's Obsidian journal folder on the Desktop and
+# remove the aliases of previous days. Safe to run repeatedly (e.g. via
+# launchd). Uses a Finder alias instead of a symlink: Finder renders Desktop
+# symlinks with a blank generic icon, aliases get the real folder icon.
 set -euo pipefail
 
 : "${OBSIDIAN_VAULT_DAILY_JOURNAL:?OBSIDIAN_VAULT_DAILY_JOURNAL is not set}"
@@ -13,15 +15,49 @@ TARGET="$OBSIDIAN_VAULT_DAILY_JOURNAL/$(date +%Y)/$MONTH_DIR/$TODAY"
 
 mkdir -p "$TARGET"
 
-# Remove stale day links: only symlinks named YYYY-MM-DD that point into the
-# journal, never real files or folders that happen to match the pattern.
-for link in "$DESKTOP"/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]; do
-  [ -L "$link" ] || continue
-  [ "$(basename "$link")" = "$TODAY" ] && continue
-  case "$(readlink "$link")" in
-    "$OBSIDIAN_VAULT_DAILY_JOURNAL"/*) rm "$link" ;;
-  esac
+# Resolve a Finder alias file to its original's POSIX path ("" if not an alias)
+alias_original() {
+  osascript - "$1" <<'EOF' 2>/dev/null || true
+on run argv
+  tell application "Finder"
+    set f to item (POSIX file (item 1 of argv) as text)
+    if class of f is alias file then
+      return POSIX path of ((original item of f) as alias)
+    end if
+  end tell
+  return ""
+end run
+EOF
+}
+
+# Remove stale day entries: only symlinks/aliases named YYYY-MM-DD that point
+# into the journal, never real files or folders that happen to match.
+for entry in "$DESKTOP"/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]; do
+  [ -e "$entry" ] || [ -L "$entry" ] || continue
+  [ "$(basename "$entry")" = "$TODAY" ] && continue
+  if [ -L "$entry" ]; then
+    case "$(readlink "$entry")" in
+      "$OBSIDIAN_VAULT_DAILY_JOURNAL"/*) rm "$entry" ;;
+    esac
+  elif [ -f "$entry" ]; then
+    case "$(alias_original "$entry")" in
+      "$OBSIDIAN_VAULT_DAILY_JOURNAL"/*) rm "$entry" ;;
+    esac
+  fi
 done
 
-ln -sfn "$TARGET" "$DESKTOP/$TODAY"
+# Replace a leftover symlink from the pre-alias version of this script
+[ -L "$DESKTOP/$TODAY" ] && rm "$DESKTOP/$TODAY"
+
+if [ ! -e "$DESKTOP/$TODAY" ]; then
+  osascript - "$TARGET" "$TODAY" <<'EOF' >/dev/null
+on run argv
+  tell application "Finder"
+    set newAlias to make alias file to (POSIX file (item 1 of argv)) at (POSIX file (POSIX path of (path to desktop)))
+    set name of newAlias to (item 2 of argv)
+  end tell
+end run
+EOF
+fi
+
 echo "Desktop/$TODAY -> $TARGET"
