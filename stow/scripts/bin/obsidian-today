@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Symlink today's Obsidian journal folder onto the Desktop and remove
+# the symlinks of previous days. Safe to run repeatedly (e.g. via launchd).
+set -euo pipefail
+
+: "${OBSIDIAN_VAULT_DAILY_JOURNAL:?OBSIDIAN_VAULT_DAILY_JOURNAL is not set}"
+
+DESKTOP="$HOME/Desktop"
+TODAY=$(date +%Y-%m-%d)
+# Journal layout: <journal>/<YYYY>/<MM-Month>/<YYYY-MM-DD> (English month names)
+MONTH_DIR=$(LC_ALL=C date +%m-%B)
+TARGET="$OBSIDIAN_VAULT_DAILY_JOURNAL/$(date +%Y)/$MONTH_DIR/$TODAY"
+
+mkdir -p "$TARGET"
+
+# Remove stale day links: only symlinks named YYYY-MM-DD that point into the
+# journal, never real files or folders that happen to match the pattern.
+for link in "$DESKTOP"/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]; do
+  [ -L "$link" ] || continue
+  [ "$(basename "$link")" = "$TODAY" ] && continue
+  case "$(readlink "$link")" in
+    "$OBSIDIAN_VAULT_DAILY_JOURNAL"/*) rm "$link" ;;
+  esac
+done
+
+ln -sfn "$TARGET" "$DESKTOP/$TODAY"
+echo "Desktop/$TODAY -> $TARGET"
