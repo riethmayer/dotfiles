@@ -138,6 +138,14 @@ chmod +x stow/bootstrap/.system-bootstrap.d/115_personal_skills.sh
 ./stow/bootstrap/.system-bootstrap.d/115_personal_skills.sh
 '''
 
+[tasks.obsidian-today]
+description = "Install launchd agent: daily Desktop alias to today's Obsidian journal folder"
+run = '''
+echo "Setting up obsidian-today launchd agent..."
+chmod +x stow/bootstrap/.system-bootstrap.d/150_obsidian_today.sh
+./stow/bootstrap/.system-bootstrap.d/150_obsidian_today.sh
+'''
+
 [tasks.tmux]
 description = "Setup tmux configuration"
 run = '''

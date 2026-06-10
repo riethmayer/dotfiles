@@ -25,6 +25,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run atuin` - Setup Atuin shell history
 - `mise run zsh-xdg` - Setup Zsh XDG directories
 - `mise run gws` - Install the Google Workspace CLI (gws) for the gws-* skills
+- `mise run obsidian-today` - Install launchd agent: daily Desktop alias to today's Obsidian journal folder
 
 ## Architecture and Structure
 
