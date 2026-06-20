@@ -2,6 +2,7 @@
 GOBIN = ""
 
 [tools]
+"1password" = "latest"
 direnv = "2.35.0"
 go = "latest"
 zoxide = "latest"
