@@ -28,6 +28,7 @@ stow/claude/.claude/plugins/known_marketplaces.json
 stow/claude/.claude/plugins/cache/
 stow/claude/.claude/plugins/install-counts-cache.json
 stow/claude/.claude/plugins/plugin-catalog-cache.json
+stow/claude/.claude/plugins/.last_inuse_sweep
 firebase-debug.log
 
 # Claude runtime logs
