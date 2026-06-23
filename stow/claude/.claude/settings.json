@@ -115,7 +115,9 @@
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
   },
   "enabledPlugins": {
-    "claude-warehouse@sderosiaux-claude-plugins": true
+    "claude-warehouse@sderosiaux-claude-plugins": true,
+    "frontend-design@claude-plugins-official": true,
+    "understand-anything@understand-anything": true
   },
   "extraKnownMarketplaces": {
     "earlybirdvc-skills": {
@@ -142,6 +144,12 @@
         "source": "github",
         "repo": "sderosiaux/claude-plugins"
       }
+    },
+    "understand-anything": {
+      "source": {
+        "source": "github",
+        "repo": "Egonex-AI/Understand-Anything"
+      }
     }
   },
   "effortLevel": "xhigh",
@@ -150,5 +158,6 @@
   "theme": "auto",
   "editorMode": "vim",
   "verbose": true,
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
 }
