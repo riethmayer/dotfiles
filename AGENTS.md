@@ -122,6 +122,7 @@ stow/claude/.claude/skills                →  ../../agents/.agents/skills
 ~/.agents/skills                          →  ../dotfiles/stow/agents/.agents/skills
 ~/.claude/skills                          →  ../dotfiles/stow/claude/.claude/skills
 Codex jan-skills marketplace              →  git@github.com:riethmayer/skills.git --ref main
+Claude jan-skills marketplace             →  github:riethmayer/skills (.claude-plugin/marketplace.json)
 ```
 
 Run `mise run skills` to clone/update the repo, register the Codex marketplace,
@@ -136,6 +137,19 @@ and rerun `mise run install`.
 
 For in-progress local Codex marketplace testing before pushing the skills repo,
 run with `MY_SKILLS_CODEX_MARKETPLACE_SOURCE=local`.
+
+The same repo is also a **Claude plugin marketplace**: `scripts/sync-marketplace.mjs`
+generates `.claude-plugin/marketplace.json` (root) + per-bundle
+`plugins/<name>/.claude-plugin/plugin.json` alongside the Codex manifest, exposing
+the 7 grouped `jan-*` plugins. It is pre-declared in `stow/claude/.claude/settings.json`
+(`extraKnownMarketplaces.jan-skills` → github `riethmayer/skills`), so
+`/plugin marketplace add riethmayer/skills` works on any machine. It is registered
+KNOWN only, never auto-enabled: this machine already loads every skill through the
+`~/.claude/skills` symlink above, so enabling a `jan-*` plugin here would double-load
+the same skills. Use the marketplace on a machine that does not stow the symlink, or
+to install a single bundle in isolation. Regenerate the manifests after editing
+`skill-bundles.json` with `node scripts/sync-marketplace.mjs` (or just the Claude
+artifacts with the `claude` subcommand).
 
 ### Script Organization
 - System setup scripts: `stow/bootstrap/.system-bootstrap.d/`
