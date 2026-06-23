@@ -150,6 +150,12 @@
         "source": "github",
         "repo": "Egonex-AI/Understand-Anything"
       }
+    },
+    "jan-skills": {
+      "source": {
+        "source": "github",
+        "repo": "riethmayer/skills"
+      }
     }
   },
   "effortLevel": "xhigh",
