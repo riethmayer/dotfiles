@@ -1,9 +1,0 @@
-{
-  "lastChangelogVersion": "0.79.1",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.3-codex-spark",
-  "defaultThinkingLevel": "high",
-  "editorPaddingX": 0,
-  "theme": "dracula",
-  "hideThinkingBlock": true
-}
