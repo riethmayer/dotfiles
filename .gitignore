@@ -14,6 +14,11 @@ public.key
 stow/git/.config/git/local
 stow/zsh/.config/zsh/99_local.zsh
 
+# pi rewrites its own settings.json with runtime state (lastChangelogVersion)
+# on every update; the tracked settings.json.example carries the shared
+# defaults, seeded by stow/bootstrap/.system-bootstrap.d/155_pi.sh.
+stow/pi/.pi/agent/settings.json
+
 # GPG
 .gnupg/
 
