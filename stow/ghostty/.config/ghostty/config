@@ -25,23 +25,35 @@ shell-integration = zsh
 
 keybind = shift+enter=text:\x1b\r
 
-# Cmd+T creates tmux window instead of ghostty tab
+# Cmd+T new herdr space (sends prefix+c, bound in herdr)
 keybind = super+t=text:\x01c
 
-# Cmd+N switches tmux windows (sends Alt+N, bound in tmux)
-keybind = command+digit_1=text:\x1b1
-keybind = command+digit_2=text:\x1b2
-keybind = command+digit_3=text:\x1b3
-keybind = command+digit_4=text:\x1b4
-keybind = command+digit_5=text:\x1b5
-keybind = command+digit_6=text:\x1b6
-keybind = command+digit_7=text:\x1b7
-keybind = command+digit_8=text:\x1b8
-keybind = command+digit_9=text:\x1b9
+# Cmd+N jumps to herdr space N (sends prefix+shift+N as its punctuation char)
+keybind = command+digit_1=text:\x01!
+keybind = command+digit_2=text:\x01@
+keybind = command+digit_3=text:\x01#
+keybind = command+digit_4=text:\x01$
+keybind = command+digit_5=text:\x01%
+keybind = command+digit_6=text:\x01^
+keybind = command+digit_7=text:\x01&
+keybind = command+digit_8=text:\x01*
+keybind = command+digit_9=text:\x01(
+
+# Opt+N switches herdr tabs (sends Alt+N; digit keys only, Option stays
+# free for special characters elsewhere)
+keybind = alt+digit_1=text:\x1b1
+keybind = alt+digit_2=text:\x1b2
+keybind = alt+digit_3=text:\x1b3
+keybind = alt+digit_4=text:\x1b4
+keybind = alt+digit_5=text:\x1b5
+keybind = alt+digit_6=text:\x1b6
+keybind = alt+digit_7=text:\x1b7
+keybind = alt+digit_8=text:\x1b8
+keybind = alt+digit_9=text:\x1b9
 
 # Cmd+l sesh session picker (sends Alt+l, bound in tmux)
 keybind = super+l=text:\x1bl
 # Cmd+o switch to last sesh session (sends Alt+o, bound in tmux)
 keybind = super+o=text:\x1bo
-# Cmd+w kill tmux window (sends Alt+w, bound in tmux)
+# Cmd+w close herdr space with confirmation (sends Alt+w, bound in herdr)
 keybind = super+w=text:\x1bw

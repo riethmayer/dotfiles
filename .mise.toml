@@ -209,3 +209,11 @@ echo "Setting up claude-warehouse sync agent..."
 chmod +x stow/bootstrap/.system-bootstrap.d/140_claude_warehouse.sh
 ./stow/bootstrap/.system-bootstrap.d/140_claude_warehouse.sh
 '''
+
+[tasks.herdr]
+description = "Stow herdr config + install/refresh agent integrations (claude, pi)"
+run = '''
+echo "Setting up herdr..."
+chmod +x stow/bootstrap/.system-bootstrap.d/160_herdr.sh
+./stow/bootstrap/.system-bootstrap.d/160_herdr.sh
+'''
