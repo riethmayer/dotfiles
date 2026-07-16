@@ -26,6 +26,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run zsh-xdg` - Setup Zsh XDG directories
 - `mise run gws` - Install the Google Workspace CLI (gws) for the gws-* skills
 - `mise run obsidian-today` - Install launchd agent: daily Desktop alias to today's Obsidian journal folder
+- `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008)
 
 ## Architecture and Structure
 
@@ -78,6 +79,7 @@ Seams currently wired:
 | git  | `stow/git/.config/git/config` (ends in `[include] path = ~/.config/git/local`) | `stow/git/.config/git/local` | git reads the include last, so local overrides everything. Holds `[user]`, `coderabbit.machineId`, and absolute-path `allowedSignersFile`. |
 | zsh  | `stow/zsh/.config/zsh/*.zsh` | `stow/zsh/.config/zsh/99_local.zsh` | `~/.config/zsh` is a stow symlink into the repo dir, so the `*.zsh` glob in `.zshrc` sources `99_local.zsh` last automatically (the `.example` is skipped — glob requires `.zsh`). |
 | Claude | `stow/claude/.claude/settings.json` (shared intent) | `~/.claude/settings.local.json` + plugin runtime (`installed_plugins.json`, `known_marketplaces.json`, `cache/`) | runtime plugin state is gitignored — it carries absolute install paths that break across machines (different `$HOME`), so it must never be committed. |
+| pi   | `stow/pi/.pi/agent/settings.json.example` (shared defaults) | `stow/pi/.pi/agent/settings.json` | pi rewrites its own settings.json with runtime state (`lastChangelogVersion`) on every update, so the real file is gitignored; `155_pi.sh` seeds it from the example. |
 
 Each seam ships a tracked `*.example` template showing what to put in it.
 **Setup on a new machine:** `cp <file>.example <file>` next to it, edit in this
@@ -99,7 +101,7 @@ All configurations must follow XDG Base Directory Specification:
 - Cache files → `$XDG_CACHE_HOME` (~/.cache)
 
 ### Key Packages
-Current stow packages: agents, atuin, bootstrap, brew, claude, gcloud, ghostty, git, mise, nvim, opencode, pi, pnpm, ruby, scripts, ssh, starship, tmux, zsh
+Current stow packages: agents, atuin, bootstrap, brew, claude, ghostty, git, herdr, mise, nvim, opencode, pi, pnpm, ruby, scripts, ssh, starship, tmux, zsh
 
 ## Development Patterns
 
@@ -175,15 +177,7 @@ For every leftover, pick exactly one:
 
 Never leave `?? something` or ` M something` behind for the next agent — the dotfiles repo is a high-traffic shared workspace, and every leftover poisons the next session's `git status` signal.
 
-## Shared Rules
-
-Load on need-to-know basis:
-- `.rules/planning.md` - Sprint management (check when working on `.planning/`)
-- `.rules/tools.md` - Tool preferences (rg, fd, gh, fzf, etc.)
-- `.planning/tech-radar.md` - When adding/referencing technology, review and clarify categorization
-
 ## Must-Read Context
 
 Always read these before making changes:
 - `docs/adr/` - Architecture decision records
-- `docs/briefs/` - Work briefs with dated decisions
