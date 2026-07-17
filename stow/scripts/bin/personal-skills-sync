@@ -69,6 +69,10 @@ ensure_repo() {
         git clone --branch "$REPO_REF" "$REPO_URL" "$SKILLS_REPO" || die "clone failed for $REPO_URL"
     fi
 
+    # Repo-local git hooks (pre-push bundle-version gate) live in .githooks;
+    # hooksPath is per-clone config, so (re)set it on every sync.
+    git -C "$SKILLS_REPO" config core.hooksPath .githooks
+
     [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
     compgen -G "$SKILLS_DIR/*/SKILL.md" > /dev/null || die "$SKILLS_DIR does not look like the personal skills tree"
 }
