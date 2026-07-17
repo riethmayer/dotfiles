@@ -49,9 +49,6 @@ __pycache__/
 # Packaged skill build artifacts (scripts/package_skill.py output)
 *.skill
 
-# Skill-creator workspaces — test runs, evals, snapshots; never committed.
-# Each lives next to its skill as `<skill-name>-workspace/`.
-/stow/agents/.agents/skills/*-workspace/
 
 # herdr runtime state — written next to config.toml if ~/.config/herdr ever
 # gets stow-folded into the repo (install paths mkdir first, this is a belt).

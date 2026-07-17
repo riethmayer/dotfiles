@@ -63,11 +63,12 @@ mise run update         # Sync and update dotfiles
 
 ## Personal Skills
 
-Personal agent skills live in `~/src/my-skills` and are exposed through
-`~/.agents/skills` for Claude and Codex. `mise run install` prepares that
-checkout before stow; `mise run skills` installs the Git-backed Codex
-`jan-skills` marketplace and a LaunchAgent that fast-forwards the checkout
-hourly when it is clean.
+Personal agent skills live in `~/src/my-skills` and reach each agent through
+its own marketplace install (Claude: `jan-*` plugins, Codex: `jan-skills`
+marketplace) — content is duplicated per agent, no shared symlink. `mise run
+install` prepares the checkout before stow; `mise run skills` registers the
+Git-backed Codex `jan-skills` marketplace and a LaunchAgent that fast-forwards
+the checkout hourly when it is clean.
 
 ## Directory Structure
 

@@ -2,9 +2,10 @@
 #
 # Keep Jan's personal skills repo available to Claude and Codex.
 #
-# The repo is the source of truth; dotfiles owns only setup, symlinks, and
-# runtime registration. Normal runs clone or fast-forward when the checkout is
-# clean. Dirty worktrees are fetched but never overwritten.
+# The repo is the source of truth; dotfiles owns only setup and marketplace
+# registration — agents install skills from the marketplace (duplicated per
+# agent), no shared symlink. Normal runs clone or fast-forward when the
+# checkout is clean. Dirty worktrees are fetched but never overwritten.
 
 set -euo pipefail
 
@@ -77,45 +78,17 @@ ensure_repo() {
     compgen -G "$SKILLS_DIR/*/SKILL.md" > /dev/null || die "$SKILLS_DIR does not look like the personal skills tree"
 }
 
-prepare_legacy_home_skills() {
-    mkdir -p "$HOME/.agents"
-
+retire_home_symlink() {
+    # ~/.agents/skills is retired entirely: every agent consumes skills via its
+    # own marketplace/plugin install (duplicated content, per-machine choice of
+    # bundles), never via a shared raw-skill symlink. Remove the old link; a
+    # real directory means skill content drifted outside the repo — refuse.
     if [ -L "$HOME_SKILLS" ]; then
-        return
-    fi
-
-    if [ -e "$HOME_SKILLS" ]; then
-        backup="$HOME/.agents/skills.pre-my-skills-$(date '+%Y%m%d%H%M%S')"
-        if [ -d "$HOME_SKILLS" ] && [ -z "$(find "$HOME_SKILLS" -mindepth 1 -maxdepth 1 ! -type l -print -quit)" ]; then
-            rm -rf "$HOME_SKILLS"
-            log "removed legacy ~/.agents/skills directory containing only stow symlinks"
-        else
-            mv "$HOME_SKILLS" "$backup"
-            log "moved legacy ~/.agents/skills to $backup"
-        fi
-    fi
-}
-
-ensure_home_symlink() {
-    prepare_legacy_home_skills
-
-    # Link ~/.agents/skills straight at the skills checkout. It must NOT route
-    # through a symlink inside the dotfiles repo: any skills-reachable path in
-    # a project tree makes Claude Code surface all personal skills as that
-    # project's "project skills" (double-loading them next to the jan-*
-    # plugins). Replace a legacy dotfiles-routed link in place.
-    if [ -L "$HOME_SKILLS" ] && [ "$(readlink "$HOME_SKILLS")" != "$SKILLS_DIR" ]; then
         rm "$HOME_SKILLS"
-        log "replacing legacy dotfiles-routed ~/.agents/skills link"
+        log "removed retired ~/.agents/skills symlink"
+    elif [ -e "$HOME_SKILLS" ]; then
+        die "$HOME_SKILLS is a real path — move its contents into $SKILLS_DIR and remove it"
     fi
-
-    if [ -L "$HOME_SKILLS" ]; then
-        return
-    fi
-
-    [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
-    ln -s "$SKILLS_DIR" "$HOME_SKILLS"
-    log "linked ~/.agents/skills to $SKILLS_DIR"
 }
 
 ensure_codex_marketplace() {
@@ -176,8 +149,8 @@ check_state() {
     # Claude loads personal skills via the enabled jan-* plugins, not a
     # ~/.claude/skills symlink (retired to avoid double-loading).
     [ ! -L "$HOME/.claude/skills" ] || die "~/.claude/skills symlink is retired — remove it (skills load via jan-* plugins)"
-    [ -L "$HOME_SKILLS" ] || die "~/.agents/skills is not linked"
-    compgen -G "$HOME_SKILLS/*/SKILL.md" > /dev/null || die "Codex/shared agents cannot resolve personal skills"
+    # ~/.agents/skills is retired too: agents install skills via marketplaces.
+    [ ! -e "$HOME_SKILLS" ] || die "~/.agents/skills is retired — remove it (skills install via each agent's marketplace)"
     if command -v codex >/dev/null 2>&1; then
         codex plugin marketplace list | awk '$1 == "jan-skills" { found=1 } END { exit found ? 0 : 1 }' || die "Codex marketplace jan-skills is not registered"
         plugin_list="$(mktemp)"
@@ -185,9 +158,15 @@ check_state() {
             rm -f "$plugin_list"
             die "Codex plugin list failed"
         }
-        grep -q '^jan-engineering@jan-skills' "$plugin_list" || {
+        grep -q '^jan-[a-z-]*@jan-skills' "$plugin_list" || {
             rm -f "$plugin_list"
             die "Codex cannot see generated jan-skills plugins"
+        }
+        # With ~/.agents/skills retired, installed plugins are Codex's only
+        # skill source — at least one bundle must be installed per machine.
+        grep -E '^jan-[a-z-]*@jan-skills[[:space:]]+installed' "$plugin_list" > /dev/null || {
+            rm -f "$plugin_list"
+            die "no jan-skills plugin installed — pick this machine's bundles with 'codex plugin add <bundle>@jan-skills'"
         }
         rm -f "$plugin_list"
     fi
@@ -199,10 +178,8 @@ case "$MODE" in
         check_state
         ;;
     pre-stow)
-        # Stow no longer manages ~/.agents/skills (no skills-reachable path
-        # may live in the dotfiles tree), so link it here.
         ensure_repo
-        ensure_home_symlink
+        retire_home_symlink
         ;;
     git-only)
         ensure_repo
@@ -210,7 +187,7 @@ case "$MODE" in
         ;;
     full)
         ensure_repo
-        ensure_home_symlink
+        retire_home_symlink
         ensure_codex_marketplace
         ;;
 esac

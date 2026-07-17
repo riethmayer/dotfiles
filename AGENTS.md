@@ -114,32 +114,34 @@ Current stow packages: agents, atuin, bootstrap, brew, claude, ghostty, git, her
 ### Adding Agent Skills
 
 Personal skill content now lives outside dotfiles in `~/src/my-skills`
-(`git@github.com:riethmayer/skills.git`). Dotfiles owns only setup and entry
-points:
+(`git@github.com:riethmayer/skills.git`). Dotfiles owns only setup and
+marketplace registration — **every agent installs skills through its own
+marketplace mechanism (content duplicated per agent); there is no shared
+skills symlink anywhere**:
 
 ```
 ~/src/my-skills/skills/<name>/            real skill files (edit/commit there)
-~/.agents/skills                          →  ~/src/my-skills/skills (created by personal-skills-sync)
 Codex jan-skills marketplace              →  git@github.com:riethmayer/skills.git --ref main
 Claude jan-skills plugins (enabled)       →  github:riethmayer/skills (.claude-plugin/marketplace.json)
 ```
 
-No skills-reachable symlink may live inside this repo: Claude Code's project
-scan follows it and surfaces every personal skill as dotfiles "project
-skills", double-loading them next to the jan-* plugins. Both former in-repo
-links (`stow/claude/.claude/skills`, `stow/agents/.agents/skills`) are
-retired; `personal-skills-sync` links `~/.agents/skills` directly and
-enforces their absence.
+No skills-reachable symlink may exist inside this repo or in `$HOME`: Claude
+Code's project scan follows in-repo links and surfaces every personal skill
+as dotfiles "project skills", double-loading them next to the jan-* plugins,
+and a shared `~/.agents/skills` link would expose all skills to every agent
+on every machine, defeating the per-machine bundle split. All three former
+links (`stow/claude/.claude/skills`, `stow/agents/.agents/skills`,
+`~/.agents/skills`) are retired; `personal-skills-sync` removes and enforces
+their absence.
 
 Run `mise run skills` to clone/update the repo, register the Codex marketplace,
 and install the background updater. `mise run install` prepares the external
-checkout before stow so the single `~/.agents/skills` symlink is present by
-default.
+checkout before stow.
 
-When adding or editing a skill, work in `~/src/my-skills`, not under
-`stow/agents/.agents/skills`. If a tool writes a real directory into
+When adding or editing a skill, work in `~/src/my-skills`, never under a
+retired symlink path. If a tool writes a real directory into
 `~/.agents/skills/<name>`, move that content into `~/src/my-skills/skills/<name>`
-and rerun `mise run install`.
+and delete `~/.agents/skills`.
 
 For in-progress local Codex marketplace testing before pushing the skills repo,
 run with `MY_SKILLS_CODEX_MARKETPLACE_SOURCE=local`.
@@ -157,7 +159,7 @@ jan-deslop, jan-ship) and work marketplaces (`earlybirdvc-skills`) are enabled
 only in the work machine's `~/.claude/settings.local.json` — the personal
 laptop never sees them. Per-machine live-editing of local skills goes through a
 `jan-skills` directory-source override in `~/.claude/settings.local.json`.
-`~/.agents/skills` stays stowed for Codex and other agents. Regenerate the
+Regenerate the
 manifests after editing `skill-bundles.json` with `node scripts/sync-marketplace.mjs`
 (or just the Claude artifacts with the `claude` subcommand).
 

@@ -1,7 +1,7 @@
 # ADR-007: Personal skills live in a separate Git repo
 
 **Date:** 2026-06-07
-**Status:** Accepted
+**Status:** Accepted (amended 2026-07-17)
 
 ## Context
 
@@ -41,3 +41,16 @@ marketplace snapshot when it is registered.
   discovery.
 - ADR-005 still applies to the Claude config package split, but its statement
   that `stow/agents` owns actual skill files is superseded by this ADR.
+
+## Amendment (2026-07-17): all skill symlinks retired
+
+The shared raw-skill entry point is gone. `~/.agents/skills`,
+`stow/agents/.agents/skills`, and `~/.claude/skills` are all retired;
+`personal-skills-sync` removes them and its `--check` enforces their absence.
+Every agent now consumes skills exclusively through its own marketplace
+install — Claude via the `jan-*` plugins, Codex via the `jan-skills`
+marketplace — accepting duplicated skill content per agent in exchange for
+per-machine bundle selection: shared bundles are enabled in tracked
+`stow/claude/.claude/settings.json`, work-only bundles only in the work
+machine's gitignored `~/.claude/settings.local.json`. A raw symlink would
+bypass that split by exposing every skill on every machine.
