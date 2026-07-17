@@ -16,7 +16,9 @@ Alt-forwarding trick (ADR-004) carries over unchanged.
 Adopt herdr as the daily driver; keep the tmux package tracked as fallback.
 
 - `stow/herdr/` holds `config.toml` (keymaps mapped from the old tmux config,
-  documented inline). Installed via mise (`herdr = "latest"`).
+  documented inline). Installed via Homebrew (`brew 'herdr'` in the Brewfile;
+  herdr is not in the mise tool registry — its self-updater also tracks the
+  brew formula).
 - Ghostty keybinds now target herdr: Cmd+T new space, Cmd+1..9 space N,
   Alt+1..9 tab N, Cmd+W close space (see `stow/ghostty/.config/ghostty/config`).
 - `herdr integration install <tool>` writes version-stamped shims into tool

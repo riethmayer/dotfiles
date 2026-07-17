@@ -23,9 +23,9 @@ set -euo pipefail
 # $HOME instead of into the repo.
 cd "$(cd "$(dirname "$0")" && pwd -P)/../../.."
 
-# herdr itself is installed by mise (stow/mise lists herdr = "latest").
+# herdr itself is installed by Homebrew (stow/brew/Brewfile lists it).
 if ! command -v herdr &> /dev/null; then
-    echo "herdr: not on PATH (run 'mise install' first), skipping" >&2
+    echo "herdr: not on PATH (run 'brew bundle' against stow/brew/Brewfile first), skipping" >&2
     exit 0
 fi
 
