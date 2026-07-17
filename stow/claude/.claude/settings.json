@@ -17,6 +17,7 @@
     "jan-present@jan-skills": true,
     "jan-shape@jan-skills": true,
     "jan-ship@jan-skills": true,
+    "jan-tldraw@jan-skills": true,
     "shared@earlybird-marketplace": true,
     "understand-anything@understand-anything": true
   },
@@ -150,7 +151,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=\"$HOME/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
+            "command": "f=\"$HOME/src/my-skills/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
           }
         ]
       }
