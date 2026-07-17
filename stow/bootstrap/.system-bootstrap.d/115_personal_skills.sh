@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install/update Jan's personal skills repo and keep it fresh in the background.
-# The repo feeds both Claude (~/.claude/skills via ~/.agents/skills) and Codex
+# The repo feeds both Claude (via the enabled jan-* marketplace plugins) and Codex
 # (~/.agents/skills plus the local jan-skills marketplace).
 
 set -euo pipefail

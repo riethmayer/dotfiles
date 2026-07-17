@@ -102,17 +102,6 @@
       {
         "hooks": [
           {
-            "command": "jq -r '.tool_input.file_path' | { read -r f; case \"$f\" in $HOME/.claude/skills/*) skill_dir=$(echo \"$f\" | sed \"s|$HOME/.claude/skills/||\" | cut -d/ -f1); if [ -n \"$skill_dir\" ] && [ ! -L \"$HOME/.claude/skills/$skill_dir\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"WARNING: Writing directly to ~/.claude/skills/%s/ — skills should live in ~/.agents/skills/ with a symlink. Create the skill in ~/.agents/skills/%s/ and symlink: ln -sf ../../.agents/skills/%s ~/.claude/skills/%s\"}}' \"$skill_dir\" \"$skill_dir\" \"$skill_dir\" \"$skill_dir\"; exit 1; fi ;; esac; }",
-            "statusMessage": "Checking skill location...",
-            "timeout": 5,
-            "type": "command"
-          }
-        ],
-        "matcher": "Write"
-      },
-      {
-        "hooks": [
-          {
             "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.html) checker=\"$HOME/code/eagleeye/.agents/skills/html-output/scripts/check_self_contained.sh\"; [ -x \"$checker\" ] || exit 0; v=$(\"$checker\" \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"decision\":\"block\",\"reason\":\"check_self_contained.sh failed for %s. Per /html-output, briefs must be single-file: <img> via data: URIs, fonts via @font-face local()+Google Fonts fallback, no external <script src=> or <link rel=stylesheet> (Google Fonts excepted). Fix and re-write:\\n%s\"}' \"$f\" \"$v\"; exit 1; fi ;; esac; }",
             "statusMessage": "Checking HTML is self-contained...",
             "timeout": 10,

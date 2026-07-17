@@ -70,7 +70,7 @@ ensure_repo() {
     fi
 
     [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
-    [ -f "$SKILLS_DIR/skill/SKILL.md" ] || die "$SKILLS_DIR does not look like the personal skills tree"
+    compgen -G "$SKILLS_DIR/*/SKILL.md" > /dev/null || die "$SKILLS_DIR does not look like the personal skills tree"
 }
 
 prepare_legacy_home_skills() {
@@ -158,10 +158,11 @@ check_state() {
     [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
     [ -L "$DOTFILES_SKILLS" ] || die "$DOTFILES_SKILLS is not a symlink"
     [ "$(readlink "$DOTFILES_SKILLS")" = "../../../../src/my-skills/skills" ] || die "$DOTFILES_SKILLS points at $(readlink "$DOTFILES_SKILLS")"
-    [ -L "$HOME/.claude/skills" ] || die "~/.claude/skills is not linked"
-    [ -e "$HOME/.claude/skills/skill/SKILL.md" ] || die "Claude cannot resolve personal skills"
+    # Claude loads personal skills via the enabled jan-* plugins, not a
+    # ~/.claude/skills symlink (retired to avoid double-loading).
+    [ ! -L "$HOME/.claude/skills" ] || die "~/.claude/skills symlink is retired — remove it (skills load via jan-* plugins)"
     [ -L "$HOME_SKILLS" ] || die "~/.agents/skills is not linked"
-    [ -e "$HOME_SKILLS/skill/SKILL.md" ] || die "Codex/shared agents cannot resolve personal skills"
+    compgen -G "$HOME_SKILLS/*/SKILL.md" > /dev/null || die "Codex/shared agents cannot resolve personal skills"
     if command -v codex >/dev/null 2>&1; then
         codex plugin marketplace list | awk '$1 == "jan-skills" { found=1 } END { exit found ? 0 : 1 }' || die "Codex marketplace jan-skills is not registered"
         plugin_list="$(mktemp)"

@@ -120,11 +120,9 @@ points:
 ```
 ~/src/my-skills/skills/<name>/            real skill files (edit/commit there)
 stow/agents/.agents/skills                →  ../../../../src/my-skills/skills
-stow/claude/.claude/skills                →  ../../agents/.agents/skills
 ~/.agents/skills                          →  ../dotfiles/stow/agents/.agents/skills
-~/.claude/skills                          →  ../dotfiles/stow/claude/.claude/skills
 Codex jan-skills marketplace              →  git@github.com:riethmayer/skills.git --ref main
-Claude jan-skills marketplace             →  github:riethmayer/skills (.claude-plugin/marketplace.json)
+Claude jan-skills plugins (enabled)       →  github:riethmayer/skills (.claude-plugin/marketplace.json)
 ```
 
 Run `mise run skills` to clone/update the repo, register the Codex marketplace,
@@ -143,15 +141,15 @@ run with `MY_SKILLS_CODEX_MARKETPLACE_SOURCE=local`.
 The same repo is also a **Claude plugin marketplace**: `scripts/sync-marketplace.mjs`
 generates `.claude-plugin/marketplace.json` (root) + per-bundle
 `plugins/<name>/.claude-plugin/plugin.json` alongside the Codex manifest, exposing
-the 7 grouped `jan-*` plugins. It is pre-declared in `stow/claude/.claude/settings.json`
-(`extraKnownMarketplaces.jan-skills` → github `riethmayer/skills`), so
-`/plugin marketplace add riethmayer/skills` works on any machine. It is registered
-KNOWN only, never auto-enabled: this machine already loads every skill through the
-`~/.claude/skills` symlink above, so enabling a `jan-*` plugin here would double-load
-the same skills. Use the marketplace on a machine that does not stow the symlink, or
-to install a single bundle in isolation. Regenerate the manifests after editing
-`skill-bundles.json` with `node scripts/sync-marketplace.mjs` (or just the Claude
-artifacts with the `claude` subcommand).
+the grouped `jan-*` plugins. **Claude loads personal skills exclusively through
+these plugins** — the `jan-*` bundles are enabled in tracked
+`stow/claude/.claude/settings.json` (`extraKnownMarketplaces.jan-skills` → github
+`riethmayer/skills`), and the former `~/.claude/skills` symlink is retired to
+avoid double-loading. Per-machine live-editing of local skills goes through a
+`jan-skills` directory-source override in `~/.claude/settings.local.json`.
+`~/.agents/skills` stays stowed for Codex and other agents. Regenerate the
+manifests after editing `skill-bundles.json` with `node scripts/sync-marketplace.mjs`
+(or just the Claude artifacts with the `claude` subcommand).
 
 ### Script Organization
 - System setup scripts: `stow/bootstrap/.system-bootstrap.d/`
