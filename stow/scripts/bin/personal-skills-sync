@@ -99,13 +99,23 @@ prepare_legacy_home_skills() {
 ensure_home_symlink() {
     prepare_legacy_home_skills
 
+    # Link ~/.agents/skills straight at the skills checkout. It must NOT route
+    # through a symlink inside the dotfiles repo: any skills-reachable path in
+    # a project tree makes Claude Code surface all personal skills as that
+    # project's "project skills" (double-loading them next to the jan-*
+    # plugins). Replace a legacy dotfiles-routed link in place.
+    if [ -L "$HOME_SKILLS" ] && [ "$(readlink "$HOME_SKILLS")" != "$SKILLS_DIR" ]; then
+        rm "$HOME_SKILLS"
+        log "replacing legacy dotfiles-routed ~/.agents/skills link"
+    fi
+
     if [ -L "$HOME_SKILLS" ]; then
         return
     fi
 
-    [ -e "$DOTFILES_SKILLS" ] || die "$DOTFILES_SKILLS is missing; run from the updated dotfiles checkout"
-    ln -s "$DOTFILES_SKILLS" "$HOME_SKILLS"
-    log "linked ~/.agents/skills to dotfiles personal-skills symlink"
+    [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
+    ln -s "$SKILLS_DIR" "$HOME_SKILLS"
+    log "linked ~/.agents/skills to $SKILLS_DIR"
 }
 
 ensure_codex_marketplace() {
@@ -160,8 +170,9 @@ upgrade_codex_marketplace() {
 check_state() {
     [ -d "$SKILLS_REPO/.git" ] || die "$SKILLS_REPO is not cloned"
     [ -d "$SKILLS_DIR" ] || die "$SKILLS_DIR is missing"
-    [ -L "$DOTFILES_SKILLS" ] || die "$DOTFILES_SKILLS is not a symlink"
-    [ "$(readlink "$DOTFILES_SKILLS")" = "../../../../src/my-skills/skills" ] || die "$DOTFILES_SKILLS points at $(readlink "$DOTFILES_SKILLS")"
+    # No skills-reachable path may exist inside the dotfiles repo (see
+    # ensure_home_symlink); both former in-repo symlinks are retired.
+    [ ! -e "$DOTFILES_SKILLS" ] || die "$DOTFILES_SKILLS is retired — remove it (skills must not be reachable inside the dotfiles tree)"
     # Claude loads personal skills via the enabled jan-* plugins, not a
     # ~/.claude/skills symlink (retired to avoid double-loading).
     [ ! -L "$HOME/.claude/skills" ] || die "~/.claude/skills symlink is retired — remove it (skills load via jan-* plugins)"
@@ -188,8 +199,10 @@ case "$MODE" in
         check_state
         ;;
     pre-stow)
+        # Stow no longer manages ~/.agents/skills (no skills-reachable path
+        # may live in the dotfiles tree), so link it here.
         ensure_repo
-        prepare_legacy_home_skills
+        ensure_home_symlink
         ;;
     git-only)
         ensure_repo

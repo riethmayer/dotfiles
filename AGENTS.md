@@ -119,11 +119,17 @@ points:
 
 ```
 ~/src/my-skills/skills/<name>/            real skill files (edit/commit there)
-stow/agents/.agents/skills                →  ../../../../src/my-skills/skills
-~/.agents/skills                          →  ../dotfiles/stow/agents/.agents/skills
+~/.agents/skills                          →  ~/src/my-skills/skills (created by personal-skills-sync)
 Codex jan-skills marketplace              →  git@github.com:riethmayer/skills.git --ref main
 Claude jan-skills plugins (enabled)       →  github:riethmayer/skills (.claude-plugin/marketplace.json)
 ```
+
+No skills-reachable symlink may live inside this repo: Claude Code's project
+scan follows it and surfaces every personal skill as dotfiles "project
+skills", double-loading them next to the jan-* plugins. Both former in-repo
+links (`stow/claude/.claude/skills`, `stow/agents/.agents/skills`) are
+retired; `personal-skills-sync` links `~/.agents/skills` directly and
+enforces their absence.
 
 Run `mise run skills` to clone/update the repo, register the Codex marketplace,
 and install the background updater. `mise run install` prepares the external
