@@ -32,8 +32,8 @@ Adopt herdr as the daily driver; keep the tmux package tracked as fallback.
 ## Consequences
 
 - ADR-002 (sesh) and ADR-003 (tmux grid) are effectively superseded; the
-  Ghostty sesh keybinds (Cmd+L/Cmd+O → Alt+l/Alt+o) still forward but only
-  bind inside tmux, not herdr.
+  Ghostty sesh keybinds (Cmd+L/Cmd+O → Alt+l/Alt+o) are dropped — herdr's
+  goto navigator (prefix+o) covers session/space switching.
 - Integration shim updates show up as tracked diffs — intentional, they are
   versioned config.
 - `herdr integration status` is the health check for all shims.

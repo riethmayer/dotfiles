@@ -51,9 +51,5 @@ keybind = alt+digit_7=text:\x1b7
 keybind = alt+digit_8=text:\x1b8
 keybind = alt+digit_9=text:\x1b9
 
-# Cmd+l sesh session picker (sends Alt+l, bound in tmux)
-keybind = super+l=text:\x1bl
-# Cmd+o switch to last sesh session (sends Alt+o, bound in tmux)
-keybind = super+o=text:\x1bo
 # Cmd+w close herdr space with confirmation (sends Alt+w, bound in herdr)
 keybind = super+w=text:\x1bw
