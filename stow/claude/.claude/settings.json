@@ -136,7 +136,7 @@
       "autoUpdate": true
     }
   },
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "fastMode": true,
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
