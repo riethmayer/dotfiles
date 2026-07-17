@@ -9,9 +9,18 @@ if ! command -v claude &> /dev/null; then
     curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-# Stow claude configuration
-cd "$(dirname "$0")/../../.."
+# Stow claude configuration. Resolve the repo root physically: $0 may be the
+# stowed ~/.system-bootstrap.d/<script> path, where a logical ../../.. walks
+# out of $HOME instead of into the repo.
+cd "$(cd "$(dirname "$0")" && pwd -P)/../../.."
 stow -d stow -t ~ claude
+
+# The ~/.claude/skills symlink is retired (personal skills load via the
+# enabled jan-* marketplace plugins); drop a dangling leftover from the
+# pre-plugin layout.
+if [ -L "$HOME/.claude/skills" ] && [ ! -e "$HOME/.claude/skills" ]; then
+    rm "$HOME/.claude/skills"
+fi
 
 # Repair stale plugin runtime state. installed_plugins.json caches absolute
 # installPaths; this repo is shared across machines with different $HOME values,

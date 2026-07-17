@@ -17,6 +17,16 @@ if [ -f stow/scripts/bin/personal-skills-sync ]; then
   bash stow/scripts/bin/personal-skills-sync --pre-stow
 fi
 
+# pi settings.json is a gitignored seam file (see 155_pi.sh); seed it before
+# stow so the ~/.pi/agent/settings.json symlink always has a target.
+if [ ! -f stow/pi/.pi/agent/settings.json ]; then
+  cp stow/pi/.pi/agent/settings.json.example stow/pi/.pi/agent/settings.json
+fi
+
+# Pre-create dirs that stow would otherwise fold into repo-pointing dir
+# symlinks; herdr writes runtime state (logs, sockets) next to its config.
+mkdir -p ~/.config/herdr
+
 STOW_DIR=$(pwd)/stow
 PACKAGES=$(ls -d stow/* | xargs basename -a)
 stow --dir $STOW_DIR --target ~ $PACKAGES
