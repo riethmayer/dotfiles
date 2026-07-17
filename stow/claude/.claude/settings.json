@@ -114,19 +114,12 @@
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
   },
   "enabledPlugins": {
-    "claude-warehouse@sderosiaux-claude-plugins": true,
     "jan-agents@jan-skills": true,
-    "jan-build@jan-skills": true,
-    "jan-data-engineering@jan-skills": true,
     "jan-decide@jan-skills": true,
-    "jan-deslop@jan-skills": true,
     "jan-personal@jan-skills": true,
     "jan-present@jan-skills": true,
     "jan-shape@jan-skills": true,
-    "jan-ship@jan-skills": true,
-    "jan-tldraw@jan-skills": true,
-    "shared@earlybird-marketplace": true,
-    "understand-anything@understand-anything": true
+    "jan-tldraw@jan-skills": true
   },
   "extraKnownMarketplaces": {
     "anthropic-skills": {
@@ -135,37 +128,12 @@
         "repo": "anthropics/skills"
       }
     },
-    "earlybird-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "earlybirdvc/skills"
-      },
-      "autoUpdate": true
-    },
-    "earlybirdvc-skills": {
-      "source": {
-        "source": "github",
-        "repo": "earlybirdvc/skills"
-      }
-    },
     "jan-skills": {
       "source": {
         "source": "github",
         "repo": "riethmayer/skills"
       },
       "autoUpdate": true
-    },
-    "sderosiaux-claude-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "sderosiaux/claude-plugins"
-      }
-    },
-    "understand-anything": {
-      "source": {
-        "source": "github",
-        "repo": "Egonex-AI/Understand-Anything"
-      }
     }
   },
   "effortLevel": "high",

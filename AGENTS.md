@@ -148,10 +148,14 @@ The same repo is also a **Claude plugin marketplace**: `scripts/sync-marketplace
 generates `.claude-plugin/marketplace.json` (root) + per-bundle
 `plugins/<name>/.claude-plugin/plugin.json` alongside the Codex manifest, exposing
 the grouped `jan-*` plugins. **Claude loads personal skills exclusively through
-these plugins** — the `jan-*` bundles are enabled in tracked
+these plugins** — the **shared** `jan-*` bundles (agents, decide, personal,
+present, shape, tldraw) are enabled in tracked
 `stow/claude/.claude/settings.json` (`extraKnownMarketplaces.jan-skills` → github
 `riethmayer/skills`), and the former `~/.claude/skills` symlink is retired to
-avoid double-loading. Per-machine live-editing of local skills goes through a
+avoid double-loading. **Work-only** bundles (jan-build, jan-data-engineering,
+jan-deslop, jan-ship) and work marketplaces (`earlybirdvc-skills`) are enabled
+only in the work machine's `~/.claude/settings.local.json` — the personal
+laptop never sees them. Per-machine live-editing of local skills goes through a
 `jan-skills` directory-source override in `~/.claude/settings.local.json`.
 `~/.agents/skills` stays stowed for Codex and other agents. Regenerate the
 manifests after editing `skill-bundles.json` with `node scripts/sync-marketplace.mjs`
