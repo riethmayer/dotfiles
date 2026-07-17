@@ -84,6 +84,17 @@
             "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && echo 'Note: piping to head/tail can truncate exploration output (git log, grep, find). For status-checks (gh/git/jq one-liners) it is fine. For long output, prefer run_in_background + Read the output file.' >&2; exit 0"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "f=\"$HOME/.agents/skills/slack-approve/hooks/slack-send-draft-only.py\"; if [ -f \"$f\" ]; then python3 \"$f\"; else exit 0; fi",
+            "statusMessage": "Checking Slack send authorization...",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "mcp__claude_ai_Slack__slack_send_message$"
       }
     ],
     "SessionStart": [
