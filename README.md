@@ -26,6 +26,7 @@ The following tools are managed via GNU Stow:
 | brew | Homebrew bundle | N/A |
 | claude | Claude AI assistant config | ✅ |
 | ghostty | Ghostty terminal config | ✅ |
+| herdr | Herdr agent workspace manager (sidebar rows, keys, theme) | ✅ |
 | git | Git configuration | ✅ |
 | kitty | Kitty terminal config | ✅ |
 | mise | Mise (rtx) config | ✅ |
@@ -69,6 +70,14 @@ marketplace) — content is duplicated per agent, no shared symlink. `mise run
 install` prepares the checkout before stow; `mise run skills` registers the
 Git-backed Codex `jan-skills` marketplace and a LaunchAgent that fast-forwards
 the checkout hourly when it is clean.
+
+## Cron
+
+`cron/crontab.txt` is the source of truth for non-factory cron entries — install with `crontab ~/dotfiles/cron/crontab.txt`. Factory-owned entries self-install afterwards from their owning repo (marker-managed blocks, idempotent):
+
+```bash
+node ~/src/my-skills/scripts/reap-agents.mjs --install-cron   # herdr idle-agent reaper (15min)
+```
 
 ## Directory Structure
 
