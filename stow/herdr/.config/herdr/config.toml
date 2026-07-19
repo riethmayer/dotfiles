@@ -98,8 +98,14 @@ sidebar_max_width = 48
 # one row, no wrapping; skipped when unset).
 # Set per space: herdr workspace report-metadata <id> --source claude --token goal="..."
 [ui.sidebar.spaces]
-rows = [["state_icon", "workspace"], ["$goal"], ["branch", "git_status"]]
+rows = [["state_icon", "workspace", "$id"], ["$goal"], ["branch", "git_status"]]
 
 [ui.toast]
 # Route agent notifications through Ghostty as desktop notifications.
 delivery = "herdr"
+
+# Cross-referencing mentions: show pane/tab identity on expanded agent rows.
+# Built-ins per release notes: state_icon, state_text, workspace, tab, pane,
+# agent, terminal_title, terminal_title_stripped (+ $name metadata tokens).
+[ui.sidebar.agents]
+rows = [["state_icon", "workspace", "agent", "$id", "$role"], ["terminal_title_stripped"]]
