@@ -1,5 +1,5 @@
-# Herdr idle-agent reaper and future cron entries.
-# Install (replaces the user crontab): crontab ~/dotfiles/cron/crontab.txt
-# Current live crontab exported 2026-07-19T14:30Z:
-# herdr idle-agent reaper (my-skills scripts/reap-agents.mjs) — remove this line to disable
-*/15 * * * * /Users/janriethmayer/.local/share/mise/shims/node /Users/janriethmayer/src/my-skills/scripts/reap-agents.mjs >> /Users/janriethmayer/.local/state/herdr-reaper.log 2>&1
+# Non-factory cron entries only. Install (replaces the user crontab):
+#   crontab ~/dotfiles/cron/crontab.txt
+# Factory-owned entries live with their owners and self-install afterwards —
+# re-run them after installing this file:
+#   node ~/src/my-skills/scripts/reap-agents.mjs --install-cron   # herdr idle-agent reaper
