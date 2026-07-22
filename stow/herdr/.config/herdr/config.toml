@@ -113,5 +113,7 @@ delivery = "herdr"
 # Cross-referencing mentions: show pane/tab identity on expanded agent rows.
 # Built-ins per release notes: state_icon, state_text, workspace, tab, pane,
 # agent, terminal_title, terminal_title_stripped (+ $name metadata tokens).
+# "pane" row = manual pane name (prefix+p) — pane borders only draw on splits,
+# so this keeps the name visible when a tab has a single pane.
 [ui.sidebar.agents]
-rows = [["state_icon", "workspace", "agent", "$id", "$role"], ["terminal_title_stripped"]]
+rows = [["state_icon", "workspace", "agent", "$id", "$role"], ["pane"], ["terminal_title_stripped"]]
