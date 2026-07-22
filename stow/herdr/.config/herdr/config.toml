@@ -48,11 +48,9 @@ detach = "prefix+ctrl+d"
 # Rename current space (default was prefix+shift+w).
 rename_workspace = "prefix+ctrl+r"
 
-# Rename current pane (default was prefix+shift+p; prefix+p freed up by
-# dropping the scratch-terminal command below). Convention: prefix names
-# with the pane's public ID, e.g. "wK:p3 pull-flow" — the prompt pre-fills
-# the current name, so the prefix survives later renames.
-rename_pane = "prefix+p"
+# Pane rename lives on prefix+p as the ID-prefixing popup below; the
+# built-in rename_pane stays on its default prefix+shift+p as the raw
+# (no-prefix) fallback.
 
 # Focus/zoom the current pane (default was prefix+z).
 zoom = "prefix+ctrl+f"
@@ -75,6 +73,16 @@ navigate_workspace_up = "ctrl+p"
 navigate_workspace_down = "ctrl+n"
 
 # Pane focus h/j/k/l and zoom (prefix+z) already match tmux defaults.
+
+# Rename the focused pane with its public ID auto-prefixed ("wK:p3 pull-flow").
+# Popup commands get the underlying tiled pane as HERDR_ACTIVE_PANE_ID; the
+# script (stow/scripts/bin) prompts with the current name minus the old prefix.
+[[keys.command]]
+key = "prefix+p"
+type = "popup"
+command = "$HOME/bin/herdr-rename-pane"
+width = 60
+height = 5
 
 # Direct tab switching: alt+1..9 (Ghostty sends Cmd+N as Alt+N, as with tmux).
 [keys.indexed]

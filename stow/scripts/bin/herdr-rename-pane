@@ -1,0 +1,34 @@
+#!/bin/zsh
+# Rename the focused herdr pane, auto-prefixed with its public pane ID
+# (e.g. "wK:p3 pull-flow"). Bound to prefix+p as a [[keys.command]] popup
+# in stow/herdr/.config/herdr/config.toml — herdr passes the underlying
+# tiled pane as HERDR_ACTIVE_PANE_ID and its own binary as HERDR_BIN_PATH.
+#
+# Usage: herdr-rename-pane [name]
+#   With no argument, prompts (prefilled with the current name minus any
+#   old ID prefix). An empty name leaves the pane untouched.
+#   Target pane: HERDR_ACTIVE_PANE_ID, else HERDR_PANE_ID (CLI use).
+set -eu
+
+herdr_bin="${HERDR_BIN_PATH:-herdr}"
+pane="${HERDR_ACTIVE_PANE_ID:-${HERDR_PANE_ID:-}}"
+if [[ -z "$pane" ]]; then
+  print -u2 "herdr-rename-pane: no HERDR_ACTIVE_PANE_ID/HERDR_PANE_ID in environment"
+  exit 1
+fi
+
+label=$("$herdr_bin" pane get "$pane" | /usr/bin/python3 -c \
+  'import json,sys; print(json.load(sys.stdin)["result"]["pane"].get("label") or "")')
+name=$(printf '%s' "$label" | sed -E 's/^w[[:alnum:]]+:p[[:alnum:]]+[[:space:]]+//')
+
+if (( $# >= 1 )); then
+  name="$1"
+else
+  print "rename ${pane} (empty keeps \"${label:-unnamed}\")"
+  vared -p "name: " name
+fi
+
+name=$(printf '%s' "$name" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')
+[[ -z "$name" ]] && exit 0
+
+"$herdr_bin" pane rename "$pane" "$pane $name" >/dev/null
