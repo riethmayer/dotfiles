@@ -48,6 +48,12 @@ detach = "prefix+ctrl+d"
 # Rename current space (default was prefix+shift+w).
 rename_workspace = "prefix+ctrl+r"
 
+# Rename current pane (default was prefix+shift+p; prefix+p freed up by
+# dropping the scratch-terminal command below). Convention: prefix names
+# with the pane's public ID, e.g. "wK:p3 pull-flow" — the prompt pre-fills
+# the current name, so the prefix survives later renames.
+rename_pane = "prefix+p"
+
 # Focus/zoom the current pane (default was prefix+z).
 zoom = "prefix+ctrl+f"
 
@@ -69,14 +75,6 @@ navigate_workspace_up = "ctrl+p"
 navigate_workspace_down = "ctrl+n"
 
 # Pane focus h/j/k/l and zoom (prefix+z) already match tmux defaults.
-
-# floax replacement: scratch terminal on prefix+p (temporary pane, closes on
-# exit). After `herdr update` to >= 0.7.4, switch to type = "popup" for a
-# floating 80% overlay like floax.
-[[keys.command]]
-key = "prefix+p"
-type = "pane"
-command = "zsh -l"
 
 # Direct tab switching: alt+1..9 (Ghostty sends Cmd+N as Alt+N, as with tmux).
 [keys.indexed]

@@ -56,3 +56,5 @@ stow/herdr/.config/herdr/*.log
 stow/herdr/.config/herdr/*.sock
 stow/herdr/.config/herdr/session.json
 stow/herdr/.config/herdr/release-notes.json
+# named-session runtime (herdr --session <name>) — same class as the files above
+stow/herdr/.config/herdr/sessions/
