@@ -1,0 +1,44 @@
+#!/bin/zsh
+# Toggle a persistent "scratch" herdr workspace. Bound to prefix+. as a
+# [[keys.command]] shell binding in stow/herdr/.config/herdr/config.toml.
+#
+# First press jumps to the workspace labeled "scratch" (created on first
+# use, cwd $HOME); pressing again from scratch jumps back to the workspace
+# you came from. Unlike the prefix+comma popup, this is a real workspace:
+# panes and running processes persist between visits. Renaming the scratch
+# workspace breaks the label lookup (the next press creates a fresh one).
+set -eu
+
+herdr_bin="${HERDR_BIN_PATH:-herdr}"
+cur="${HERDR_ACTIVE_WORKSPACE_ID:?not launched from a herdr keybinding}"
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/herdr"
+mkdir -p "$state_dir"
+# Separate return-slots per herdr session (default vs --session <name>).
+key=$(printf '%s' "${HERDR_SOCKET_PATH:-default}" | md5 -q)
+state="$state_dir/scratch-return-$key"
+
+list=$("$herdr_bin" workspace list)
+scratch=$(printf '%s' "$list" | /usr/bin/python3 -c '
+import json, sys
+ws = json.load(sys.stdin)["result"]["workspaces"]
+print(next((w["workspace_id"] for w in ws if w.get("label") == "scratch"), ""))')
+
+if [[ -n "$scratch" && "$cur" == "$scratch" ]]; then
+  target=$(cat "$state" 2>/dev/null || true)
+  # Fall back to any non-scratch workspace if the recorded one is gone.
+  if [[ -z "$target" ]] || ! printf '%s' "$list" | grep -q "\"workspace_id\":\"$target\"" ; then
+    target=$(printf '%s' "$list" | /usr/bin/python3 -c '
+import json, sys
+ws = json.load(sys.stdin)["result"]["workspaces"]
+print(next((w["workspace_id"] for w in ws if w.get("label") != "scratch"), ""))')
+  fi
+  [[ -n "$target" ]] && "$herdr_bin" workspace focus "$target" >/dev/null
+else
+  printf '%s' "$cur" > "$state"
+  if [[ -n "$scratch" ]]; then
+    "$herdr_bin" workspace focus "$scratch" >/dev/null
+  else
+    "$herdr_bin" workspace create --label scratch --cwd "$HOME" --focus >/dev/null
+  fi
+fi
