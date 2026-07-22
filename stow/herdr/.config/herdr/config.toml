@@ -84,6 +84,15 @@ command = "$HOME/bin/herdr-rename-pane"
 width = 60
 height = 5
 
+# floax-style scratch terminal: floating 80% overlay, closes on shell exit.
+# Opens in the focused pane's cwd.
+[[keys.command]]
+key = "prefix+comma"
+type = "popup"
+command = "zsh -l"
+width = "80%"
+height = "80%"
+
 # Direct tab switching: alt+1..9 (Ghostty sends Cmd+N as Alt+N, as with tmux).
 [keys.indexed]
 tabs = "alt"
