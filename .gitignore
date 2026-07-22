@@ -58,3 +58,6 @@ stow/herdr/.config/herdr/session.json
 stow/herdr/.config/herdr/release-notes.json
 # named-session runtime (herdr --session <name>) — same class as the files above
 stow/herdr/.config/herdr/sessions/
+# experimental pane_history snapshot — contains raw pane output (secrets!),
+# must never be committed
+stow/herdr/.config/herdr/session-history.json

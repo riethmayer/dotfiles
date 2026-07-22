@@ -134,3 +134,9 @@ delivery = "herdr"
 # so this keeps the name visible when a tab has a single pane.
 [ui.sidebar.agents]
 rows = [["state_icon", "workspace", "agent", "$id", "$role"], ["pane"], ["terminal_title_stripped"]]
+
+[experimental]
+# Save recent pane screen history across full server restarts (crash-restart
+# recovery). Writes raw pane contents to session-history.json — gitignored,
+# and to be treated like shell history (can contain secrets).
+pane_history = true
