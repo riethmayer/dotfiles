@@ -63,3 +63,9 @@ stow/herdr/.config/herdr/sessions/
 stow/herdr/.config/herdr/session-history.json
 # 0.7.5+ global plugin registry lockfile — runtime, not config
 stow/herdr/.config/herdr/.plugins.lock
+
+# per-machine seam files synced via 1Password (dotfiles-local-sync push/pull);
+# tracked *.example templates stand in for them
+stow/agents/Library/Application Support/Claude/claude_desktop_config.json
+stow/claude/.claude/hooks/gh-pr-create-ship.sh
+stow/claude/.claude/hooks/workos-billing-guard.sh

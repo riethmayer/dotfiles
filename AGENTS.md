@@ -80,11 +80,23 @@ Seams currently wired:
 | zsh  | `stow/zsh/.config/zsh/*.zsh` | `stow/zsh/.config/zsh/99_local.zsh` | `~/.config/zsh` is a stow symlink into the repo dir, so the `*.zsh` glob in `.zshrc` sources `99_local.zsh` last automatically (the `.example` is skipped — glob requires `.zsh`). |
 | Claude | `stow/claude/.claude/settings.json` (shared intent) | `~/.claude/settings.local.json` + plugin runtime (`installed_plugins.json`, `known_marketplaces.json`, `cache/`) | runtime plugin state is gitignored — it carries absolute install paths that break across machines (different `$HOME`), so it must never be committed. |
 | pi   | `stow/pi/.pi/agent/settings.json.example` (shared defaults) | `stow/pi/.pi/agent/settings.json` | pi rewrites its own settings.json with runtime state (`lastChangelogVersion`) on every update, so the real file is gitignored; `155_pi.sh` seeds it from the example. |
+| Claude Desktop | `claude_desktop_config.json.example` (shared `mcpServers`) | `stow/agents/Library/Application Support/Claude/claude_desktop_config.json` | the app rewrites `preferences` with runtime state and absolute trusted-folder paths, so the real file is gitignored. |
+| Claude hooks | guard wiring in `stow/claude/.claude/settings.json` (`[ -x "$f" ] \|\| exit 0`) | `stow/claude/.claude/hooks/gh-pr-create-ship.sh`, `workos-billing-guard.sh` | wiring no-ops when a script is absent, so work-only hook scripts stay off the personal machine (repo is public — they must not be tracked). |
 
 Each seam ships a tracked `*.example` template showing what to put in it.
 **Setup on a new machine:** `cp <file>.example <file>` next to it, edit in this
 machine's values, then `mise run install` (git needs the restow to link
 `~/.config/git/local`; zsh picks it up with no install step).
+
+**Syncing the local layer between machines — 1Password as the database.**
+Each machine declares itself once: `echo work > ~/.config/dotfiles/machine`
+(or `personal`). That untracked marker *is* the device identity — no hostname
+detection, same philosophy as the seam files. `dotfiles-local-sync push|pull`
+(stowed to `~/bin`) then syncs every seam file to/from 1Password Documents
+titled `dotfiles <machine> <slug>` in the `Private` vault (`op` CLI must be
+signed in). New-machine flow: write the marker, `dotfiles-local-sync pull`,
+then `mise run install`. Adding a seam file? Extend `ENTRIES` in the script
+alongside `.gitignore` and the `*.example`.
 
 **Rules of thumb when editing tracked config:**
 - Never commit an absolute home path (`/Users/<name>/…`) — a different macOS

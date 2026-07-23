@@ -1,0 +1,90 @@
+#!/bin/bash
+# Sync the per-machine local seam files (gitignored *.local layer) with
+# 1Password, using it as the cross-laptop database for the parts that must
+# never be committed: identity, work-only hooks, machine-specific config.
+#
+# Device identity is NOT detected — per the repo's multi-machine philosophy
+# the machine declares itself once in ~/.config/dotfiles/machine ("work" or
+# "personal"), and every 1Password item is namespaced by that name, so both
+# laptops sync independent payloads through the same vault.
+#
+# Items are 1Password Documents titled "dotfiles <machine> <slug>" in the
+# vault $DOTFILES_OP_VAULT (default: Private).
+#
+# Usage: dotfiles-local-sync push|pull|list
+#   push — upload every seam file that exists locally (create or update)
+#   pull — download every item for this machine into place (new laptop setup:
+#          write ~/.config/dotfiles/machine first, then pull, then stow)
+#   list — show this machine's items in the vault
+set -euo pipefail
+
+VAULT="${DOTFILES_OP_VAULT:-Private}"
+MACHINE_FILE="$HOME/.config/dotfiles/machine"
+REPO="${DOTFILES_REPO:-$HOME/dotfiles}"
+
+if [ ! -f "$MACHINE_FILE" ]; then
+    cat >&2 <<EOF
+dotfiles-local-sync: $MACHINE_FILE missing.
+Declare this machine once (this file IS the device identity):
+    mkdir -p ~/.config/dotfiles && echo work > ~/.config/dotfiles/machine
+(or "personal")
+EOF
+    exit 1
+fi
+MACHINE="$(tr -d '[:space:]' < "$MACHINE_FILE")"
+
+# slug|absolute path — extend together with .gitignore and the *.example files
+ENTRIES=(
+    "git-local|$REPO/stow/git/.config/git/local"
+    "zsh-local|$REPO/stow/zsh/.config/zsh/99_local.zsh"
+    "claude-settings-local|$HOME/.claude/settings.local.json"
+    "claude-desktop-config|$REPO/stow/agents/Library/Application Support/Claude/claude_desktop_config.json"
+    "claude-hook-gh-pr-create-ship|$REPO/stow/claude/.claude/hooks/gh-pr-create-ship.sh"
+    "claude-hook-workos-billing-guard|$REPO/stow/claude/.claude/hooks/workos-billing-guard.sh"
+)
+
+title() { printf 'dotfiles %s %s' "$MACHINE" "$1"; }
+
+cmd="${1:-}"
+case "$cmd" in
+push)
+    for entry in "${ENTRIES[@]}"; do
+        slug="${entry%%|*}" path="${entry#*|}"
+        if [ ! -f "$path" ]; then
+            echo "skip  $slug (no local file)"
+            continue
+        fi
+        t="$(title "$slug")"
+        if op document get "$t" --vault "$VAULT" >/dev/null 2>&1; then
+            op document edit "$t" "$path" --vault "$VAULT" >/dev/null
+            echo "update $slug -> $t"
+        else
+            op document create "$path" --title "$t" --vault "$VAULT" >/dev/null
+            echo "create $slug -> $t"
+        fi
+    done
+    ;;
+pull)
+    for entry in "${ENTRIES[@]}"; do
+        slug="${entry%%|*}" path="${entry#*|}"
+        t="$(title "$slug")"
+        if ! op document get "$t" --vault "$VAULT" > "$path.op-tmp" 2>/dev/null; then
+            rm -f "$path.op-tmp"
+            echo "skip  $slug (no item '$t')"
+            continue
+        fi
+        mkdir -p "$(dirname "$path")"
+        mv "$path.op-tmp" "$path"
+        case "$path" in *.sh) chmod +x "$path" ;; esac
+        echo "pull  $slug <- $t"
+    done
+    ;;
+list)
+    op item list --vault "$VAULT" --format json |
+        /usr/bin/python3 -c "import json,sys;[print(i['title']) for i in json.load(sys.stdin) if i['title'].startswith('dotfiles $MACHINE ')]"
+    ;;
+*)
+    echo "usage: dotfiles-local-sync push|pull|list" >&2
+    exit 1
+    ;;
+esac
