@@ -116,6 +116,10 @@ tabs = "alt"
 # tmux active-pane border color
 accent = "magenta"
 
+# Agents sidebar as attention queue (blocked/done first) instead of
+# grouped by space.
+agent_panel_sort = "priority"
+
 # tmux creates windows instantly without a name prompt.
 prompt_new_tab_name = false
 
