@@ -100,6 +100,14 @@ key = "prefix+period"
 type = "shell"
 command = "$HOME/bin/herdr-scratch-toggle"
 
+# Esc emulation: inject a real Escape into the focused pane server-side,
+# bypassing client key handling (workaround while physical Esc is swallowed).
+# Not on prefix+esc — esc is reserved for exiting prefix mode.
+[[keys.command]]
+key = "prefix+q"
+type = "shell"
+command = "$HERDR_BIN_PATH pane send-keys $HERDR_ACTIVE_PANE_ID esc"
+
 # Direct tab switching: alt+1..9 (Ghostty sends Cmd+N as Alt+N, as with tmux).
 [keys.indexed]
 tabs = "alt"
