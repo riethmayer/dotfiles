@@ -25,6 +25,11 @@ shell-integration = zsh
 
 keybind = shift+enter=text:\x1b\r
 
+# Ghostty 1.3's terminal search binds Esc to end_search by default, and that
+# binding swallows Esc before it reaches pane apps (vim, Claude Code, herdr).
+# Unbind so Esc always goes to the terminal; close search with cmd+f instead.
+keybind = escape=unbind
+
 # Cmd+T new herdr space (sends prefix+c, bound in herdr)
 keybind = super+t=text:\x01c
 
