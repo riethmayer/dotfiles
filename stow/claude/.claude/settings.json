@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed — fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed \u2014 fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
             "timeout": 10,
             "statusMessage": "Validating YAML..."
           }
@@ -133,7 +133,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
+    "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); ctx=$(echo \"$input\" | jq -r '.context_window.total_input_tokens // empty'); if [ \"${HERDR_ENV:-}\" = \"1\" ] && [ -n \"${HERDR_PANE_ID:-}\" ] && [ -n \"$ctx\" ]; then (herdr pane report-metadata \"$HERDR_PANE_ID\" --source claude-statusline --token ctx=\"$(awk -v t=\"$ctx\" 'BEGIN{if(t>=1000)printf \"%.0fk\",t/1000;else printf \"%d\",t}')\" >/dev/null 2>&1 &); fi; echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
   },
   "enabledPlugins": {
     "jan-agents@jan-skills": true,
