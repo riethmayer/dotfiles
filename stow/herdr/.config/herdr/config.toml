@@ -7,12 +7,15 @@
 onboarding = false
 
 [theme]
-# "terminal" inherits the outer terminal's ANSI palette — same trick as the
-# tmux status config: Ghostty Earlybird Light/Dark toggles flow through
-# without a reload.
+# Dark: "terminal" inherits the outer terminal's ANSI palette (Ghostty
+# Dracula flows through). Light: raw GitHub-Light ANSI maps badly onto
+# herdr chrome (charcoal selection bg, unreadable selected rows), so light
+# mode gets a curated theme instead; auto_switch follows the host
+# appearance change. Alternatives to try: tokyo-night-day, gruvbox-light.
 name = "terminal"
-
-auto_switch = false
+auto_switch = true
+dark_name = "terminal"
+light_name = "catppuccin-latte"
 [terminal]
 # shell_mode "auto" = login shell on macOS (matches tmux `zsh -l`).
 # new_cwd "follow" matches tmux's `-c "#{pane_current_path}"` binds.
