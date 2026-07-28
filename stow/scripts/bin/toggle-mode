@@ -4,8 +4,11 @@
 # Followers and their behavior:
 #   - Ghostty: instant. `theme = light:...,dark:...` switches on system appearance change.
 #   - tmux:    instant. Status bar uses ANSI palette indices, so colors flip with Ghostty.
-#   - Claude:  lazy. `theme: "auto"` detects bg at session start only — running Claude
-#              sessions keep the old theme until restarted.
+#   - herdr:   instant chrome via [theme] auto_switch, but pane PTYs never see the
+#              switch — herdr-theme-sync pushes it into Claude panes below.
+#   - Claude:  `theme: "auto"` detects the background at session start; running
+#              sessions re-theme on the mode-2031 color-scheme report (DSR 997).
+#              Under herdr that report never arrives, hence the nudge below.
 set -euo pipefail
 
 osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to not dark mode'
@@ -19,7 +22,10 @@ fi
 
 echo "$STATE"
 
-# Hint about Claude — only if a Claude process is detected.
-if pgrep -qf '[c]laude' 2>/dev/null; then
+# Herdr swallows the host color-scheme change instead of forwarding it to
+# pane PTYs — push it into running Claude panes ourselves.
+if command -v herdr-theme-sync >/dev/null 2>&1; then
+  herdr-theme-sync "$STATE" || true
+elif pgrep -qf '[c]laude' 2>/dev/null; then
   echo "(restart any running Claude session to pick up the new theme)" >&2
 fi

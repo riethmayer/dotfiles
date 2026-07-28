@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Push the host light/dark switch into Claude Code panes of running herdr
+# sessions. Herdr consumes Ghostty's color-scheme change for its own
+# [theme] auto_switch chrome but does not forward it to pane PTYs, so a
+# Claude session with theme "auto" keeps its startup detection — dark diff
+# colors on a light background after a toggle (white-on-white context lines).
+# Claude Code re-themes live on the mode-2031 color-scheme report (DSR 997):
+# ESC[?997;1n = dark, ESC[?997;2n = light. Only Claude panes get the bytes —
+# other TUIs may not parse the DSR and would see it as stray input.
+#
+# Usage: herdr-theme-sync [light|dark]   (defaults to current macOS appearance)
+set -euo pipefail
+
+command -v herdr >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+
+mode="${1:-}"
+if [[ -z "$mode" ]]; then
+  # AppleInterfaceStyle key only exists in Dark mode.
+  if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
+    mode=dark
+  else
+    mode=light
+  fi
+fi
+case "$mode" in
+  dark) code=1 ;;
+  light) code=2 ;;
+  *)
+    echo "usage: herdr-theme-sync [light|dark]" >&2
+    exit 2
+    ;;
+esac
+dsr=$(printf '\033[?997;%sn' "$code")
+
+count=0
+while IFS= read -r session; do
+  while IFS= read -r pane; do
+    if herdr --session "$session" pane send-text "$pane" "$dsr" >/dev/null 2>&1; then
+      count=$((count + 1))
+    fi
+  done < <(herdr --session "$session" pane list 2>/dev/null |
+    jq -r '.result.panes[] | select(.agent == "claude") | .pane_id')
+done < <(herdr session list --json 2>/dev/null |
+  jq -r '.sessions[] | select(.running) | .name')
+
+echo "herdr: nudged $count claude pane(s) to $mode" >&2
