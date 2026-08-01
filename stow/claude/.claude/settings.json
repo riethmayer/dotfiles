@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed \u2014 fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed — fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
             "timeout": 10,
             "statusMessage": "Validating YAML..."
           }
@@ -86,15 +86,15 @@
         ]
       },
       {
+        "matcher": "mcp__claude_ai_Slack__slack_send_message$",
         "hooks": [
           {
+            "type": "command",
             "command": "f=\"$HOME/.agents/skills/slack-approve/hooks/slack-send-draft-only.py\"; if [ -f \"$f\" ]; then python3 \"$f\"; else exit 0; fi",
-            "statusMessage": "Checking Slack send authorization...",
             "timeout": 5,
-            "type": "command"
+            "statusMessage": "Checking Slack send authorization..."
           }
-        ],
-        "matcher": "mcp__claude_ai_Slack__slack_send_message$"
+        ]
       }
     ],
     "SessionStart": [
