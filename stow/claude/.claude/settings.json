@@ -125,7 +125,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=\"$HOME/src/my-skills/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
+            "command": "f=\"$HOME/skills/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
           }
         ]
       }

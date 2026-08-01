@@ -31,7 +31,7 @@ esac
 REPO_URL="${MY_SKILLS_REPO:-git@github.com:riethmayer/skills.git}"
 REPO_REF="${MY_SKILLS_REF:-main}"
 CODEX_MARKETPLACE_SOURCE="${MY_SKILLS_CODEX_MARKETPLACE_SOURCE:-git}"
-SKILLS_REPO="${MY_SKILLS_DIR:-$HOME/src/my-skills}"
+SKILLS_REPO="${MY_SKILLS_DIR:-$HOME/skills}"
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 SKILLS_DIR="$SKILLS_REPO/skills"
 MARKETPLACE_JSON="$SKILLS_REPO/.agents/plugins/marketplace.json"
@@ -47,6 +47,14 @@ is_dirty() {
 
 ensure_repo() {
     mkdir -p "$(dirname "$SKILLS_REPO")"
+
+    # One-time migration: the checkout used to live at ~/src/my-skills.
+    # Move it instead of re-cloning so local branches/dirty state survive.
+    legacy_repo="$HOME/src/my-skills"
+    if [ ! -e "$SKILLS_REPO" ] && [ -d "$legacy_repo/.git" ]; then
+        mv "$legacy_repo" "$SKILLS_REPO"
+        log "migrated checkout from $legacy_repo to $SKILLS_REPO"
+    fi
 
     if [ -d "$SKILLS_REPO/.git" ]; then
         current_remote="$(git -C "$SKILLS_REPO" remote get-url origin 2>/dev/null || true)"

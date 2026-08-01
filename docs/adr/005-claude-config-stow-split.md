@@ -5,7 +5,7 @@
 
 **Update 2026-06-07:** ADR-007 supersedes the skill-content ownership part of
 this decision. The package split remains, but personal skill bodies now live in
-`~/src/my-skills`; dotfiles keeps only symlinks and setup.
+`~/skills`; dotfiles keeps only symlinks and setup.
 
 ## Context
 

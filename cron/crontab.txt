@@ -2,4 +2,4 @@
 #   crontab ~/dotfiles/cron/crontab.txt
 # Factory-owned entries live with their owners and self-install afterwards —
 # re-run them after installing this file:
-#   node ~/src/my-skills/scripts/reap-agents.mjs --install-cron   # herdr idle-agent reaper
+#   node ~/skills/scripts/reap-agents.mjs --install-cron   # herdr idle-agent reaper

@@ -64,7 +64,7 @@ mise run update         # Sync and update dotfiles
 
 ## Personal Skills
 
-Personal agent skills live in `~/src/my-skills` and reach each agent through
+Personal agent skills live in `~/skills` and reach each agent through
 its own marketplace install (Claude: `jan-*` plugins, Codex: `jan-skills`
 marketplace) — content is duplicated per agent, no shared symlink. `mise run
 install` prepares the checkout before stow; `mise run skills` registers the
@@ -76,7 +76,7 @@ the checkout hourly when it is clean.
 `cron/crontab.txt` is the source of truth for non-factory cron entries — install with `crontab ~/dotfiles/cron/crontab.txt`. Factory-owned entries self-install afterwards from their owning repo (marker-managed blocks, idempotent):
 
 ```bash
-node ~/src/my-skills/scripts/reap-agents.mjs --install-cron   # herdr idle-agent reaper (15min)
+node ~/skills/scripts/reap-agents.mjs --install-cron   # herdr idle-agent reaper (15min)
 ```
 
 ## Directory Structure

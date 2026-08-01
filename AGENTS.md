@@ -125,14 +125,14 @@ Current stow packages: agents, atuin, bootstrap, brew, claude, ghostty, git, her
 
 ### Adding Agent Skills
 
-Personal skill content now lives outside dotfiles in `~/src/my-skills`
+Personal skill content now lives outside dotfiles in `~/skills`
 (`git@github.com:riethmayer/skills.git`). Dotfiles owns only setup and
 marketplace registration — **every agent installs skills through its own
 marketplace mechanism (content duplicated per agent); there is no shared
 skills symlink anywhere**:
 
 ```
-~/src/my-skills/skills/<name>/            real skill files (edit/commit there)
+~/skills/skills/<name>/            real skill files (edit/commit there)
 Codex jan-skills marketplace              →  git@github.com:riethmayer/skills.git --ref main
 Claude jan-skills plugins (enabled)       →  github:riethmayer/skills (.claude-plugin/marketplace.json)
 ```
@@ -150,9 +150,9 @@ Run `mise run skills` to clone/update the repo, register the Codex marketplace,
 and install the background updater. `mise run install` prepares the external
 checkout before stow.
 
-When adding or editing a skill, work in `~/src/my-skills`, never under a
+When adding or editing a skill, work in `~/skills`, never under a
 retired symlink path. If a tool writes a real directory into
-`~/.agents/skills/<name>`, move that content into `~/src/my-skills/skills/<name>`
+`~/.agents/skills/<name>`, move that content into `~/skills/skills/<name>`
 and delete `~/.agents/skills`.
 
 For in-progress local Codex marketplace testing before pushing the skills repo,
