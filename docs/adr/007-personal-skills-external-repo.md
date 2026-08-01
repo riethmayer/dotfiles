@@ -61,3 +61,14 @@ The checkout lives at `~/skills` on every machine (was `~/src/my-skills`).
 `personal-skills-sync` migrates an existing legacy checkout with a plain `mv`
 before it would clone, so local branches and dirty state survive the move.
 Per-machine `MY_SKILLS_DIR` still overrides the location.
+
+## Amendment (2026-08-01): third-party skills may live in `~/.agents/skills`
+
+The 2026-07-17 retirement banned `~/.agents/skills` outright, but that path
+is also the skills-ecosystem convention dir: `npx skills add` installs
+third-party skills (e.g. the Cloudflare set) there as real directories.
+Those are not personal skills and don't threaten the bundle split, so a real
+directory is allowed again. Only two things remain forbidden, enforced by
+`personal-skills-sync`: the shared *symlink* (still removed on sight), and
+any entry that shadows a personal skill present in `~/skills/skills/<name>`
+— personal content must live in the repo, full stop.

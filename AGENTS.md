@@ -151,9 +151,11 @@ and install the background updater. `mise run install` prepares the external
 checkout before stow.
 
 When adding or editing a skill, work in `~/skills`, never under a
-retired symlink path. If a tool writes a real directory into
-`~/.agents/skills/<name>`, move that content into `~/skills/skills/<name>`
-and delete `~/.agents/skills`.
+retired symlink path. A real `~/.agents/skills` *directory* is allowed:
+it's the skills-ecosystem convention dir where `npx skills add` installs
+third-party skills. What it must never contain is a copy of a personal
+skill (one that exists in `~/skills/skills/<name>`) — `personal-skills-sync`
+dies on such shadowing; edit the repo copy and delete the `~/.agents` one.
 
 For in-progress local Codex marketplace testing before pushing the skills repo,
 run with `MY_SKILLS_CODEX_MARKETPLACE_SOURCE=local`.
