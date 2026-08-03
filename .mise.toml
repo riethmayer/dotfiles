@@ -227,3 +227,11 @@ echo "Setting up herdr..."
 chmod +x stow/bootstrap/.system-bootstrap.d/160_herdr.sh
 ./stow/bootstrap/.system-bootstrap.d/160_herdr.sh
 '''
+
+[tasks.treehouse]
+description = "Install the treehouse CLI + stow its config (pooled git worktrees for agents)"
+run = '''
+echo "Setting up treehouse..."
+chmod +x stow/bootstrap/.system-bootstrap.d/170_treehouse.sh
+./stow/bootstrap/.system-bootstrap.d/170_treehouse.sh
+'''

@@ -27,6 +27,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run gws` - Install the Google Workspace CLI (gws) for the gws-* skills
 - `mise run obsidian-today` - Install launchd agent: daily Desktop alias to today's Obsidian journal folder
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008)
+- `mise run treehouse` - Install the treehouse CLI + stow its config (pooled git worktrees for agents)
 
 ## Architecture and Structure
 
