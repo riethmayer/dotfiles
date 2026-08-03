@@ -1,0 +1,3 @@
+# Treehouse — pooled git worktrees for parallel agent workflows
+# User-level config; hooks would only be honored here (repo-level hooks are ignored).
+max_trees = 16
