@@ -25,8 +25,9 @@ End plans with unresolved questions (extremely concise).
 
 ## Worktrees
 
-- Create under `.claude/worktrees/<short-name>` inside the repo (not sibling dirs)
-- Copy `.claude/settings.local.json` and `.env`
+- Prefer the treehouse pool when the CLI is installed: `treehouse get --lease --json --lease-holder <label>` from the repo → use `.path`. Lease arrives detached at the default tip — `git switch <branch>` / `git switch -c <new>` before committing. `treehouse return <path>` once the branch is pushed.
+- Fallback (no treehouse): create under `.claude/worktrees/<short-name>` inside the repo (not sibling dirs)
+- Either way: copy `.claude/settings.local.json` and `.env`
 
 ## Pull Requests
 
