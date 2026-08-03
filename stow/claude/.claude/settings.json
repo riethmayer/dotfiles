@@ -11,9 +11,7 @@
   "permissions": {
     "allow": [
       "Edit(~/code/**)",
-      "Write(~/code/**)",
-      "Edit(~/.claude/**)",
-      "Write(~/.claude/**)"
+      "Edit(~/.claude/**)"
     ],
     "defaultMode": "auto"
   },
