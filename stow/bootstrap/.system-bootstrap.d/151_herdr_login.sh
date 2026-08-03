@@ -23,9 +23,14 @@ PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 LOG="$HOME/Library/Logs/herdr-server-login.log"
 SESSION="${HERDR_LOGIN_SESSION:-eb}"
 
-HERDR_BIN="$(command -v herdr || true)"
+# herdr is mise-managed: prefer the `latest` symlink over a resolved PATH hit
+# so the baked-in absolute path keeps working across version upgrades.
+HERDR_BIN="$HOME/.local/share/mise/installs/herdr/latest/herdr"
+if [ ! -x "$HERDR_BIN" ]; then
+    HERDR_BIN="$(command -v herdr || true)"
+fi
 if [ -z "$HERDR_BIN" ]; then
-    echo "herdr-login: herdr not on PATH (brew install herdr first), skipping" >&2
+    echo "herdr-login: herdr not installed (mise run herdr first), skipping" >&2
     exit 0
 fi
 

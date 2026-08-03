@@ -16,7 +16,7 @@ java = "temurin-21"
 yamllint = "latest"
 uv = "latest"
 rust = "latest"
-herdr = "0.7.5"
+herdr = "latest"
 
 [settings]
 experimental = true
