@@ -1,0 +1,80 @@
+#!/bin/zsh
+# Create a git worktree + branch off the repo's default branch and open it as
+# a new herdr space. Bound to prefix+g as a [[keys.command]] popup in
+# stow/herdr/.config/herdr/config.toml — herdr passes the underlying tiled
+# pane as HERDR_ACTIVE_PANE_ID and its own binary as HERDR_BIN_PATH.
+#
+# Unlike the built-in new_worktree action (prefix+shift+g), which refuses to
+# start from a pane inside a linked worktree (linked_worktree_source), this
+# resolves the primary checkout from the pane's cwd via git-common-dir, so it
+# works from any pane. Worktrees land at <repo>/.claude/worktrees/<name>
+# (CLAUDE.md convention) and seam files (.claude/settings.local.json, .env)
+# are copied into the new checkout.
+#
+# Usage: herdr-worktree-new [name]
+#   With no argument, prompts for the branch/worktree name. Empty name aborts.
+set -eu
+
+herdr_bin="${HERDR_BIN_PATH:-herdr}"
+if ! command -v "$herdr_bin" >/dev/null 2>&1; then
+  # Popup env can carry a stale HERDR_BIN_PATH (e.g. server started from a
+  # since-removed install); fall back to the mise-managed binary.
+  herdr_bin="$HOME/.local/share/mise/installs/herdr/latest/herdr"
+fi
+
+# Resolve the starting cwd: active pane's foreground cwd, else $PWD (CLI use).
+pane="${HERDR_ACTIVE_PANE_ID:-${HERDR_PANE_ID:-}}"
+cwd=""
+if [[ -n "$pane" ]]; then
+  cwd=$("$herdr_bin" pane get "$pane" 2>/dev/null | /usr/bin/python3 -c \
+    'import json,sys; p=json.load(sys.stdin)["result"]["pane"]; print(p.get("foreground_cwd") or p.get("cwd") or "")' \
+    2>/dev/null || true)
+fi
+cwd="${cwd:-$PWD}"
+
+# Primary checkout root, even when cwd is inside a linked worktree:
+# git-common-dir always points at <main-checkout>/.git.
+if ! common=$(git -C "$cwd" rev-parse --path-format=absolute --git-common-dir 2>/dev/null); then
+  print -u2 "herdr-worktree-new: ${cwd} is not inside a git repo"
+  read -k1 -s '?press any key'
+  exit 1
+fi
+repo="${common:h}"
+
+# Default branch: origin/HEAD if set, else local main/master, else current.
+if ! base=$(git -C "$repo" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null); then
+  if git -C "$repo" show-ref -q --verify refs/heads/main; then
+    base=main
+  elif git -C "$repo" show-ref -q --verify refs/heads/master; then
+    base=master
+  else
+    base=$(git -C "$repo" symbolic-ref --short HEAD)
+  fi
+fi
+
+if (( $# >= 1 )); then
+  name="$1"
+else
+  print "new worktree in ${repo:t} — branch off ${base} (empty aborts)"
+  name=""
+  vared -p "name: " name
+fi
+name=$(printf '%s' "$name" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')
+[[ -z "$name" ]] && exit 0
+
+wt_path="$repo/.claude/worktrees/$name"
+if ! out=$("$herdr_bin" worktree create --cwd "$repo" --branch "$name" \
+    --base "$base" --path "$wt_path" --label "$name" --focus --json 2>&1); then
+  print -u2 "herdr-worktree-new: create failed: $out"
+  read -k1 -s '?press any key'
+  exit 1
+fi
+
+# Seam files the new checkout needs but git doesn't carry.
+if [[ -f "$repo/.claude/settings.local.json" ]]; then
+  mkdir -p "$wt_path/.claude"
+  cp "$repo/.claude/settings.local.json" "$wt_path/.claude/"
+fi
+[[ -f "$repo/.env" ]] && cp "$repo/.env" "$wt_path/"
+
+print "created $wt_path (branch $name off $base)"

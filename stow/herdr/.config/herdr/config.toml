@@ -87,6 +87,19 @@ command = "$HOME/bin/herdr-rename-pane"
 width = 60
 height = 5
 
+# New worktree + space on prefix+g (free since goto moved to prefix+o).
+# Unlike the built-in new_worktree (prefix+shift+g), the script resolves the
+# primary checkout from the pane's cwd, so it also works from panes inside
+# linked worktrees (the built-in refuses those: linked_worktree_source).
+# Worktrees land at <repo>/.claude/worktrees/<name>; seam files
+# (.claude/settings.local.json, .env) are copied into the new checkout.
+[[keys.command]]
+key = "prefix+g"
+type = "popup"
+command = "$HOME/bin/herdr-worktree-new"
+width = 70
+height = 7
+
 # floax-style scratch terminal: floating 80% overlay, closes on shell exit.
 # Opens in the focused pane's cwd.
 [[keys.command]]
