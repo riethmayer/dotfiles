@@ -13,7 +13,6 @@
       "Edit(~/code/**)",
       "Edit(~/.claude/**)"
     ],
-    "defaultMode": "auto",
     "deny": [
       "EnterPlanMode",
       "ExitPlanMode",
@@ -28,9 +27,13 @@
       "CronCreate",
       "CronDelete",
       "CronList"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "fable",
+  "outputStyle": "Smart Brevity Explanatory",
+  "disableClaudeAiConnectors": true,
+  "disableBundledSkills": true,
   "hooks": {
     "PostToolUse": [
       {
@@ -144,6 +147,9 @@
       }
     ]
   },
+  "disableRemoteControl": true,
+  "disableWorkflows": true,
+  "disableArtifact": true,
   "statusLine": {
     "type": "command",
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); dir=$(basename \"$cwd\"); usage=$($HOME/.claude/scripts/usage-cache.sh); h5=$(echo \"$usage\" | jq -r '.five_hour.utilization // \"-\"' | awk '{printf \"%d\", $0}'); d7=$(echo \"$usage\" | jq -r '.seven_day.utilization // \"-\"' | awk '{printf \"%d\", $0}'); ctx=$(echo \"$input\" | jq -r '.context_window.total_input_tokens // empty'); if [ \"${HERDR_ENV:-}\" = \"1\" ] && [ -n \"${HERDR_PANE_ID:-}\" ] && [ -n \"$ctx\" ]; then (herdr pane report-metadata \"$HERDR_PANE_ID\" --source claude-statusline --token ctx=\"$(awk -v t=\"$ctx\" 'BEGIN{if(t>=1000)printf \"%.0fk\",t/1000;else printf \"%d\",t}')\" >/dev/null 2>&1 &); fi; echo \"$model | $dir | 5h:${h5}% | 7d:${d7}%\""
@@ -154,7 +160,11 @@
     "jan-personal@jan-skills": true,
     "jan-present@jan-skills": true,
     "jan-shape@jan-skills": true,
-    "jan-tldraw@jan-skills": true
+    "jan-tldraw@jan-skills": true,
+    "jan-build@jan-skills": true,
+    "jan-data-engineering@jan-skills": true,
+    "jan-deslop@jan-skills": true,
+    "jan-ship@jan-skills": true
   },
   "extraKnownMarketplaces": {
     "anthropic-skills": {
@@ -174,16 +184,11 @@
   "effortLevel": "xhigh",
   "fastMode": true,
   "tui": "fullscreen",
+  "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
   "editorMode": "vim",
   "verbose": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "disableBundledSkills": true,
-  "disableWorkflows": true,
-  "disableRemoteControl": true,
-  "disableClaudeAiConnectors": true,
-  "disableArtifact": true,
-  "autoMemoryEnabled": false
+  "skipAutoPermissionPrompt": true
 }

@@ -1,0 +1,4 @@
+# output-styles must be real files in ~/.claude — Claude Code's discovery
+# skips symlinked .claude subdirs since v2.1.69 (cf. claude-code#36659).
+# Deploy manually: cp stow/claude/.claude/output-styles/*.md ~/.claude/output-styles/
+^/\.claude/output-styles
