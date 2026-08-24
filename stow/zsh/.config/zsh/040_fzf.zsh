@@ -20,6 +20,9 @@ export FZF_ALT_C_OPTS="
   --walker-skip .git,node_modules,target
   --preview 'tree -C {}'"
 
+# Fuzzy-pick a file (fd respects .gitignore) with bat preview; prints the pick
+alias f="fd --type f | fzf --preview 'bat --color=always --style=numbers {}'"
+
 # Initialize fzf if available
 if command -v fzf &> /dev/null; then
     source <(fzf --zsh)
