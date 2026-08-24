@@ -7,13 +7,16 @@
 # Unlike the built-in new_worktree action (prefix+shift+g), which refuses to
 # start from a pane inside a linked worktree (linked_worktree_source), this
 # resolves the primary checkout from the pane's cwd via git-common-dir, so it
-# works from any pane. Worktrees land at <repo>/.claude/worktrees/<name>
-# (CLAUDE.md convention) and seam files (.claude/settings.local.json, .env)
-# are copied into the new checkout.
+# works from any pane. The checkout is leased from the treehouse pool
+# (branched off the default branch, opened via `herdr worktree open`); when
+# treehouse is not installed it falls back to `herdr worktree create` at
+# <repo>/.claude/worktrees/<name>. Either way seam files
+# (.claude/settings.local.json, .env) are copied into the checkout.
 #
 # Usage: herdr-worktree-new [name]
 #   With no argument, prompts for the branch/worktree name. Empty name aborts.
 set -eu
+export PATH="$HOME/.local/bin:$PATH"
 
 herdr_bin="${HERDR_BIN_PATH:-herdr}"
 if ! command -v "$herdr_bin" >/dev/null 2>&1; then
@@ -62,12 +65,34 @@ fi
 name=$(printf '%s' "$name" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')
 [[ -z "$name" ]] && exit 0
 
-wt_path="$repo/.claude/worktrees/$name"
-if ! out=$("$herdr_bin" worktree create --cwd "$repo" --branch "$name" \
-    --base "$base" --path "$wt_path" --label "$name" --focus --json 2>&1); then
-  print -u2 "herdr-worktree-new: create failed: $out"
-  read -k1 -s '?press any key'
-  exit 1
+if command -v treehouse >/dev/null 2>&1; then
+  # Lease from the pool. The lease arrives detached at the default tip, so
+  # branching before anything else is mandatory; then attach it as a space.
+  if ! wt_path=$(cd "$repo" && treehouse get --lease --lease-holder "$name"); then
+    print -u2 "herdr-worktree-new: treehouse lease failed"
+    read -k1 -s '?press any key'
+    exit 1
+  fi
+  if ! out=$(git -C "$wt_path" switch -c "$name" "$base" 2>&1); then
+    print -u2 "herdr-worktree-new: branch failed: $out"
+    (cd "$repo" && treehouse return "$wt_path" --force) || true
+    read -k1 -s '?press any key'
+    exit 1
+  fi
+  if ! out=$("$herdr_bin" worktree open --cwd "$repo" --path "$wt_path" \
+      --label "$name" --focus --json 2>&1); then
+    print -u2 "herdr-worktree-new: open failed: $out"
+    read -k1 -s '?press any key'
+    exit 1
+  fi
+else
+  wt_path="$repo/.claude/worktrees/$name"
+  if ! out=$("$herdr_bin" worktree create --cwd "$repo" --branch "$name" \
+      --base "$base" --path "$wt_path" --label "$name" --focus --json 2>&1); then
+    print -u2 "herdr-worktree-new: create failed: $out"
+    read -k1 -s '?press any key'
+    exit 1
+  fi
 fi
 
 # Seam files the new checkout needs but git doesn't carry.

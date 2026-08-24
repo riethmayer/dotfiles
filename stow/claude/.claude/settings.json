@@ -30,8 +30,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "fable",
-  "outputStyle": "Smart Brevity Explanatory",
+  "model": "claude-fable-5[1m]",
   "disableClaudeAiConnectors": true,
   "disableBundledSkills": true,
   "hooks": {
@@ -141,7 +140,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=\"$HOME/skills/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
+            "command": "sh '/Users/jan/skills/tldraw-offline/inject-server-context.sh' SubagentStart"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "s=\"$HOME/bin/claude-worktree-treehouse\"; if [ -x \"$s\" ]; then \"$s\"; else echo 'claude-worktree-treehouse not stowed (mise run install)' >&2; exit 1; fi",
+            "timeout": 120,
+            "statusMessage": "Leasing worktree from treehouse pool..."
           }
         ]
       }
@@ -181,6 +192,7 @@
       "autoUpdate": true
     }
   },
+  "outputStyle": "Smart Brevity Explanatory",
   "effortLevel": "xhigh",
   "fastMode": true,
   "tui": "fullscreen",

@@ -1,0 +1,57 @@
+#!/bin/bash
+# WorktreeCreate hook: back `claude -w <name>` with a treehouse pool lease.
+#
+# Contract (code.claude.com/docs/en/hooks#worktreecreate): receives
+# {"name": ..., "cwd": ...} on stdin, prints the worktree directory to stdout
+# (nothing else), non-zero exit aborts creation. Claude Code uses the returned
+# directory as-is — verified empirically: it does NOT create a branch there,
+# and a treehouse lease arrives detached at the default tip, so the branch
+# must be created here. With this hook active, .worktreeinclude is not
+# processed either, so seam files are also copied here.
+#
+# Re-entry: `claude -w <name>` for a name that already holds a lease returns
+# the same tree (lease holder claude-w-<name> is the identity). Release with
+# `treehouse return <path>` once the branch is pushed — Claude Code does not
+# return leases itself.
+set -euo pipefail
+export PATH="$HOME/.local/bin:$PATH"
+
+in=$(cat)
+name=$(printf '%s' "$in" | jq -r '.name')
+cwd=$(printf '%s' "$in" | jq -r '.cwd // empty')
+cd "${cwd:-$PWD}"
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+
+if command -v treehouse >/dev/null 2>&1; then
+  holder="claude-w-$name"
+  wt=$(treehouse status --json 2>/dev/null |
+    jq -r --arg h "$holder" '[.[] | select(.lease_holder == $h)][0].path // empty')
+  if [ -z "$wt" ]; then
+    wt=$(treehouse get --lease --lease-holder "$holder")
+  fi
+else
+  # No treehouse on this machine: fall back to the repo convention.
+  wt="$root/.claude/worktrees/$name"
+  [ -d "$wt" ] || git worktree add "$wt" >&2
+fi
+
+# Detached tree (fresh lease, or reuse before this fix): put it on the
+# worktree-<name> branch Claude Code's own provisioning would have used.
+if ! git -C "$wt" symbolic-ref -q HEAD >/dev/null; then
+  branch="worktree-$name"
+  if git -C "$wt" show-ref -q --verify "refs/heads/$branch"; then
+    git -C "$wt" switch "$branch" >&2
+  else
+    git -C "$wt" switch -c "$branch" >&2
+  fi
+fi
+
+# Seam files the new checkout needs but git doesn't carry.
+[ -f "$root/.env" ] && cp "$root/.env" "$wt/.env"
+if [ -f "$root/.claude/settings.local.json" ]; then
+  mkdir -p "$wt/.claude"
+  cp "$root/.claude/settings.local.json" "$wt/.claude/"
+fi
+
+echo "$wt"
