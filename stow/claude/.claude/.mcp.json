@@ -20,7 +20,7 @@
     },
     "excalidraw": {
       "command": "node",
-      "args": ["/Users/jan/code/excalidraw-mcp/dist/index.js", "--stdio"]
+      "args": ["${HOME}/code/excalidraw-mcp/dist/index.js", "--stdio"]
     }
   }
 }

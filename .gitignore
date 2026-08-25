@@ -69,3 +69,7 @@ stow/herdr/.config/herdr/.plugins.lock
 stow/agents/Library/Application Support/Claude/claude_desktop_config.json
 stow/claude/.claude/hooks/gh-pr-create-ship.sh
 stow/claude/.claude/hooks/workos-billing-guard.sh
+
+# atuin standalone-installer receipt — generated at install time, carries the
+# machine-local install_prefix, so it must never be tracked
+stow/atuin/.config/atuin/atuin-receipt.json

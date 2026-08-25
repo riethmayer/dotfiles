@@ -140,7 +140,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh '/Users/jan/skills/tldraw-offline/inject-server-context.sh' SubagentStart"
+            "command": "f=\"$HOME/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
           }
         ]
       }
