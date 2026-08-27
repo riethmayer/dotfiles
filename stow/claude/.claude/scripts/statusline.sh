@@ -13,9 +13,9 @@
 # Everything comes from the statusline stdin JSON (statusline.md):
 #   .context_window.used_percentage   input-side %, pre-calculated
 #   .rate_limits.{five_hour,seven_day}.used_percentage
-#     Pro/Max only and absent until the first API response — shown as "-"
-#     then. This replaced the old usage-cache.sh keychain+endpoint fetch,
-#     which silently broke (rendered 0%) and is retired.
+#     Pro/Max only and absent until the first API response — shown as a
+#     green 0% then. Replaced the old usage-cache.sh keychain+endpoint fetch,
+#     which silently broke and is retired.
 # Under herdr, reports ctx tokens as pane metadata for the sidebar.
 
 input=$(cat)
@@ -34,11 +34,13 @@ d7=$(j '.rate_limits.seven_day.used_percentage // empty | round')
 G=$'\033[32m'; O=$'\033[33m'; R=$'\033[31m'; X=$'\033[0m'
 
 paint() { # $1=rounded pct or empty, $2=orange threshold, $3=red threshold
-  if [ -z "$1" ]; then printf '%s' '-'; return; fi
+  # Empty (pre-first-response) renders as green 0% — real numbers arrive
+  # from the same payload one turn later, so a brief 0 can't lie for long.
+  local v=${1:-0}
   local c=$G
-  [ "$1" -ge "$2" ] && c=$O
-  [ "$1" -ge "$3" ] && c=$R
-  printf '%s%s%%%s' "$c" "$1" "$X"
+  [ "$v" -ge "$2" ] && c=$O
+  [ "$v" -ge "$3" ] && c=$R
+  printf '%s%s%%%s' "$c" "$v" "$X"
 }
 
 kfmt() {
