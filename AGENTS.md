@@ -122,7 +122,8 @@ Current stow packages: agents, atuin, bootstrap, brew, claude, ghostty, git, her
 1. Create `stow/{tool}/` directory following XDG structure
 2. Add tool-specific bootstrap script: `stow/bootstrap/.system-bootstrap.d/XXX_{tool}.sh`
 3. Add mise task for individual tool setup in `stow/mise/.config/mise/config.toml`
-4. For Zsh integration: add `stow/zsh/.oh-my-zsh/custom/zshrc.d/XXX_{tool}.zsh`
+4. For Zsh integration: add `stow/zsh/.config/zsh/XXX_{tool}.zsh`, guarded by `command -v {tool}` (not every machine has every tool)
+5. Completions: hand-written/static files go in `stow/zsh/.zsh/completions/_{tool}` (tracked, already on fpath); generated ones (`{tool} completions zsh`) are cached under `$XDG_CACHE_HOME/zsh/completions/` and regenerated when the binary's mtime is newer — see `074_swamp.zsh`. Never track generated completions.
 
 ### Adding Agent Skills
 
