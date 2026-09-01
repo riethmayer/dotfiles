@@ -30,7 +30,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "fable[1m]",
   "disableClaudeAiConnectors": true,
   "disableBundledSkills": true,
   "hooks": {
