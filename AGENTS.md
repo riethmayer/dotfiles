@@ -28,6 +28,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run obsidian-today` - Install launchd agent: daily Desktop alias to today's Obsidian journal folder
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008)
 - `mise run treehouse` - Install the treehouse CLI + stow its config (pooled git worktrees for agents)
+- `mise run swamp` - Install the swamp CLI (skips when present; `swamp update` owns upgrades)
 
 ## Architecture and Structure
 

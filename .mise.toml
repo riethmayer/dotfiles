@@ -235,3 +235,11 @@ echo "Setting up treehouse..."
 chmod +x stow/bootstrap/.system-bootstrap.d/170_treehouse.sh
 ./stow/bootstrap/.system-bootstrap.d/170_treehouse.sh
 '''
+
+[tasks.swamp]
+description = "Install the swamp CLI (AI-native automation; self-updates via `swamp update`)"
+run = '''
+echo "Setting up swamp..."
+chmod +x stow/bootstrap/.system-bootstrap.d/180_swamp.sh
+./stow/bootstrap/.system-bootstrap.d/180_swamp.sh
+'''
