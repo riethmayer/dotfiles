@@ -9,7 +9,7 @@ zoxide = "latest"
 python = "3.12.6"
 ruby = "latest"
 lua = "5.1.5"
-node = "26.3.1"
+node = "latest"
 pnpm = "latest"
 bun = "latest"
 java = "temurin-21"
@@ -17,6 +17,7 @@ yamllint = "latest"
 uv = "latest"
 rust = "latest"
 herdr = "latest"
+"npm:@earendil-works/pi-coding-agent" = "latest"  # pi agent CLI; shim is node-version independent
 
 [settings]
 experimental = true
