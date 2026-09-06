@@ -12,6 +12,7 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
+      "Bash(herdr:*)",
       "Edit(~/code/**)",
       "Edit(~/.claude/**)"
     ],
