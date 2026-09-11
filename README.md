@@ -71,6 +71,30 @@ install` prepares the checkout before stow; `mise run skills` registers the
 Git-backed Codex `jan-skills` marketplace and a LaunchAgent that fast-forwards
 the checkout hourly when it is clean.
 
+## Pi prompt stash
+
+`stow/pi/.pi/agent/extensions/prompt-stash.ts` adds a global **Ctrl+S** shortcut.
+Run `/reload` in an existing Pi session after installing the file.
+
+1. Write part of a prompt and press **Ctrl+S** to hide and remember it.
+2. Type a side question and send it. The original draft returns to the editor
+   immediately at input processing, without being submitted or waiting for a reply.
+3. Alternatively, press **Ctrl+S** on an empty editor to restore it manually.
+
+Works for normal prompts, steering (Enter while working), and follow-ups
+(Alt+Enter). A footer hint stays visible while a draft is stashed. There is one
+stash slot; pressing Ctrl+S with another draft warns rather than replacing it.
+Restoration never overwrites non-empty input.
+
+Drafts stay in process memory, including across `/reload` and session switches;
+quitting or crashing Pi loses them. No unsent draft is written to session history
+or disk. This is text-only: pasted text is preserved in full, but cursor position,
+collapsed-paste presentation, and separately managed image attachments are not
+captured. Built-in/extension commands bypass the input hook: use Ctrl+S to restore
+manually after those. Input queued during compaction restores when Pi processes it.
+
+Verify with `mise run pi:test` (Node 22.6+; no dependencies or model calls).
+
 ## Cron
 
 `cron/crontab.txt` is the source of truth for non-factory cron entries — install with `crontab ~/dotfiles/cron/crontab.txt`. Factory-owned entries self-install afterwards from their owning repo (marker-managed blocks, idempotent):

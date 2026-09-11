@@ -139,6 +139,10 @@ if [ -f stow/scripts/bin/personal-skills-sync ]; then
 fi
 '''
 
+[tasks."pi:test"]
+description = "Test Pi prompt stashing (Node 22.6+; no dependencies or model calls)"
+run = "node --experimental-strip-types --test tests/pi-prompt-stash.test.mjs"
+
 [tasks.skills]
 description = "Install/update personal skills for Claude and Codex"
 run = '''
