@@ -44,8 +44,14 @@ change.
 
 ## Consequences
 
-- Switching drivers changes nothing git can see. `git diff` on the settings file
-  returns empty after a `/model` switch.
+- Switching drivers produces nothing committable. `git diff --quiet` on the
+  settings file returns 0 after a `/model` switch, and staging it stages
+  nothing.
+- `git status` still lists the file as modified until the next `git add`. Git
+  does not refresh its stat cache for filtered paths, so it reports the file
+  dirty on size and mtime alone while `git diff` runs the filter and finds no
+  change. `git add .` clears the display and stages nothing. Cosmetic, and the
+  price of keeping hooks tracked.
 - The copies Claude writes into the tracked file are inert: the local file wins,
   so losing them to the filter costs nothing. This also defuses the usual clean
   filter hazard, where `git checkout` overwrites a working file with its
