@@ -1,21 +1,190 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CLAUDE_CODE_EXPERIMENTAL_OBSERVER_AGENTS": "1",
-    "DISABLE_ERROR_REPORTING": "1",
-    "DISABLE_BUG_COMMAND": "1"
-  },
+  "agentPushNotifEnabled": true,
   "attribution": {
     "commit": "",
     "pr": ""
   },
+  "autoMemoryEnabled": false,
+  "disableArtifact": true,
+  "disableBundledSkills": true,
+  "disableClaudeAiConnectors": true,
+  "disableRemoteControl": true,
+  "disableWorkflows": true,
+  "editorMode": "vim",
+  "enabledPlugins": {
+    "ic@earlybird-marketplace": true,
+    "jan-agents@jan-skills": true,
+    "jan-build@jan-skills": true,
+    "jan-data-engineering@jan-skills": true,
+    "jan-decide@jan-skills": true,
+    "jan-deslop@jan-skills": true,
+    "jan-personal@jan-skills": true,
+    "jan-present@jan-skills": true,
+    "jan-shape@jan-skills": true,
+    "jan-ship@jan-skills": true,
+    "jan-tldraw@jan-skills": true
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_OBSERVER_AGENTS": "1",
+    "DISABLE_BUG_COMMAND": "1",
+    "DISABLE_ERROR_REPORTING": "1"
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-skills": {
+      "source": {
+        "repo": "anthropics/skills",
+        "source": "github"
+      }
+    },
+    "earlybird-marketplace": {
+      "source": {
+        "repo": "earlybirdvc/skills",
+        "source": "github"
+      }
+    },
+    "jan-skills": {
+      "autoUpdate": true,
+      "source": {
+        "repo": "riethmayer/skills",
+        "source": "github"
+      }
+    }
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "f=\"$HOME/.claude/hooks/gh-pr-create-ship.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
+            "statusMessage": "Checking for gh pr create...",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "f=\"$HOME/.claude/scripts/mcp-hook.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "mcp__.*"
+      },
+      {
+        "hooks": [
+          {
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed, fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
+            "statusMessage": "Validating YAML...",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.html) checker=\"$HOME/code/eagleeye/.agents/skills/html-output/scripts/check_self_contained.sh\"; [ -x \"$checker\" ] || exit 0; v=$(\"$checker\" \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"decision\":\"block\",\"reason\":\"check_self_contained.sh failed for %s. Per /html-output, briefs must be single-file: <img> via data: URIs, fonts via @font-face local()+Google Fonts fallback, no external <script src=> or <link rel=stylesheet> (Google Fonts excepted). Fix and re-write:\\n%s\"}' \"$f\" \"$v\"; exit 1; fi ;; esac; }",
+            "statusMessage": "Checking HTML is self-contained...",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "f=\"$HOME/.claude/hooks/workos-billing-guard.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
+            "statusMessage": "Checking WorkOS billing guard...",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "mcp__workos__mutate"
+      },
+      {
+        "hooks": [
+          {
+            "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && echo 'Note: piping to head/tail can truncate exploration output (git log, grep, find). For status-checks (gh/git/jq one-liners) it is fine. For long output, prefer run_in_background + Read the output file.' >&2; exit 0",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "command": "f=\"$HOME/.agents/skills/slack-approve/hooks/slack-send-draft-only.py\"; if [ -f \"$f\" ]; then python3 \"$f\"; else exit 0; fi",
+            "statusMessage": "Checking Slack send authorization...",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "mcp__claude_ai_Slack__slack_send_message$"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "f=\"$HOME/.claude/hooks/herdr-agent-state.sh\"; if [ -f \"$f\" ]; then bash \"$f\" session; else exit 0; fi",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "command": "node '/Users/jan/skills/tldraw-offline/inject-server-context.mjs' SubagentStart",
+            "type": "command"
+          }
+        ],
+        "matcher": "tldraw-offline"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "jq -r '\"<session-ctx time=\\\"\" + (now|strflocaltime(\"%Y-%m-%dT%H:%M:%S%z\")) + \"\\\" cwd=\\\"\" + (.cwd // env.PWD) + \"\\\"/>\"'",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "command": "s=\"$HOME/bin/claude-worktree-treehouse\"; if [ -x \"$s\" ]; then \"$s\"; else echo 'claude-worktree-treehouse not stowed (mise run install)' >&2; exit 1; fi",
+            "statusMessage": "Leasing worktree from treehouse pool...",
+            "timeout": 120,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
   "includeCoAuthoredBy": false,
+  "outputStyle": "Smart Brevity Explanatory",
   "permissions": {
     "allow": [
       "Bash(herdr:*)",
       "Edit(~/code/**)",
       "Edit(~/.claude/**)"
     ],
+    "defaultMode": "auto",
     "deny": [
       "EnterPlanMode",
       "ExitPlanMode",
@@ -30,180 +199,15 @@
       "CronCreate",
       "CronDelete",
       "CronList"
-    ],
-    "defaultMode": "auto"
-  },
-  "model": "claude-fable-5-1[1m]",
-  "disableClaudeAiConnectors": true,
-  "disableBundledSkills": true,
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=\"$HOME/.claude/hooks/gh-pr-create-ship.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
-            "timeout": 5,
-            "statusMessage": "Checking for gh pr create..."
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=\"$HOME/.claude/scripts/mcp-hook.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.yml|*.yaml) output=$(yamllint -d relaxed --no-warnings \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"YAML validation failed, fix these errors:\\n%s\"}}' \"$output\"; exit 1; fi ;; esac; }",
-            "timeout": 10,
-            "statusMessage": "Validating YAML..."
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in *.html) checker=\"$HOME/code/eagleeye/.agents/skills/html-output/scripts/check_self_contained.sh\"; [ -x \"$checker\" ] || exit 0; v=$(\"$checker\" \"$f\" 2>&1); rc=$?; if [ $rc -ne 0 ]; then printf '{\"decision\":\"block\",\"reason\":\"check_self_contained.sh failed for %s. Per /html-output, briefs must be single-file: <img> via data: URIs, fonts via @font-face local()+Google Fonts fallback, no external <script src=> or <link rel=stylesheet> (Google Fonts excepted). Fix and re-write:\\n%s\"}' \"$f\" \"$v\"; exit 1; fi ;; esac; }",
-            "timeout": 10,
-            "statusMessage": "Checking HTML is self-contained..."
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "mcp__workos__mutate",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=\"$HOME/.claude/hooks/workos-billing-guard.sh\"; if [ -x \"$f\" ]; then \"$f\"; else exit 0; fi",
-            "timeout": 10,
-            "statusMessage": "Checking WorkOS billing guard..."
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.command' | grep -qE '\\| *(head|tail)\\b' && echo 'Note: piping to head/tail can truncate exploration output (git log, grep, find). For status-checks (gh/git/jq one-liners) it is fine. For long output, prefer run_in_background + Read the output file.' >&2; exit 0"
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__claude_ai_Slack__slack_send_message$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=\"$HOME/.agents/skills/slack-approve/hooks/slack-send-draft-only.py\"; if [ -f \"$f\" ]; then python3 \"$f\"; else exit 0; fi",
-            "timeout": 5,
-            "statusMessage": "Checking Slack send authorization..."
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=\"$HOME/.claude/hooks/herdr-agent-state.sh\"; if [ -f \"$f\" ]; then bash \"$f\" session; else exit 0; fi",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '\"<session-ctx time=\\\"\" + (now|strflocaltime(\"%Y-%m-%dT%H:%M:%S%z\")) + \"\\\" cwd=\\\"\" + (.cwd // env.PWD) + \"\\\"/>\"'"
-          }
-        ]
-      }
-    ],
-    "SubagentStart": [
-      {
-        "matcher": "tldraw-offline",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "f=\"$HOME/skills/tldraw-offline/inject-server-context.sh\"; if [ -f \"$f\" ]; then sh \"$f\" SubagentStart; else exit 0; fi"
-          }
-        ]
-      }
-    ],
-    "WorktreeCreate": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "s=\"$HOME/bin/claude-worktree-treehouse\"; if [ -x \"$s\" ]; then \"$s\"; else echo 'claude-worktree-treehouse not stowed (mise run install)' >&2; exit 1; fi",
-            "timeout": 120,
-            "statusMessage": "Leasing worktree from treehouse pool..."
-          }
-        ]
-      }
     ]
   },
-  "disableRemoteControl": true,
-  "disableWorkflows": true,
-  "disableArtifact": true,
-  "statusLine": {
-    "type": "command",
-    "command": "$HOME/.claude/scripts/statusline.sh"
-  },
-  "enabledPlugins": {
-    "jan-agents@jan-skills": true,
-    "jan-decide@jan-skills": true,
-    "jan-personal@jan-skills": true,
-    "jan-present@jan-skills": true,
-    "jan-shape@jan-skills": true,
-    "jan-tldraw@jan-skills": true,
-    "jan-build@jan-skills": true,
-    "jan-data-engineering@jan-skills": true,
-    "jan-deslop@jan-skills": true,
-    "jan-ship@jan-skills": true
-  },
-  "extraKnownMarketplaces": {
-    "anthropic-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
-    "jan-skills": {
-      "source": {
-        "source": "github",
-        "repo": "riethmayer/skills"
-      },
-      "autoUpdate": true
-    }
-  },
-  "outputStyle": "Smart Brevity Explanatory",
-  "effortLevel": "xhigh",
-  "fastMode": true,
-  "tui": "fullscreen",
-  "autoMemoryEnabled": false,
+  "skipAutoPermissionPrompt": true,
   "skipDangerousModePermissionPrompt": true,
+  "statusLine": {
+    "command": "$HOME/.claude/scripts/statusline.sh",
+    "type": "command"
+  },
   "theme": "auto",
-  "editorMode": "vim",
-  "verbose": true,
-  "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "tui": "fullscreen",
+  "verbose": true
 }

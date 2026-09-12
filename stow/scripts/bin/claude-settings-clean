@@ -1,0 +1,33 @@
+#!/bin/sh
+# git clean filter for stow/claude/.claude/settings.json.
+#
+# Claude Code writes per-session state back into ~/.claude/settings.json, which
+# is a stow symlink into this repo. Switching the driving model with /model
+# therefore showed up as an uncommitted dotfiles change every time. The real
+# values for these keys live in ~/.claude/settings.local.json, which is
+# gitignored and wins on precedence (local > project > user), so the copies
+# Claude writes into the tracked file are inert duplicates. This filter drops
+# them on the way into git: the working file keeps whatever Claude wrote, and
+# the committed file never carries a driver choice.
+#
+# Wired by `mise run claude` (see stow/bootstrap/.system-bootstrap.d/157_claude.sh);
+# git filters are per-clone config and are not carried by the repo itself.
+#
+# Fails open: if jq is missing or the file is not valid JSON, the input passes
+# through unchanged rather than being truncated.
+set -eu
+
+input=$(cat)
+
+if ! command -v jq >/dev/null 2>&1; then
+    printf '%s' "$input"
+    exit 0
+fi
+
+# -S keeps the committed key order canonical, so a rewrite by Claude that only
+# reorders keys does not read as a change either.
+if output=$(printf '%s' "$input" | jq -S 'del(.model, .fastMode, .effortLevel, .modelSettings)' 2>/dev/null); then
+    printf '%s\n' "$output"
+else
+    printf '%s' "$input"
+fi

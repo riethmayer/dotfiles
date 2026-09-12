@@ -63,4 +63,21 @@ if [ ! -e "$desktop_config" ]; then
     cp "$desktop_seed" "$desktop_config"
 fi
 
+# Wire the clean filter that keeps per-session driver choices out of git.
+# Claude writes model / fastMode / effortLevel / modelSettings back into
+# ~/.claude/settings.json, which is a stow symlink into this repo, so every
+# /model switch used to dirty the working tree. The real values live in
+# ~/.claude/settings.local.json (gitignored, and local beats user on
+# precedence); the filter drops the inert copies on the way into git.
+# Git filters are per-clone config, so this has to run at install time.
+# See docs/adr/009-claude-settings-driver-seam.md.
+filter_script="$(pwd)/stow/scripts/bin/claude-settings-clean"
+if [ -x "$filter_script" ]; then
+    git config filter.claude-volatile.clean "$filter_script"
+    git config filter.claude-volatile.smudge cat
+    # Re-apply the filter to anything already staged under the old rules.
+    git add --renormalize stow/claude/.claude/settings.json 2>/dev/null || true
+    echo "  Claude settings driver-seam filter configured."
+fi
+
 echo "Claude Code setup complete!"
