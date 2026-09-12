@@ -32,5 +32,13 @@ alias w4='cd ~/code/ee-four/apps/eagleeye-web'
 
 # Claude Code
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
-yolo() { claude --dangerously-skip-permissions "$@"; }
-yoloc() { claude --dangerously-skip-permissions --chrome "$@"; }
+CLAUDE_SYSTEM_PROMPT_FILE="$HOME/.claude/smart-brevity-system-prompt.md"
+
+# Expand to --append-system-prompt <text>, or to nothing if the file is missing.
+_claude_sysprompt() {
+  reply=()
+  [[ -r $CLAUDE_SYSTEM_PROMPT_FILE ]] && reply=(--append-system-prompt "$(<$CLAUDE_SYSTEM_PROMPT_FILE)")
+}
+
+yolo() { local -a reply; _claude_sysprompt; claude --dangerously-skip-permissions "${reply[@]}" "$@"; }
+yoloc() { local -a reply; _claude_sysprompt; claude --dangerously-skip-permissions --chrome "${reply[@]}" "$@"; }

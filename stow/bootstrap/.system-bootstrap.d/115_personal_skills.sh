@@ -18,6 +18,18 @@ fi
 
 "$WRAPPER"
 
+# The yolo/yoloc shell functions append this prompt via --append-system-prompt.
+# It is authored in the skills repo, so link rather than copy and it updates
+# with every sync. The functions fail open when the link is absent, so this is
+# a convenience, not a dependency.
+PROMPT_SRC="$HOME/skills/skills/prompt-engineering-patterns/references/smart-brevity-system-prompt.md"
+PROMPT_LINK="$HOME/.claude/smart-brevity-system-prompt.md"
+if [ -f "$PROMPT_SRC" ]; then
+    mkdir -p "$(dirname "$PROMPT_LINK")"
+    ln -sfn "$PROMPT_SRC" "$PROMPT_LINK"
+    echo "personal-skills: linked smart-brevity system prompt into ~/.claude"
+fi
+
 if ! command -v launchctl >/dev/null 2>&1; then
     echo "personal-skills: launchctl missing; skipping background updater"
     exit 0
