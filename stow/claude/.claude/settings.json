@@ -12,7 +12,6 @@
   "disableWorkflows": true,
   "editorMode": "vim",
   "enabledPlugins": {
-    "ic@earlybird-marketplace": true,
     "jan-agents@jan-skills": true,
     "jan-build@jan-skills": true,
     "jan-data-engineering@jan-skills": true,
