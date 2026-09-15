@@ -9,7 +9,10 @@
 # laptops sync independent payloads through the same vault.
 #
 # Items are 1Password Documents titled "dotfiles <machine> <slug>" in the
-# vault $DOTFILES_OP_VAULT (default: Private).
+# vault $DOTFILES_OP_VAULT (default: machines). That vault is shared, not
+# Private, because the `op` calls run as a service account (ADR-010): the
+# token comes from the login Keychain via 076_1password.zsh, so no biometric
+# prompt, and 1Password cannot scope a service account to the Private vault.
 #
 # Usage: dotfiles-local-sync push|pull|list
 #   push — upload every seam file that exists locally (create or update)
@@ -18,7 +21,7 @@
 #   list — show this machine's items in the vault
 set -euo pipefail
 
-VAULT="${DOTFILES_OP_VAULT:-Private}"
+VAULT="${DOTFILES_OP_VAULT:-machines}"
 MACHINE_FILE="$HOME/.config/dotfiles/machine"
 REPO="${DOTFILES_REPO:-$HOME/dotfiles}"
 
@@ -45,6 +48,14 @@ ENTRIES=(
     # rides the same seam: lose this file and every synced history record on
     # api.atuin.sh is unreadable forever. `atuin key` prints it as a mnemonic.
     "atuin-key|$HOME/.local/share/atuin/key"
+    # Repo .env files. Gitignored in their own repos, copied into worktrees by
+    # herdr-worktree-new / claude-worktree-treehouse, and otherwise lost with
+    # the laptop. Paths are per machine like everything else here; push skips
+    # the ones that do not exist.
+    "env-eagleeye|$HOME/code/eagleeye/.env"
+    "env-skills|$HOME/code/skills/.env"
+    "env-diagrams|$HOME/code/diagrams/.env"
+    "env-stealths-orchestrator|$HOME/code/eagleeye-fix-recently-detected-stealths/orchestrator/.env"
 )
 
 title() { printf 'dotfiles %s %s' "$MACHINE" "$1"; }

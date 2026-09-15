@@ -18,7 +18,7 @@
 
 # --- Secrets: reference a store, never hardcode -------------------------------
 # export GITHUB_TOKEN="$(security find-generic-password -s github-token -w)"  # macOS Keychain
-# export OPENAI_API_KEY="$(op read op://Private/openai/key)"                  # 1Password CLI
+# export OPENAI_API_KEY="$(op read op://machines/openai/key)"                  # 1Password CLI
 
 # --- Work-only shell functions ------------------------------------------------
 # Wrappers around internal tooling (gateway hostnames, company CLIs) live here,

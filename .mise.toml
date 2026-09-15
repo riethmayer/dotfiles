@@ -240,6 +240,13 @@ chmod +x stow/bootstrap/.system-bootstrap.d/170_treehouse.sh
 ./stow/bootstrap/.system-bootstrap.d/170_treehouse.sh
 '''
 
+[tasks.1password]
+description = "Check the 1Password service-account token for op (prints the one-time setup when missing)"
+run = '''
+chmod +x stow/bootstrap/.system-bootstrap.d/175_1password.sh
+./stow/bootstrap/.system-bootstrap.d/175_1password.sh
+'''
+
 [tasks.swamp]
 description = "Install the swamp CLI (AI-native automation; self-updates via `swamp update`)"
 run = '''

@@ -28,7 +28,7 @@ def get_api_key():
     # 3. Fetch from 1Password and cache
     try:
         result = subprocess.run(
-            ["op", "read", "op://Private/ElevenLabs/api-key"],
+            ["op", "read", "op://machines/ElevenLabs/api-key"],
             capture_output=True,
             text=True,
             check=True

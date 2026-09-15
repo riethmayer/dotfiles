@@ -29,6 +29,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008)
 - `mise run treehouse` - Install the treehouse CLI + stow its config (pooled git worktrees for agents)
 - `mise run swamp` - Install the swamp CLI (skips when present; `swamp update` owns upgrades)
+- `mise run 1password` - Check the `op` service-account token in Keychain; prints the one-time vault + token setup when missing (ADR-010)
 
 ## Architecture and Structure
 
@@ -96,9 +97,12 @@ Each machine declares itself once: `echo work > ~/.config/dotfiles/machine`
 (or `personal`). That untracked marker *is* the device identity — no hostname
 detection, same philosophy as the seam files. `dotfiles-local-sync push|pull`
 (stowed to `~/bin`) then syncs every seam file to/from 1Password Documents
-titled `dotfiles <machine> <slug>` in the `Private` vault (`op` CLI must be
-signed in). New-machine flow: write the marker, `dotfiles-local-sync pull`,
-then `mise run install`. Adding a seam file? Extend `ENTRIES` in the script
+titled `dotfiles <machine> <slug>` in the shared `machines` vault. `op` runs
+as a per-machine **service account** (ADR-010): the token sits in the login
+Keychain and `076_1password.zsh` exports it, so no biometric prompt and it
+works from agent panes. New-machine flow: write the marker, `mise run
+1password` (prints the token setup), `dotfiles-local-sync pull`, then
+`mise run install`. Repo `.env` files ride the same seam (`env-*` entries). Adding a seam file? Extend `ENTRIES` in the script
 alongside `.gitignore` and the `*.example`.
 
 **Rules of thumb when editing tracked config:**
