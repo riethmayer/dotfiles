@@ -37,7 +37,7 @@ End plans with unresolved questions (extremely concise).
 ## Presentation & Visuals
 
 - Always apply brand guidelines (earlybird plugin) for any visual
-- Use pptx skill for presentations
+- Presentations are single-file HTML decks via the `html-presentation` skill (earlybird plugin); `creating-presentations` (pptx) only when a .pptx is explicitly requested
 - Add "strictly confidential" to first slide top-right
 
 ## CLI & API Values
