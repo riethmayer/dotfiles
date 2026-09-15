@@ -30,9 +30,9 @@ One-time setup, in an interactive shell (Touch ID once):
   1. Create the shared vault (service accounts cannot see Private):
        opme vault create $VAULT
   2. Move the machine secrets into it (dotfiles documents, CLI items):
-       opme item list --vault Private --format json \\
-         | jq -r '.[] | select(.title|startswith("dotfiles ")) | .id' \\
-         | xargs -n1 -I{} opme item move {} --current-vault Private --destination-vault $VAULT
+       for id in \$(opme item list --vault Private --format json | jq -r '.[] | select(.title|startswith("dotfiles ")) | .id'); do
+         opme item move "\$id" --current-vault Private --destination-vault $VAULT
+       done
        opme item move ElevenLabs --current-vault Private --destination-vault $VAULT
   3. Create the service account (prints the token once, never again):
        opme service-account create "\$(hostname -s)" --vault $VAULT:read_items,write_items
