@@ -1,0 +1,45 @@
+#!/bin/bash
+# WorktreeRemove hook: cleanup counterpart to claude-worktree-treehouse.
+#
+# Contract (code.claude.com/docs/en/hooks#worktreeremove): receives
+# {"worktree_path": ..., "name": ..., "cwd": ...} on stdin; fires when a
+# `claude -w` session exits and chooses removal, when an isolation:"worktree"
+# subagent finishes, or when a background session is deleted. Non-zero exit
+# only matters while the directory still exists afterward; JSON output is
+# discarded.
+#
+# A treehouse lease is returned to the pool (the directory stays, that is the
+# point of the pool). A plain git worktree under .claude/worktrees is removed.
+# Either way only when the checkout is clean: a dirty tree is left in place
+# with a note on stderr, so nothing uncommitted is ever thrown away here.
+set -euo pipefail
+export PATH="$HOME/.local/bin:$PATH"
+
+in=$(cat)
+wt=$(printf '%s' "$in" | jq -r '.worktree_path // empty')
+[ -n "$wt" ] && [ -d "$wt" ] || exit 0
+
+# Seam files copied in by the create hook are not work; anything else is.
+dirty=$(git -C "$wt" status --porcelain 2>/dev/null |
+  grep -v -E '^\?\? (\.env|\.claude/settings\.local\.json)$' || true)
+if [ -n "$dirty" ]; then
+  echo "claude-worktree-remove: $wt has uncommitted changes, leaving it" >&2
+  exit 0
+fi
+
+# Primary checkout: git-common-dir points at <main-checkout>/.git even from
+# inside a linked worktree; treehouse resolves its pool from there.
+common=$(git -C "$wt" rev-parse --path-format=absolute --git-common-dir)
+root=$(dirname "$common")
+
+if command -v treehouse >/dev/null 2>&1; then
+  lease=$(cd "$root" && treehouse status --json 2>/dev/null |
+    jq -r --arg p "$wt" '[.[] | select(.path == $p and .status == "leased")][0].lease_holder // empty')
+  if [ -n "$lease" ]; then
+    (cd "$root" && treehouse return --force --if-lease-holder "$lease" "$wt") >&2
+    exit 0
+  fi
+fi
+
+# --force only clears the seam files checked above.
+git -C "$root" worktree remove --force "$wt" >&2

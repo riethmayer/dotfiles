@@ -4,15 +4,23 @@
 # Contract (code.claude.com/docs/en/hooks#worktreecreate): receives
 # {"name": ..., "cwd": ...} on stdin, prints the worktree directory to stdout
 # (nothing else), non-zero exit aborts creation. Claude Code uses the returned
-# directory as-is — verified empirically: it does NOT create a branch there,
-# and a treehouse lease arrives detached at the default tip, so the branch
-# must be created here. With this hook active, .worktreeinclude is not
-# processed either, so seam files are also copied here.
+# directory as-is for `claude -w`: it does NOT create a branch there, and a
+# treehouse lease arrives detached at the default tip, so the branch must be
+# created here. With this hook active, .worktreeinclude is not processed
+# either, so seam files are also copied here.
+#
+# Subagents (`isolation: "worktree"`, name `agent-<id>`) are different:
+# Claude Code creates <repo>/.claude/worktrees/agent-<id> on branch
+# worktree-agent-<id> itself, *before* this hook runs, and works there no
+# matter what the hook prints (verified 2026-09-14: default checkout at
+# 10:44:55, hook lease at 10:45:17, subagent transcript in the default path).
+# Leasing a pool slot for those only leaks it, so agent-* names stay off the
+# pool and get the default path back.
 #
 # Re-entry: `claude -w <name>` for a name that already holds a lease returns
-# the same tree (lease holder claude-w-<name> is the identity). Release with
-# `treehouse return <path>` once the branch is pushed — Claude Code does not
-# return leases itself.
+# the same tree (lease holder claude-w-<name> is the identity). Leases are
+# released by the WorktreeRemove hook (claude-worktree-remove) when Claude
+# Code drops the worktree, or by hand with `treehouse return <path>`.
 set -euo pipefail
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -23,7 +31,7 @@ cd "${cwd:-$PWD}"
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-if command -v treehouse >/dev/null 2>&1; then
+if command -v treehouse >/dev/null 2>&1 && [[ "$name" != agent-* ]]; then
   holder="claude-w-$name"
   wt=$(treehouse status --json 2>/dev/null |
     jq -r --arg h "$holder" '[.[] | select(.lease_holder == $h)][0].path // empty')
@@ -31,9 +39,10 @@ if command -v treehouse >/dev/null 2>&1; then
     wt=$(treehouse get --lease --lease-holder "$holder")
   fi
 else
-  # No treehouse on this machine: fall back to the repo convention.
+  # No treehouse on this machine, or a subagent: use the repo convention,
+  # which is also where Claude Code already put the subagent checkout.
   wt="$root/.claude/worktrees/$name"
-  [ -d "$wt" ] || git worktree add "$wt" >&2
+  [ -d "$wt" ] || git worktree add --detach "$wt" >&2
 fi
 
 # Detached tree (fresh lease, or reuse before this fix): put it on the
