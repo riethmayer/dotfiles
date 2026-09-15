@@ -99,6 +99,12 @@ else
   fi
 fi
 
+# Sidebar "$id" row (config.toml ui.sidebar.spaces) is metadata, not a
+# built-in: stamp the new space with its own public id so it shows up like
+# the /delegate-created ones (org-tag.mjs does the same for those).
+ws=$(printf '%s' "$out" | sed -n 's/.*"workspace_id" *: *"\([^"]*\)".*/\1/p' | head -1)
+[[ -n "$ws" ]] && "$herdr_bin" workspace report-metadata "$ws" --source orchestrator --token "id=$ws" >/dev/null 2>&1
+
 # Seam files the new checkout needs but git doesn't carry.
 if [[ -f "$repo/.claude/settings.local.json" ]]; then
   mkdir -p "$wt_path/.claude"

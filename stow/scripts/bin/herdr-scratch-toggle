@@ -39,6 +39,9 @@ else
   if [[ -n "$scratch" ]]; then
     "$herdr_bin" workspace focus "$scratch" >/dev/null
   else
-    "$herdr_bin" workspace create --label scratch --cwd "$HOME" --focus >/dev/null
+    out=$("$herdr_bin" workspace create --label scratch --cwd "$HOME" --focus 2>/dev/null)
+    # Stamp the $id sidebar row (metadata token, see herdr-worktree-new).
+    ws=$(printf '%s' "$out" | sed -n 's/.*"workspace_id" *: *"\([^"]*\)".*/\1/p' | head -1)
+    [[ -n "$ws" ]] && "$herdr_bin" workspace report-metadata "$ws" --source orchestrator --token "id=$ws" >/dev/null 2>&1
   fi
 fi
