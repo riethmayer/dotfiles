@@ -1,6 +1,10 @@
 # Atuin Configuration
 # Shell history search and sync tool
 
+# Security note: atuin syncs history to api.atuin.sh (end-to-end encrypted,
+# key in ~/.local/share/atuin/key). What gets recorded is governed by
+# history_filter in stow/atuin/.config/atuin/config.toml; back the key up
+# with `dotfiles-local-sync push`. Details in AGENTS.md, seam table.
 # History settings (atuin manages history, but keep these for compatibility)
 export HISTSIZE=1000000
 export SAVEHIST=1000000

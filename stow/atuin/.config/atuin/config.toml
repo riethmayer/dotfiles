@@ -118,10 +118,26 @@
 ## with ^ or end with $, they'll match anywhere in the command.
 ## For details on the supported regular expression syntax, see
 ## https://docs.rs/regex/latest/regex/#syntax
-# history_filter = [
-#   "^secret-cmd",
-#   "^innocuous-cmd .*--secret=.+",
-# ]
+# Security: history syncs to Atuin's hosted server (api.atuin.sh) every 5 min.
+# Records are end-to-end encrypted with ~/.local/share/atuin/key (the server
+# only ever sees ciphertext plus timestamps), but that key plus the account
+# unlocks everything ever typed. An audit on 2026-09-15 found ~50 lines with
+# live API keys, bearer tokens and a GitHub PAT that the built-in
+# secrets_filter had let through (env assignments, --with-token, curl -H).
+# These patterns stop such lines from being recorded at all; `atuin history
+# prune` deletes already-recorded matches and syncs the deletions. Regexes are
+# unanchored Rust syntax. Keep the key backed up: `dotfiles-local-sync push`
+# (see AGENTS.md, seam table).
+history_filter = [
+  "(?i)(api[_-]?key|secret|token|password|passwd)\\s*[=:]\\s*\\S",
+  "(?i)authorization:\\s*bearer\\s+\\S",
+  "(?i)--(with-token|token)([= ]|$)",
+  "ghp_[A-Za-z0-9]{30,}",
+  "github_pat_[A-Za-z0-9_]{20,}",
+  "sk-[A-Za-z0-9_-]{20,}",
+  "AKIA[0-9A-Z]{16}",
+  "xox[bpa]-[A-Za-z0-9-]+",
+]
 
 ## prevent commands run with cwd matching any of these regexes from being written
 ## to history. Note that these regular expressions are unanchored, i.e. if they don't
@@ -158,7 +174,8 @@
 ## 3. Slack oauth tokens (bot, user)
 ## 4. Slack webhooks
 ## 5. Stripe live/test keys
-# secrets_filter = true
+# Explicitly on; history_filter above covers what this misses.
+secrets_filter = true
 
 ## Defaults to true. If enabled, upon hitting enter Atuin will immediately execute the command,
 ## whereas tab will put the command in the prompt for editing.
