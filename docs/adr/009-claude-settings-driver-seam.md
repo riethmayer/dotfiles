@@ -64,3 +64,17 @@ change.
   input passes through unchanged rather than being truncated.
 - A new volatile key added by a future Claude release is not covered until it is
   named in the filter.
+- The filter only runs on the `git add` path. `git apply --cached`,
+  `git hash-object -w` + `git update-index --cacheinfo`, and anything else
+  that writes a blob straight into the index bypasses it: the committed file
+  then carries whatever the working copy had, driver keys included, and is not
+  key-sorted. Fail-open compounds this, since an invalid intermediate (a hunk
+  applied with its brackets in the wrong place) passes through silently.
+  Observed 2026-09-15: two commits built from partial hunks shipped invalid
+  JSON and `model`/`fastMode`, caught only because the commits were still
+  local. Rule: stage this file with `git add` only, and after any commit that
+  touches it run
+  `git show HEAD:stow/claude/.claude/settings.json | python3 -m json.tool` and
+  `git show HEAD:stow/claude/.claude/settings.json | grep -c '"model"'`
+  (must print 0). Partial staging of this file is not worth the risk; commit
+  the plugin or hook change whole and split elsewhere.
