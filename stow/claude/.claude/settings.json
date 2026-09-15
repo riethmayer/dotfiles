@@ -36,12 +36,6 @@
         "source": "github"
       }
     },
-    "earlybird-marketplace": {
-      "source": {
-        "repo": "earlybirdvc/skills",
-        "source": "github"
-      }
-    },
     "jan-skills": {
       "autoUpdate": true,
       "source": {
