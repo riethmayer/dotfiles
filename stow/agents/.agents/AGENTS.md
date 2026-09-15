@@ -40,6 +40,10 @@ End plans with unresolved questions (extremely concise).
 - Use pptx skill for presentations
 - Add "strictly confidential" to first slide top-right
 
+## CLI & API Values
+
+- Before using a flag, subcommand or enum value you have not seen work this session, read `--help` / `<tool> help <cmd>` or list the valid values. After one rejection, look it up; never retry a variation. (retro topic `cli-syntax-guessing`, 2 sessions)
+
 ## Misc
 
 - When copying to clipboard, omit markdown fences — just raw content
