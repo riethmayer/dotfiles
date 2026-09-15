@@ -8,7 +8,8 @@
 # start from a pane inside a linked worktree (linked_worktree_source), this
 # resolves the primary checkout from the pane's cwd via git-common-dir, so it
 # works from any pane. The checkout is leased from the treehouse pool
-# (branched off the default branch, opened via `herdr worktree open`); when
+# (branched off the default branch, opened via `herdr worktree open` with the
+# pool slot number prefixed to the space title, e.g. "14 orchestration"); when
 # treehouse is not installed it falls back to `herdr worktree create` at
 # <repo>/.claude/worktrees/<name>. Either way seam files
 # (.claude/settings.local.json, .env) are copied into the checkout.
@@ -79,8 +80,11 @@ if command -v treehouse >/dev/null 2>&1; then
     read -k1 -s '?press any key'
     exit 1
   fi
+  # Space title carries the pool slot number (…/<repo>-<hash>/<N>/<repo>) so
+  # the sidebar maps straight onto `treehouse status`.
+  tree_no="${wt_path:h:t}"
   if ! out=$("$herdr_bin" worktree open --cwd "$repo" --path "$wt_path" \
-      --label "$name" --focus --json 2>&1); then
+      --label "$tree_no $name" --focus --json 2>&1); then
     print -u2 "herdr-worktree-new: open failed: $out"
     read -k1 -s '?press any key'
     exit 1
