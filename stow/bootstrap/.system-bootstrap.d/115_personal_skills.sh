@@ -28,6 +28,22 @@ if [ -f "$PROMPT_SRC" ]; then
     mkdir -p "$(dirname "$PROMPT_LINK")"
     ln -sfn "$PROMPT_SRC" "$PROMPT_LINK"
     echo "personal-skills: linked smart-brevity system prompt into ~/.claude"
+
+    # Same prompt as a Claude Code output style, so sessions that never pass
+    # --append-system-prompt (herdr agent start, plain `claude`) get it via
+    # `outputStyle` in ~/.claude/settings.local.json. Must be a real file, not
+    # a symlink (see stow/claude/.stow-local-ignore), so it is regenerated here.
+    STYLE_OUT="$HOME/.claude/output-styles/smart-brevity-clear.md"
+    mkdir -p "$(dirname "$STYLE_OUT")"
+    {
+        printf '%s\n' '---' \
+            'name: Smart Brevity Clear' \
+            'description: Clear, concise, actionable communication (the yolo system prompt). Generated from ~/skills prompt-engineering-patterns by 115_personal_skills.sh, do not edit here.' \
+            'keep-coding-instructions: true' \
+            '---' ''
+        cat "$PROMPT_SRC"
+    } > "$STYLE_OUT"
+    echo "personal-skills: generated output style $STYLE_OUT"
 fi
 
 if ! command -v launchctl >/dev/null 2>&1; then
