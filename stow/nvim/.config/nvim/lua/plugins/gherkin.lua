@@ -1,12 +1,4 @@
 return {
-  -- Treesitter: Gherkin syntax highlighting
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = { "gherkin" },
-    },
-  },
-
   -- Mason: install cucumber LSP
   {
     "mason-org/mason.nvim",
