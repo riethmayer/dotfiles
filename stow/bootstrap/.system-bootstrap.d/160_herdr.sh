@@ -55,6 +55,22 @@ done
 mkdir -p "$HOME/.config/herdr"
 stow -d stow -t ~ herdr
 
+# Local herdr plugins (stow/herdr/.config/herdr/local-plugins/<id>). Linking
+# registers them with the running server; the registry (plugins.json) is
+# runtime state and gitignored. Needs a running server, so warn and move on
+# when there is none. Idempotent: already-linked plugins are left alone.
+for plugin_dir in "$HOME/.config/herdr/local-plugins"/*/; do
+    [ -f "${plugin_dir}herdr-plugin.toml" ] || continue
+    plugin_id="$(basename "$plugin_dir")"
+    if herdr plugin list --plugin "$plugin_id" --json 2>/dev/null | grep -q "\"plugin_id\":\"$plugin_id\""; then
+        echo "herdr: plugin $plugin_id already linked"
+    elif herdr plugin link "${plugin_dir%/}" >/dev/null 2>&1; then
+        echo "herdr: linked plugin $plugin_id"
+    else
+        echo "herdr: could not link plugin $plugin_id (is the herdr server running?)" >&2
+    fi
+done
+
 # The integrations must write through the stowed symlinks into the repo;
 # otherwise they'd create real files that conflict with the tracked shims.
 for dir in "$(dirname "$claude_shim")" "$(dirname "$pi_shim")"; do
