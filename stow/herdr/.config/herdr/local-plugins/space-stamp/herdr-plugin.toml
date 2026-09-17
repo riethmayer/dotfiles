@@ -1,0 +1,15 @@
+# space-stamp: every new space gets the sidebar `$id` token, and spaces on a
+# treehouse checkout get the pool slot number as a label prefix ("4 name").
+# Runs on herdr's own workspace.created event, so it covers every creation
+# path: herdr-worktree-new, /delegate, agents calling `herdr worktree open`
+# or `herdr workspace create` directly. Idempotent.
+# Linked by stow/bootstrap/.system-bootstrap.d/160_herdr.sh.
+id = "space-stamp"
+name = "space-stamp"
+version = "0.1.0"
+min_herdr_version = "0.8.2"
+description = "Stamp new spaces with their id and treehouse slot number"
+
+[[events]]
+on = "workspace.created"
+command = ["/bin/sh", "-c", "exec /usr/bin/python3 \"$HERDR_PLUGIN_ROOT/stamp.py\""]
