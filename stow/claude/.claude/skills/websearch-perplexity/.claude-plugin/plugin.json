@@ -1,0 +1,12 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "websearch-perplexity",
+  "version": "0.1.0",
+  "description": "Routes the WebSearch tool to Perplexity (pplx CLI) via a function hook; falls back to native search on failure",
+  "author": {
+    "name": "Jan Riethmayer"
+  },
+  "skills": [
+    "./"
+  ]
+}

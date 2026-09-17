@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Perplexity Sonar from the terminal: `llm` + llm-perplexity, keyed by the
+# machine's 1Password service account (dotfiles ADR-010). Never the
+# interactive `op` session, so never a Touch ID prompt; the key is injected
+# per call by `op run` and never written to disk.
+#
+#   sonar "question"                          # sonar-pro
+#   sonar -m sonar-reasoning-pro "question"
+#   sonar -m sonar-deep-research "question"   # slow, 1-5 min
+#   sonar -o search_recency_filter week "q"   # any llm-perplexity option
+set -euo pipefail
+
+token="${OP_SERVICE_ACCOUNT_TOKEN:-}"
+if [ -z "$token" ]; then
+  token=$(security find-generic-password -s op-service-account-token -w 2>/dev/null) || {
+    echo "sonar: no 1Password service account token (Keychain op-service-account-token); see dotfiles ADR-010" >&2
+    exit 1
+  }
+fi
+
+model=()
+case " $* " in *" -m "* | *" --model "*) ;; *) model=(-m sonar-pro) ;; esac
+
+export OP_SERVICE_ACCOUNT_TOKEN="$token"
+export LLM_PERPLEXITY_KEY="op://machines/Perplexity API Key/credential"
+exec op run --no-masking -- llm prompt "${model[@]}" "$@"

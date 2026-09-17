@@ -46,6 +46,7 @@ End plans with unresolved questions (extremely concise).
 
 ## Misc
 
+- `sonar "question"` asks Perplexity Sonar (default `sonar-pro`; `-m sonar-deep-research` for long research). WebSearch already routes to Perplexity via the `websearch-perplexity` plugin
 - When copying to clipboard, omit markdown fences — just raw content
 - When reading excalidraw files, extract relevant nodes instead of loading fully
 - Assume Neovide/nvim as code editor

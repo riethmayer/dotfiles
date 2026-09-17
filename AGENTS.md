@@ -29,6 +29,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008)
 - `mise run treehouse` - Install the treehouse CLI + stow its config (pooled git worktrees for agents)
 - `mise run swamp` - Install the swamp CLI (skips when present; `swamp update` owns upgrades)
+- `mise run perplexity` - Install `pplx`, `llm` + `llm-perplexity` (backs `sonar`) and the `pplx-cli` skill; the `websearch-perplexity` Claude plugin lives in `stow/claude/.claude/skills/`
 - `mise run 1password` - Check the `op` service-account token in Keychain; prints the one-time vault + token setup when missing (ADR-010)
 
 ## Architecture and Structure

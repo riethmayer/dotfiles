@@ -254,3 +254,11 @@ echo "Setting up swamp..."
 chmod +x stow/bootstrap/.system-bootstrap.d/180_swamp.sh
 ./stow/bootstrap/.system-bootstrap.d/180_swamp.sh
 '''
+
+[tasks.perplexity]
+description = "Install pplx, llm + llm-perplexity (sonar) and the pplx-cli skill"
+run = '''
+echo "Setting up Perplexity tooling..."
+chmod +x stow/bootstrap/.system-bootstrap.d/185_perplexity.sh
+./stow/bootstrap/.system-bootstrap.d/185_perplexity.sh
+'''

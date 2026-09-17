@@ -73,3 +73,7 @@ stow/claude/.claude/hooks/workos-billing-guard.sh
 # atuin standalone-installer receipt — generated at install time, carries the
 # machine-local install_prefix, so it must never be tracked
 stow/atuin/.config/atuin/atuin-receipt.json
+
+# Claude Code plugin type stubs, generated per Claude Code version by
+# `/plugin-types .claude/types` inside the plugin folder (~400 KB, churns)
+stow/claude/.claude/skills/*/.claude/types/
