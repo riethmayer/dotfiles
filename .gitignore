@@ -63,6 +63,10 @@ stow/herdr/.config/herdr/sessions/
 stow/herdr/.config/herdr/session-history.json
 # 0.7.5+ global plugin registry lockfile — runtime, not config
 stow/herdr/.config/herdr/.plugins.lock
+# plugin registry (absolute plugin_root paths) and per-plugin config dirs,
+# written by `herdr plugin link`; the plugin sources live in local-plugins/
+stow/herdr/.config/herdr/plugins.json
+stow/herdr/.config/herdr/plugins/
 
 # per-machine seam files synced via 1Password (dotfiles-local-sync push/pull);
 # tracked *.example templates stand in for them
