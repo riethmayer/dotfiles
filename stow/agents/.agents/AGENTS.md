@@ -31,6 +31,7 @@ End plans with unresolved questions (extremely concise).
 
 ## Pull Requests
 
+- Every PR body follows `/visual-pr` (jan-ship): one-sentence why, 1-3 reviewer notes, a change outline of diff blocks / pseudocode / file trees. Never `gh pr create --fill`.
 - After `gh pr create` (non-draft), default to `/ship` (runs `/check-pr`, then squash-merge + deploy-monitor) unless told otherwise this turn.
 - Enforcement is deterministic, not memory: a PostToolUse hook (`~/.claude/hooks/gh-pr-create-ship.sh`) surfaces this on every create in earlybirdvc/eagleeye; GitHub branch protection is the hard gate that blocks merging anything red or behind.
 
