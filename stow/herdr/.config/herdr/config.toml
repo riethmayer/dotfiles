@@ -153,9 +153,9 @@ sidebar_max_width = 48
 
 # Expanded space entries: name, then optional goal and Linear rows ($goal /
 # $linear metadata — one row each, no wrapping; skipped when unset). $linear
-# holds issue keys only ("EE-123 EE-124"): herdr strips escape bytes from
+# holds issue keys only ("EAG-123 EAG-124"): herdr strips escape bytes from
 # tokens, so OSC 8 links cannot render here.
-# Set per space: herdr workspace report-metadata <id> --source claude --token goal="..." --token linear="EE-123"
+# Set per space: herdr workspace report-metadata <id> --source claude --token goal="..." --token linear="EAG-123"
 [ui.sidebar.spaces]
 rows = [["state_icon", "workspace", "$id"], ["$goal"], ["$linear"], ["branch", "git_status"]]
 

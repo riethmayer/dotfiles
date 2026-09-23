@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Open the current herdr space's Linear issues in the browser. Reads the
-# space's $linear metadata token (issue keys, e.g. "EE-123 EE-124" — see
+# space's $linear metadata token (issue keys, e.g. "EAG-123 EAG-124" — see
 # [ui.sidebar.spaces] in stow/herdr/.config/herdr/config.toml). The sidebar
 # strips escape bytes from tokens, so OSC 8 links cannot render there; this
 # binding (prefix+i, [[keys.command]] type = "shell") is the click.
