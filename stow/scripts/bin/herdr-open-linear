@@ -7,7 +7,7 @@
 #
 # Usage: herdr-open-linear
 #   Target pane: HERDR_ACTIVE_PANE_ID (key binding), else HERDR_PANE_ID (CLI).
-#   Workspace slug: $LINEAR_WORKSPACE, default "earlybird".
+#   Workspace slug: $LINEAR_WORKSPACE, default "earlybirdvc".
 set -eu
 
 herdr_bin="${HERDR_BIN_PATH:-herdr}"
@@ -26,5 +26,5 @@ keys=$("$herdr_bin" workspace get "$ws" | /usr/bin/python3 -c \
 [[ -n "$keys" ]] || exit 0
 
 for key in ${=keys}; do
-  open "https://linear.app/${LINEAR_WORKSPACE:-earlybird}/issue/${key}"
+  open "https://linear.app/${LINEAR_WORKSPACE:-earlybirdvc}/issue/${key}"
 done
