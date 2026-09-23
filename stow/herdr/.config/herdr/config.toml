@@ -144,11 +144,13 @@ show_agent_labels_on_pane_borders = true
 # Room for goal text (defaults: min 18, max 36).
 sidebar_max_width = 48
 
-# Expanded space entries: name, then an optional goal line ($goal metadata —
-# one row, no wrapping; skipped when unset).
-# Set per space: herdr workspace report-metadata <id> --source claude --token goal="..."
+# Expanded space entries: name, then optional goal and Linear rows ($goal /
+# $linear metadata — one row each, no wrapping; skipped when unset). $linear
+# holds issue keys only ("EE-123 EE-124"): herdr strips escape bytes from
+# tokens, so OSC 8 links cannot render here.
+# Set per space: herdr workspace report-metadata <id> --source claude --token goal="..." --token linear="EE-123"
 [ui.sidebar.spaces]
-rows = [["state_icon", "workspace", "$id"], ["$goal"], ["branch", "git_status"]]
+rows = [["state_icon", "workspace", "$id"], ["$goal"], ["$linear"], ["branch", "git_status"]]
 
 [ui.toast]
 # In-app toast popups ("terminal" would hand off to Ghostty desktop
