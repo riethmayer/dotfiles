@@ -1,0 +1,30 @@
+#!/bin/zsh
+# Open the current herdr space's Linear issues in the browser. Reads the
+# space's $linear metadata token (issue keys, e.g. "EE-123 EE-124" — see
+# [ui.sidebar.spaces] in stow/herdr/.config/herdr/config.toml). The sidebar
+# strips escape bytes from tokens, so OSC 8 links cannot render there; this
+# binding (prefix+i, [[keys.command]] type = "shell") is the click.
+#
+# Usage: herdr-open-linear
+#   Target pane: HERDR_ACTIVE_PANE_ID (key binding), else HERDR_PANE_ID (CLI).
+#   Workspace slug: $LINEAR_WORKSPACE, default "earlybird".
+set -eu
+
+herdr_bin="${HERDR_BIN_PATH:-herdr}"
+pane="${HERDR_ACTIVE_PANE_ID:-${HERDR_PANE_ID:-}}"
+if [[ -z "$pane" ]]; then
+  print -u2 "herdr-open-linear: no HERDR_ACTIVE_PANE_ID/HERDR_PANE_ID in environment"
+  exit 1
+fi
+
+ws=$("$herdr_bin" pane get "$pane" | /usr/bin/python3 -c \
+  'import json,sys; print(json.load(sys.stdin)["result"]["pane"].get("workspace_id") or "")')
+[[ -n "$ws" ]] || { print -u2 "herdr-open-linear: pane $pane has no workspace"; exit 1; }
+
+keys=$("$herdr_bin" workspace get "$ws" | /usr/bin/python3 -c \
+  'import json,sys; print((json.load(sys.stdin)["result"]["workspace"].get("tokens") or {}).get("linear") or "")')
+[[ -n "$keys" ]] || exit 0
+
+for key in ${=keys}; do
+  open "https://linear.app/${LINEAR_WORKSPACE:-earlybird}/issue/${key}"
+done

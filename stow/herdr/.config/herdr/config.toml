@@ -87,6 +87,13 @@ command = "$HOME/bin/herdr-rename-pane"
 width = 60
 height = 5
 
+# Open the current space's $linear issue keys in the browser (the sidebar
+# cannot render links, so this is the click).
+[[keys.command]]
+key = "prefix+i"
+type = "shell"
+command = "$HOME/bin/herdr-open-linear"
+
 # New worktree + space on prefix+g (free since goto moved to prefix+o).
 # Unlike the built-in new_worktree (prefix+shift+g), the script resolves the
 # primary checkout from the pane's cwd, so it also works from panes inside
