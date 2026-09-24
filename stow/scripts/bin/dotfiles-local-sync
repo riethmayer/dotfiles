@@ -40,7 +40,7 @@ MACHINE="$(tr -d '[:space:]' < "$MACHINE_FILE")"
 ENTRIES=(
     "git-local|$REPO/stow/git/.config/git/local"
     "zsh-local|$REPO/stow/zsh/.config/zsh/99_local.zsh"
-    "claude-settings-local|$HOME/.claude/settings.local.json"
+    "claude-settings-local|$REPO/stow/claude/.claude/settings.local.json"
     "claude-desktop-config|$REPO/stow/agents/Library/Application Support/Claude/claude_desktop_config.json"
     "claude-hook-gh-pr-create-ship|$REPO/stow/claude/.claude/hooks/gh-pr-create-ship.sh"
     "claude-hook-workos-billing-guard|$REPO/stow/claude/.claude/hooks/workos-billing-guard.sh"

@@ -1,0 +1,49 @@
+#!/bin/sh
+# Render ~/.claude/settings.json from the tracked shared file plus this
+# machine's local overlay. See docs/adr/011-claude-settings-render-seam.md.
+#
+#   settings.shared.json  tracked   hooks, permissions, status line, shared
+#                                   marketplaces + jan-* plugin enables
+#   settings.local.json   ignored   work marketplaces + plugin enables,
+#                                   driver choice (model, fastMode, ...)
+#   settings.json         ignored   the merge; the only file Claude reads.
+#                                   ~/.claude/settings.json symlinks here.
+#
+# Claude Code reads exactly one user-level file, ~/.claude/settings.json;
+# a user-level settings.local.json is not a scope it knows. So the split
+# has to be rendered, not layered.
+#
+# Precedence, lowest first: shared, local, then the driver keys Claude wrote
+# into the current settings.json (a /model "save as default" must survive a
+# re-render). Objects deep-merge (enabledPlugins, extraKnownMarketplaces,
+# env); arrays in local replace the shared array whole.
+#
+# Idempotent: rendering twice yields the same bytes. Exit 0 with a message
+# when the render is already current.
+set -eu
+
+dir="$(cd "$(dirname "$0")/../../claude/.claude" 2>/dev/null && pwd -P || true)"
+[ -d "$dir" ] || dir="$HOME/dotfiles/stow/claude/.claude"
+shared="$dir/settings.shared.json"
+local_="$dir/settings.local.json"
+out="$dir/settings.json"
+
+command -v jq >/dev/null 2>&1 || { echo "claude-settings-render: jq not found" >&2; exit 1; }
+[ -f "$shared" ] || { echo "claude-settings-render: missing $shared" >&2; exit 1; }
+[ -f "$local_" ] || printf '{}\n' > "$local_"
+[ -f "$out" ] || printf '{}\n' > "$out"
+
+tmp="$(mktemp)"
+jq -S -s '
+  .[0] * .[1] * (.[2] | with_entries(select(.key | IN("model", "fastMode", "effortLevel", "modelSettings"))))
+' "$shared" "$local_" "$out" > "$tmp"
+
+if cmp -s "$tmp" "$out"; then
+    rm -f "$tmp"
+    echo "claude-settings-render: settings.json current"
+else
+    # cat, not mv: keep the inode so an existing stow symlink stays valid.
+    cat "$tmp" > "$out"
+    rm -f "$tmp"
+    echo "claude-settings-render: settings.json rendered"
+fi

@@ -13,6 +13,18 @@ fi
 # stowed ~/.system-bootstrap.d/<script> path, where a logical ../../.. walks
 # out of $HOME instead of into the repo.
 cd "$(cd "$(dirname "$0")" && pwd -P)/../../.."
+
+# Render settings.json (gitignored) from settings.shared.json + this machine's
+# settings.local.json overlay before stow links it; see ADR-011. If Claude
+# replaced a dangling seam symlink with a real file, adopt it as the overlay.
+live="$HOME/.claude/settings.local.json"
+seam="stow/claude/.claude/settings.local.json"
+if [ -f "$live" ] && [ ! -L "$live" ] && [ ! -f "$seam" ]; then
+    mv "$live" "$seam"
+    echo "claude: adopted existing settings.local.json into the seam"
+fi
+stow/scripts/bin/claude-settings-render
+
 stow -d stow -t ~ claude
 
 # The ~/.claude/skills symlink is retired (personal skills load via the
@@ -63,21 +75,9 @@ if [ ! -e "$desktop_config" ]; then
     cp "$desktop_seed" "$desktop_config"
 fi
 
-# Wire the clean filter that keeps per-session driver choices out of git.
-# Claude writes model / fastMode / effortLevel / modelSettings back into
-# ~/.claude/settings.json, which is a stow symlink into this repo, so every
-# /model switch used to dirty the working tree. The real values live in
-# ~/.claude/settings.local.json (gitignored, and local beats user on
-# precedence); the filter drops the inert copies on the way into git.
-# Git filters are per-clone config, so this has to run at install time.
-# See docs/adr/009-claude-settings-driver-seam.md.
-filter_script="$(pwd)/stow/scripts/bin/claude-settings-clean"
-if [ -x "$filter_script" ]; then
-    git config filter.claude-volatile.clean "$filter_script"
-    git config filter.claude-volatile.smudge cat
-    # Re-apply the filter to anything already staged under the old rules.
-    git add --renormalize stow/claude/.claude/settings.json 2>/dev/null || true
-    echo "  Claude settings driver-seam filter configured."
-fi
+# ADR-009's clean filter is retired (ADR-011): drop the per-clone git config
+# it left behind so git stops looking for the deleted script.
+git config --unset filter.claude-volatile.clean 2>/dev/null || true
+git config --unset filter.claude-volatile.smudge 2>/dev/null || true
 
 echo "Claude Code setup complete!"

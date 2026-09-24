@@ -71,6 +71,12 @@ stow/herdr/.config/herdr/plugins/
 # per-machine seam files synced via 1Password (dotfiles-local-sync push/pull);
 # tracked *.example templates stand in for them
 stow/agents/Library/Application Support/Claude/claude_desktop_config.json
+# Claude reads one user-level file, ~/.claude/settings.json, so it is rendered
+# by claude-settings-render from tracked settings.shared.json + the ignored
+# per-machine settings.local.json overlay (ADR-011). Claude also writes
+# driver state (model, fastMode, ...) into the rendered file.
+stow/claude/.claude/settings.json
+stow/claude/.claude/settings.local.json
 stow/claude/.claude/hooks/gh-pr-create-ship.sh
 stow/claude/.claude/hooks/workos-billing-guard.sh
 
