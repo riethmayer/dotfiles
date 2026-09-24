@@ -1,7 +1,7 @@
 # ADR-009: Claude driver choice is a seam, not a commit
 
 **Date:** 2026-09-12
-**Status:** Accepted
+**Status:** Superseded by [ADR-011](011-claude-settings-render-seam.md). The premise was wrong: `~/.claude/settings.local.json` is not a scope Claude Code reads, so the driver values placed there were never in effect.
 
 ## Context
 
