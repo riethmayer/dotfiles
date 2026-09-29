@@ -1,0 +1,100 @@
+#!/bin/zsh
+# thr — check which treehouse pool slots can be returned without losing work,
+# then offer to return the safe ones.
+#
+# Usage: thr [-y] [slot ...]
+#        echo 1 3 16 4 | thr
+#   Slots come from args, else stdin (whitespace/comma separated). -y returns
+#   safe slots without asking.
+#
+# A slot is safe when: no process runs in it, `git status` is clean, and HEAD
+# is on a remote (pushed or merged) or is the head of a merged PR (squash
+# merge with the branch deleted). The pool is the one of the repo you stand
+# in; outside a repo, the only pool under ~/.treehouse is used.
+set -uo pipefail
+
+yes=0
+if [[ "${1:-}" == "-y" ]]; then yes=1; shift; fi
+
+if (( $# )); then
+  slots=("$@")
+else
+  [[ -t 0 ]] && { print -u2 "usage: thr [-y] <slot ...>  |  echo 1 3 | thr"; exit 2; }
+  slots=(${=$(tr ',' ' ')})
+fi
+(( ${#slots} )) || { print -u2 "thr: no slots given"; exit 2; }
+
+# Find a directory inside the pool's repo to run treehouse/git from.
+if ! repo_dir=$(git rev-parse --show-toplevel 2>/dev/null); then
+  pools=(~/.treehouse/*(/N))
+  if (( ${#pools} != 1 )); then
+    print -u2 "thr: not in a repo and ${#pools} pools under ~/.treehouse — cd into the repo"
+    exit 2
+  fi
+  repo_dir=(${pools[1]}/*/*(/N[1]))
+  [[ -n "$repo_dir" ]] || { print -u2 "thr: pool ${pools[1]} has no slots"; exit 2; }
+fi
+cd "$repo_dir" || exit 1
+
+status_json=$(treehouse status --json) || exit 1
+git fetch --prune --quiet origin 2>/dev/null || print -u2 "thr: git fetch failed, remote state may be stale"
+default=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || print origin/main)
+
+safe=()
+for slot in $slots; do
+  row=$(print -r -- "$status_json" | /usr/bin/python3 -c '
+import json, sys
+rows = {r["name"]: r for r in json.load(sys.stdin)}
+r = rows.get(sys.argv[1])
+if r:
+    procs = ",".join(p["name"] for p in r["processes"])
+    print(r["status"], r["path"], r["branch"] or "-", procs or "-", sep="\t")
+' "$slot")
+  if [[ -z "$row" ]]; then
+    printf '%-4s ✗ no such slot\n' "$slot"; continue
+  fi
+  IFS=$'\t' read -r st wt branch procs <<< "$row"
+  label="$branch"; [[ "$branch" == "-" ]] && label="(detached)"
+
+  if [[ "$st" == "available" ]]; then
+    printf '%-4s · already available\n' "$slot"; continue
+  fi
+  if [[ "$procs" != "-" ]]; then
+    printf '%-4s ✗ %s — running: %s\n' "$slot" "$label" "$procs"; continue
+  fi
+  dirty=$(git -C "$wt" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+  if (( dirty )); then
+    printf '%-4s ✗ %s — %s dirty files\n' "$slot" "$label" "$dirty"; continue
+  fi
+
+  head=$(git -C "$wt" rev-parse HEAD)
+  why=""
+  if git -C "$wt" merge-base --is-ancestor "$head" "$default" 2>/dev/null; then
+    why="merged into $default"
+  elif [[ -z $(git -C "$wt" rev-list -1 "$head" --not --remotes) ]]; then
+    why="pushed"
+  elif [[ "$branch" != "-" ]]; then
+    pr=$(gh pr list --head "$branch" --state merged --json number,headRefOid \
+      -q ".[] | select(.headRefOid == \"$head\") | .number" 2>/dev/null | head -1)
+    [[ -n "$pr" ]] && why="PR #$pr merged"
+  fi
+  if [[ -z "$why" ]]; then
+    n=$(git -C "$wt" rev-list --count "$head" --not --remotes)
+    printf '%-4s ✗ %s — %s unpushed commits\n' "$slot" "$label" "$n"; continue
+  fi
+  printf '%-4s ✓ %s — %s\n' "$slot" "$label" "$why"
+  safe+=("$slot")
+done
+
+(( ${#safe} )) || exit 0
+if (( ! yes )); then
+  # No terminal (agent, cron): report only.
+  { exec 3<>/dev/tty } 2>/dev/null || exit 0
+  print -n "return ${safe[*]}? [y/N] " >&3
+  answer=""
+  read -r answer <&3
+  [[ "$answer" == [yY]* ]] || exit 0
+fi
+for slot in $safe; do
+  treehouse return "$slot"
+done
