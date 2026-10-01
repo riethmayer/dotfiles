@@ -29,6 +29,12 @@ End plans with unresolved questions (extremely concise).
 - Fallback (no treehouse): create under `.claude/worktrees/<short-name>` inside the repo (not sibling dirs)
 - Either way: copy `.claude/settings.local.json` and `.env`
 
+## Scratch, Briefs & Reports
+
+- Never `/tmp` for anything worth keeping: agent briefs, reports, handoffs, PR-body drafts, notes. Write them to today's Obsidian day folder, one subfolder per workstream: `"$(node ~/skills/scripts/journal.mjs paths | jq -r .dayDir)/<topic>/"` (e.g. `founder-profile/`)
+- `/tmp` only for throwaway command output nobody rereads (DOM dumps, patch diffs), and never personal data
+- When briefing a spawned agent, give it the vault path for its report
+
 ## Pull Requests
 
 - Every PR body follows `/visual-pr` (jan-ship): one-sentence why, 1-3 reviewer notes, a change outline of diff blocks / pseudocode / file trees. Never `gh pr create --fill`.
