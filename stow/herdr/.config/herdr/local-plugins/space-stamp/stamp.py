@@ -1,7 +1,7 @@
 """space-stamp hook: stamp id metadata and the treehouse slot prefix.
 
-Input: HERDR_PLUGIN_EVENT_JSON (workspace_created). Uses HERDR_BIN_PATH so it
-talks to the session that fired the event. Stdlib only.
+Input: HERDR_PLUGIN_EVENT_JSON (workspace_created or workspace_renamed). Uses
+HERDR_BIN_PATH so it talks to the session that fired the event. Stdlib only.
 """
 import json
 import os
@@ -22,8 +22,8 @@ def herdr(*args: str) -> dict:
 
 def main() -> int:
     event = json.loads(os.environ.get("HERDR_PLUGIN_EVENT_JSON") or "{}")
-    ws = ((event.get("data") or {}).get("workspace") or {})
-    ws_id = ws.get("workspace_id")
+    data = event.get("data") or {}
+    ws_id = (data.get("workspace") or {}).get("workspace_id") or data.get("workspace_id")
     if not ws_id:
         print("space-stamp: no workspace_id in event", file=sys.stderr)
         return 0
@@ -38,8 +38,11 @@ def main() -> int:
         herdr("workspace", "report-metadata", ws_id, "--source", "orchestrator", "--token", f"id={ws_id}")
         print(f"space-stamp: {ws_id} id stamped")
 
-    checkout = (live.get("worktree") or {}).get("checkout_path") or ""
-    m = SLOT.search(checkout)
+    # `herdr workspace create --cwd <slot>` leaves no worktree record, so
+    # fall back to where the panes live.
+    paths = [(live.get("worktree") or {}).get("checkout_path") or ""]
+    paths += [p.get("cwd") or "" for p in herdr("pane", "list", "--workspace", ws_id)["result"]["panes"]]
+    m = next((m for m in map(SLOT.search, paths) if m), None)
     if m:
         slot = m.group(1)
         if label and not label.startswith(f"{slot} "):
