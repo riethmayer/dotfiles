@@ -21,7 +21,8 @@
     "jan-present@jan-skills": true,
     "jan-shape@jan-skills": true,
     "jan-ship@jan-skills": true,
-    "jan-tldraw@jan-skills": true
+    "jan-tldraw@jan-skills": true,
+    "typesafe@typesafe-ai": true
   },
   "env": {
     "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1",
@@ -42,6 +43,12 @@
       "source": {
         "repo": "riethmayer/skills",
         "source": "github"
+      }
+    },
+    "typesafe-ai": {
+      "source": {
+        "source": "github",
+        "repo": "typesafe-ai/skills"
       }
     }
   },
