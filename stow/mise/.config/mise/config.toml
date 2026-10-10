@@ -18,6 +18,7 @@ uv = "latest"
 rust = "latest"
 herdr = "latest"
 "npm:@earendil-works/pi-coding-agent" = "latest"  # pi agent CLI; shim is node-version independent
+"npm:typescript" = "latest"  # native TypeScript-Go compiler and LSP
 
 [settings]
 experimental = true
