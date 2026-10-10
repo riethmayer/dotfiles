@@ -1,6 +1,8 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { Effect, Schema } from 'effect'
+
 export interface SkillCatalogEntry {
   name: string
   description: string
@@ -13,6 +15,15 @@ interface SkillFrontmatter {
   disableModelInvocation: boolean
 }
 
+export class SkillCatalogError extends Schema.TaggedError<SkillCatalogError>()(
+  'SkillCatalogError',
+  {
+    operation: Schema.String,
+    path: Schema.String,
+    cause: Schema.Defect(),
+  },
+) {}
+
 function unquote(value: string): string {
   const trimmed = value.trim()
   const quote = trimmed[0]
@@ -22,7 +33,11 @@ function unquote(value: string): string {
   return trimmed
 }
 
-function parseDescription(lines: string[], startIndex: number, rawValue: string): string {
+function parseDescription(
+  lines: string[],
+  startIndex: number,
+  rawValue: string,
+): string {
   const value = rawValue.trim()
   if (!['|', '|-', '>', '>-'].includes(value)) return unquote(value)
 
@@ -33,7 +48,10 @@ function parseDescription(lines: string[], startIndex: number, rawValue: string)
     parts.push(line.replace(/^\s+/, ''))
   }
 
-  return parts.join(value.startsWith('>') ? ' ' : '\n').replace(/\s+/g, ' ').trim()
+  return parts
+    .join(value.startsWith('>') ? ' ' : '\n')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 export function parseSkillFrontmatter(content: string): SkillFrontmatter {
@@ -53,37 +71,61 @@ export function parseSkillFrontmatter(content: string): SkillFrontmatter {
     const key = line.slice(0, separator).trim()
     const value = line.slice(separator + 1)
     if (key === 'name') name = unquote(value)
-    if (key === 'description') description = parseDescription(lines, index, value)
-    if (key === 'disable-model-invocation') disableModelInvocation = value.trim() === 'true'
+    if (key === 'description')
+      description = parseDescription(lines, index, value)
+    if (key === 'disable-model-invocation')
+      disableModelInvocation = value.trim() === 'true'
   }
 
   return { name, description, disableModelInvocation }
 }
 
-async function findSkillFiles(directory: string): Promise<string[]> {
-  const entries = await readdir(directory, { withFileTypes: true })
+const findSkillFiles = Effect.fn('SkillCatalog.findSkillFiles')(function* (
+  directory: string,
+): Effect.fn.Return<string[], SkillCatalogError> {
+  const entries = yield* Effect.tryPromise({
+    try: () => readdir(directory, { withFileTypes: true }),
+    catch: (cause) =>
+      new SkillCatalogError({
+        operation: 'read directory',
+        path: directory,
+        cause,
+      }),
+  })
   const files: string[] = []
 
   for (const entry of entries) {
     if (entry.name.startsWith('.')) continue
     const path = join(directory, entry.name)
     if (entry.isDirectory()) {
-      files.push(...(await findSkillFiles(path)))
+      files.push(...(yield* findSkillFiles(path)))
       continue
     }
     if (entry.isFile() && entry.name === 'SKILL.md') files.push(path)
   }
 
   return files
-}
+})
 
-export async function loadSkillCatalog(root: string): Promise<SkillCatalogEntry[]> {
-  const files = await findSkillFiles(root)
+export const loadSkillCatalog = Effect.fn('SkillCatalog.load')(function* (
+  root: string,
+): Effect.fn.Return<SkillCatalogEntry[], SkillCatalogError> {
+  const files = yield* findSkillFiles(root)
   const byName = new Map<string, SkillCatalogEntry>()
 
   for (const path of files.sort()) {
-    const frontmatter = parseSkillFrontmatter(await readFile(path, 'utf8'))
-    if (frontmatter.disableModelInvocation || !frontmatter.name || !frontmatter.description) continue
+    const content = yield* Effect.tryPromise({
+      try: () => readFile(path, 'utf8'),
+      catch: (cause) =>
+        new SkillCatalogError({ operation: 'read skill', path, cause }),
+    })
+    const frontmatter = parseSkillFrontmatter(content)
+    if (
+      frontmatter.disableModelInvocation ||
+      !frontmatter.name ||
+      !frontmatter.description
+    )
+      continue
     if (byName.has(frontmatter.name)) continue
 
     byName.set(frontmatter.name, {
@@ -94,4 +136,4 @@ export async function loadSkillCatalog(root: string): Promise<SkillCatalogEntry[
   }
 
   return [...byName.values()]
-}
+})

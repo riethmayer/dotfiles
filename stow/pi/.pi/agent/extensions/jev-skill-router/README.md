@@ -5,7 +5,7 @@ Observe-only skill routing for Pi.
 On each substantive, non-queued prompt the extension:
 
 1. reads the TypeSafe API key from 1Password once per Pi runtime
-2. builds a routing catalog from model-invoked skills under `~/skills/skills`
+2. builds a routing catalog from model-invoked personal skills plus the installed Effect skill
 3. asks `typesafe/jev-latest` which skill best fits
 4. shows `Jev → <skill> <confidence>` in the status area
 5. logs the recommendation and later `SKILL.md` reads to `$XDG_STATE_HOME/pi/jev-skill-router.jsonl`
@@ -15,7 +15,8 @@ The extension does not inject, invoke, or enable a skill. Telemetry stores a pro
 Environment overrides:
 
 - `PI_JEV_API_KEY_REF`: 1Password secret reference
-- `PI_SKILLS_ROOT`: skill catalog root
+- `PI_SKILLS_ROOT`: primary skill catalog root
+- `PI_SKILLS_EXTRA_ROOTS`: platform-delimited optional catalog roots
 - `TYPESAFE_API_KEY`: bypasses the 1Password lookup
 
 Run `/jev-status` to inspect the current catalog size and latest recommendation.

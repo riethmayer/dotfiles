@@ -1,74 +1,92 @@
-/**
- * Toggle between Earlybird dark and light themes with Ctrl+Shift+T.
- *
- * Switches in lockstep:
- *   - pi:      earlybird-dark  ↔  earlybird-light
- *   - Ghostty: Catppuccin Mocha ↔ Catppuccin Latte  (OSC 7777 → pane tty)
- *   - tmux:    catppuccin mocha ↔ catppuccin latte   (plugin re-run)
- *
- * Ghostty delivery: pi.exec() subprocesses have no /dev/tty, but we
- * can write to the specific pty device (/dev/ttysNNN) that pi owns.
- * The script gets the pane tty from tmux and writes the DCS passthrough
- * escape sequence directly to it.
- *
- * Persists preference across session restarts.
- */
-
 import { resolve } from 'node:path'
-import type { ExtensionAPI, ExtensionContext } from '@mariozechner/pi-coding-agent'
+
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+} from '@earendil-works/pi-coding-agent'
+import { Effect, Option, Schema } from 'effect'
 
 const DARK = 'dracula'
 const LIGHT = 'earlybird-light'
 const STATE_TYPE = 'earlybird-theme-state'
 
+const Theme = Schema.Literals([DARK, LIGHT])
+const PersistedTheme = Schema.Struct({ theme: Theme })
+
+class ThemeSyncError extends Schema.TaggedError<ThemeSyncError>()(
+  'ThemeSyncError',
+  {
+    cause: Schema.Defect(),
+  },
+) {}
+const decodePersistedTheme = Schema.decodeUnknownOption(PersistedTheme)
+
 const extensionDir = resolve(new URL('.', import.meta.url).pathname)
 const SCRIPT = resolve(extensionDir, 'toggle-theme.sh')
 
-export default function (pi: ExtensionAPI) {
-  let current: string = DARK
+const nextTheme = (theme: typeof Theme.Type): typeof Theme.Type =>
+  theme === DARK ? LIGHT : DARK
 
-  async function toggle(ctx: ExtensionContext) {
-    current = current === DARK ? LIGHT : DARK
-    const mode = current === DARK ? 'dark' : 'light'
+const restoreTheme = (
+  entries: ReturnType<ExtensionContext['sessionManager']['getEntries']>,
+): typeof Theme.Type => {
+  let theme: typeof Theme.Type = DARK
 
-    // 1. Pi theme
-    const result = ctx.ui.setTheme(current)
-    if (!result.success) {
-      const names = ctx.ui.getAllThemes().map(t => t.name).join(', ')
-      ctx.ui.notify(`Theme "${current}" not found. Available: ${names}`, 'error')
-      current = current === DARK ? LIGHT : DARK
-      return
-    }
-
-    // 2. Ghostty (config + OSC 7777 via pane tty) + tmux (catppuccin)
-    try {
-      await pi.exec('bash', [SCRIPT, mode], { timeout: 5000 })
-    } catch { /* non-fatal */ }
-
-    // 3. Persist in session
-    pi.appendEntry(STATE_TYPE, { theme: current })
-    ctx.ui.notify(
-      current === DARK ? '🌙 Dark' : '☀️ Light',
-      'info',
-    )
+  for (const entry of entries) {
+    if (entry.type !== 'custom' || entry.customType !== STATE_TYPE) continue
+    const persisted = decodePersistedTheme(entry.data)
+    if (Option.isSome(persisted)) theme = persisted.value.theme
   }
 
-  pi.on('session_start', async (_event, ctx) => {
-    for (const entry of ctx.sessionManager.getEntries()) {
-      if (entry.type === 'custom' && entry.customType === STATE_TYPE) {
-        current = (entry as any).data?.theme === LIGHT ? LIGHT : DARK
-      }
+  return theme
+}
+
+export default function (pi: ExtensionAPI) {
+  let current: typeof Theme.Type = DARK
+
+  const toggle = Effect.fnUntraced(function* (ctx: ExtensionContext) {
+    const previous = current
+    current = nextTheme(current)
+    const mode = current === DARK ? 'dark' : 'light'
+
+    const result = yield* Effect.sync(() => ctx.ui.setTheme(current))
+    if (!result.success) {
+      const names = ctx.ui
+        .getAllThemes()
+        .map((theme) => theme.name)
+        .join(', ')
+      current = previous
+      return yield* Effect.sync(() => {
+        ctx.ui.notify(
+          `Theme "${nextTheme(previous)}" not found. Available: ${names}`,
+          'error',
+        )
+      })
     }
+
+    yield* Effect.tryPromise({
+      try: () => pi.exec('bash', [SCRIPT, mode], { timeout: 5_000 }),
+      catch: (cause) => new ThemeSyncError({ cause }),
+    }).pipe(Effect.ignore)
+
+    yield* Effect.sync(() => {
+      pi.appendEntry(STATE_TYPE, { theme: current })
+      ctx.ui.notify(current === DARK ? '🌙 Dark' : '☀️ Light', 'info')
+    })
+  })
+
+  pi.on('session_start', (_event, ctx) => {
+    current = restoreTheme(ctx.sessionManager.getEntries())
     ctx.ui.setTheme(current)
   })
 
   pi.registerShortcut('ctrl+shift+t', {
     description: 'Toggle Earlybird dark/light theme (pi + Ghostty + tmux)',
-    handler: toggle,
+    handler: (ctx) => Effect.runPromise(toggle(ctx)),
   })
 
   pi.registerCommand('theme-toggle', {
     description: 'Toggle between Earlybird dark and light themes',
-    handler: async (_args, ctx) => toggle(ctx),
+    handler: (_args, ctx) => Effect.runPromise(toggle(ctx)),
   })
 }
