@@ -31,12 +31,10 @@ if [ ! -f "$f" ]; then
     echo "pi: seeded settings.json from example"
 fi
 
-extensions_dir="stow/pi/.pi/agent/extensions"
-pnpm --dir "$extensions_dir" install --frozen-lockfile
-
 if [ ! -f "$HOME/.agents/skills/effect-ts/SKILL.md" ]; then
     npx -y skills add Effect-TS/skills -g -y -s effect-ts
 fi
 
 stow -d stow -t ~ pi
+pi update --extensions
 echo "pi setup complete!"

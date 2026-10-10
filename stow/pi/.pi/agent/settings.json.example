@@ -5,6 +5,7 @@
   "editorPaddingX": 0,
   "theme": "dracula",
   "hideThinkingBlock": true,
+  "packages": ["git:github.com/riethmayer/pi-harness@v0.1.1"],
   "skills": [
     "!skills/**",
     "+skills/effect-ts",

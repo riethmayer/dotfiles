@@ -6,12 +6,6 @@ Guidance for AI agents (Claude Code, OpenCode, Codex, …) working in this repos
 
 Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification compliance. Modular, per-tool organization.
 
-## Learning more about Effect
-
-The Pi extensions use the Effect TypeScript library.
-
-Before writing Effect code, read `stow/pi/.pi/agent/extensions/node_modules/effect/AGENTS.md` completely and follow its links when required. If its guides do not cover an API or concept, search `stow/pi/.pi/agent/extensions/node_modules/effect/src`.
-
 ## Key Commands
 
 ### Installation and Setup
