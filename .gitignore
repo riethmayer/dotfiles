@@ -42,6 +42,9 @@ firebase-debug.log
 # Playwright MCP runtime artifacts (console logs, page snapshots)
 .playwright-mcp/
 
+# Language package-manager artifacts
+node_modules/
+
 # Python bytecode (skill-creator + any other Python skills)
 __pycache__/
 *.py[cod]
