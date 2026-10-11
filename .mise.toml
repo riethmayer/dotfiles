@@ -160,13 +160,6 @@ chmod +x stow/bootstrap/.system-bootstrap.d/150_obsidian_today.sh
 ./stow/bootstrap/.system-bootstrap.d/150_obsidian_today.sh
 '''
 
-[tasks.appearance-watch]
-description = "Install launchd agent: re-theme Claude panes under herdr on every macOS Light/Dark switch"
-run = '''
-chmod +x stow/bootstrap/.system-bootstrap.d/152_appearance_watch.sh
-./stow/bootstrap/.system-bootstrap.d/152_appearance_watch.sh
-'''
-
 [tasks.tmux]
 description = "Setup tmux configuration"
 run = '''

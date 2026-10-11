@@ -23,6 +23,16 @@ set -euo pipefail
 # $HOME instead of into the repo.
 cd "$(cd "$(dirname "$0")" && pwd -P)/../../.."
 
+# Herdr now forwards host color-scheme changes to pane PTYs itself. Remove the
+# retired watcher and sync command from machines that installed the workaround.
+legacy_appearance_label="com.jan.appearance-watch"
+launchctl bootout "gui/$(id -u)/$legacy_appearance_label" 2>/dev/null || true
+rm -f \
+    "$HOME/Library/LaunchAgents/$legacy_appearance_label.plist" \
+    "$HOME/Library/Logs/appearance-watch.log" \
+    "$HOME/.local/bin/appearance-watch" \
+    "$HOME/bin/herdr-theme-sync"
+
 # herdr itself is installed by mise (pinned in stow/mise config).
 if ! command -v herdr &> /dev/null; then
     echo "herdr: not on PATH (run 'mise install' first), skipping" >&2
