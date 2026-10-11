@@ -24,7 +24,6 @@ The following tools are managed via GNU Stow:
 | atuin | Shell history sync | ✅ |
 | bootstrap | System setup scripts | N/A |
 | brew | Homebrew bundle | N/A |
-| claude | Claude AI assistant config | ✅ |
 | ghostty | Ghostty terminal config | ✅ |
 | herdr | Herdr agent workspace manager (sidebar rows, keys, theme) | ✅ |
 | git | Git configuration | ✅ |

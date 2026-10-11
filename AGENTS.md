@@ -29,7 +29,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008) + link local herdr plugins (`stow/herdr/.config/herdr/local-plugins/`, e.g. `space-stamp`: id token + treehouse slot prefix on every new space)
 - `mise run treehouse` - Install the treehouse CLI + stow its config (pooled git worktrees for agents)
 - `mise run swamp` - Install the swamp CLI (skips when present; `swamp update` owns upgrades)
-- `mise run perplexity` - Install `pplx`, `llm` + `llm-perplexity` (backs `sonar`) and the `pplx-cli` skill; the `websearch-perplexity` Claude plugin lives in `stow/claude/.claude/skills/`
+- `mise run perplexity` - Install `pplx`, `llm` + `llm-perplexity` (backs `sonar`) and the `pplx-cli` skill; the `websearch-perplexity` Claude plugin lives in `~/claude-harness`
 - `mise run 1password` - Check the `op` service-account token in Keychain; prints the one-time vault + token setup when missing (ADR-010)
 
 ## Architecture and Structure
@@ -82,11 +82,10 @@ Seams currently wired:
 |------|---------|------------------------------|--------------|
 | git  | `stow/git/.config/git/config` (ends in `[include] path = ~/.config/git/local`) | `stow/git/.config/git/local` | git reads the include last, so local overrides everything. Holds `[user]`, `coderabbit.machineId`, and absolute-path `allowedSignersFile`. |
 | zsh  | `stow/zsh/.config/zsh/*.zsh` | `stow/zsh/.config/zsh/99_local.zsh` | `~/.config/zsh` is a stow symlink into the repo dir, so the `*.zsh` glob in `.zshrc` sources `99_local.zsh` last automatically (the `.example` is skipped — glob requires `.zsh`). |
-| Claude | `stow/claude/.claude/settings.shared.json` (hooks, permissions, shared plugins) | `stow/claude/.claude/settings.local.json` (work marketplaces + plugin enables, driver choice) + plugin runtime (`installed_plugins.json`, `known_marketplaces.json`, `cache/`) | Claude reads only `~/.claude/settings.json` (a user-level `settings.local.json` is not a scope), so `claude-settings-render` merges shared + local into the gitignored `settings.json` that stow links there (ADR-011). Run it after editing either file. Plugin runtime state carries absolute install paths and must never be committed. |
+| Claude | `~/claude-harness/home/.claude/settings.shared.json` (private repo, ADR-013) | `~/claude-harness/home/.claude/settings.local.json` (work marketplaces + plugin enables, driver choice) | `claude-settings-render` merges shared + local into the `settings.json` Claude reads; see claude-harness ADR-0002. `dotfiles-local-sync` still syncs the overlay. |
 | pi   | `stow/pi/.pi/agent/settings.json.example` (shared defaults) | `stow/pi/.pi/agent/settings.json` | pi rewrites its own settings.json with runtime state (`lastChangelogVersion`) on every update, so the real file is gitignored; `155_pi.sh` seeds it from the example. |
 | Claude Desktop | `claude_desktop_config.json.example` (shared `mcpServers`) | `stow/agents/Library/Application Support/Claude/claude_desktop_config.json` | the app rewrites `preferences` with runtime state and absolute trusted-folder paths, so the real file is gitignored. |
 | atuin | `stow/atuin/.config/atuin/config.toml` (`history_filter` keeps tokens out of recorded history) | `~/.local/share/atuin/key` (not in the repo; synced via `dotfiles-local-sync`) | history is end-to-end encrypted with this key before it reaches api.atuin.sh; the key never leaves the machine, so it must be backed up out of band or synced history is lost with the laptop. |
-| Claude hooks | guard wiring in `stow/claude/.claude/settings.json` (`[ -x "$f" ] \|\| exit 0`) | `stow/claude/.claude/hooks/gh-pr-create-ship.sh`, `workos-billing-guard.sh` | wiring no-ops when a script is absent, so work-only hook scripts stay off the personal machine (repo is public — they must not be tracked). |
 
 Each seam ships a tracked `*.example` template showing what to put in it.
 **Setup on a new machine:** `cp <file>.example <file>` next to it, edit in this
@@ -121,7 +120,7 @@ All configurations must follow XDG Base Directory Specification:
 - Cache files → `$XDG_CACHE_HOME` (~/.cache)
 
 ### Key Packages
-Current stow packages: agents, atuin, bootstrap, brew, claude, ghostty, git, herdr, mise, nvim, opencode, pi, pnpm, ruby, scripts, ssh, starship, tmux, zsh
+Current stow packages: agents, atuin, bootstrap, brew, ghostty, git, herdr, mise, nvim, opencode, pi, pnpm, ruby, scripts, ssh, starship, tmux, zsh
 
 ## Development Patterns
 
@@ -175,7 +174,7 @@ generates `.claude-plugin/marketplace.json` (root) + per-bundle
 the grouped `jan-*` plugins. **Claude loads personal skills exclusively through
 these plugins** — the **shared** `jan-*` bundles (agents, decide, personal,
 present, shape, tldraw) are enabled in tracked
-`stow/claude/.claude/settings.json` (`extraKnownMarketplaces.jan-skills` → github
+`~/claude-harness/home/.claude/settings.shared.json` (`extraKnownMarketplaces.jan-skills` → github
 `riethmayer/skills`), and the former `~/.claude/skills` symlink is retired to
 avoid double-loading. **Work-only** bundles (jan-build, jan-data-engineering,
 jan-deslop, jan-ship) and work marketplaces (`earlybirdvc-skills`) are enabled

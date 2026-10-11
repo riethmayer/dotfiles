@@ -1,7 +1,7 @@
 # ADR-011: Claude settings are rendered from a shared file plus a local overlay
 
 **Date:** 2026-09-24
-**Status:** Accepted. Supersedes [ADR-009](009-claude-settings-driver-seam.md).
+**Status:** Superseded by [ADR-013](013-standalone-claude-harness.md); the rule continues as claude-harness ADR-0002. Supersedes [ADR-009](009-claude-settings-driver-seam.md).
 
 ## Context
 

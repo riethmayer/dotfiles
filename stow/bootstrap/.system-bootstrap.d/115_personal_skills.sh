@@ -32,7 +32,7 @@ if [ -f "$PROMPT_SRC" ]; then
     # Same prompt as a Claude Code output style, so sessions that never pass
     # --append-system-prompt (herdr agent start, plain `claude`) get it via
     # `outputStyle` in ~/.claude/settings.local.json. Must be a real file, not
-    # a symlink (see stow/claude/.stow-local-ignore), so it is regenerated here.
+    # a symlink (see claude-harness home/.stow-local-ignore), so it is regenerated here.
     STYLE_OUT="$HOME/.claude/output-styles/smart-brevity-clear.md"
     mkdir -p "$(dirname "$STYLE_OUT")"
     {

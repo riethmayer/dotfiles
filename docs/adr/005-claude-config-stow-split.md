@@ -1,7 +1,7 @@
 # ADR-005: Claude config split from agents to dedicated stow package
 
 **Date:** 2026-04-12
-**Status:** Accepted
+**Status:** Accepted. Superseded by [ADR-013](013-standalone-claude-harness.md).
 
 **Update 2026-06-07:** ADR-007 supersedes the skill-content ownership part of
 this decision. The package split remains, but personal skill bodies now live in
