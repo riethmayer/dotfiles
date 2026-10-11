@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Install a launchd agent that runs herdr-theme-sync whenever macOS flips
-# Light/Dark, so Claude panes under herdr re-theme without /toggle-mode.
+# Light/Dark, so Claude Code and Pi panes re-theme without /toggle-mode.
 #
-# Ghostty and herdr chrome follow the system appearance on their own, but
-# herdr does not forward the color-scheme report to pane PTYs (see
+# Ghostty and herdr chrome follow the system appearance on their own, but the
+# color-scheme report does not reliably reach pane PTYs (see
 # ~/bin/herdr-theme-sync). Any switch outside /toggle-mode (Control Center,
-# the Auto schedule) left Claude panes on their startup theme.
+# the Auto schedule) can leave theme-aware agents on their startup appearance.
 #
 # The watcher is a tiny Swift program listening for the distributed
 # AppleInterfaceThemeChangedNotification: event-driven, no polling. Its source
