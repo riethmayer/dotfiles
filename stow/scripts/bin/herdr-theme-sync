@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Push the host light/dark switch into Claude Code panes of running herdr
-# sessions. Herdr consumes Ghostty's color-scheme change for its own
-# [theme] auto_switch chrome but does not forward it to pane PTYs, so a
-# Claude session with theme "auto" keeps its startup detection — dark diff
-# colors on a light background after a toggle (white-on-white context lines).
-# Claude Code re-themes live on the mode-2031 color-scheme report (DSR 997):
-# ESC[?997;1n = dark, ESC[?997;2n = light. Only Claude panes get the bytes —
-# other TUIs may not parse the DSR and would see it as stray input.
+# Push the host light/dark switch into Claude Code and Pi panes of running
+# herdr sessions. Herdr consumes Ghostty's color-scheme change for its own
+# [theme] auto_switch chrome but the report does not reliably reach pane PTYs,
+# so theme-aware agents can keep their startup appearance.
+# Claude Code and Pi re-theme live on the mode-2031 color-scheme report
+# (DSR 997): ESC[?997;1n = dark, ESC[?997;2n = light. Only known consumers get
+# the bytes — other TUIs may not parse the DSR and would see it as stray input.
 #
 # Usage: herdr-theme-sync [light|dark]   (defaults to current macOS appearance)
 set -euo pipefail
@@ -40,8 +39,8 @@ while IFS= read -r session; do
       count=$((count + 1))
     fi
   done < <(herdr --session "$session" pane list 2>/dev/null |
-    jq -r '.result.panes[] | select(.agent == "claude") | .pane_id')
+    jq -r '.result.panes[] | select(.agent == "claude" or .agent == "pi") | .pane_id')
 done < <(herdr session list --json 2>/dev/null |
   jq -r '.sessions[] | select(.running) | .name')
 
-echo "herdr: nudged $count claude pane(s) to $mode" >&2
+echo "herdr: nudged $count Claude/Pi pane(s) to $mode" >&2
