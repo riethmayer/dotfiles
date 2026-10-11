@@ -24,16 +24,7 @@ stow/pi/.pi/agent/settings.json
 
 # Google Cloud SDK (excluded - contains credentials)
 
-# Claude plugins marketplaces (nested git repos)
-stow/claude/.claude/plugins/marketplaces/
-
 stow/gcloud/
-stow/claude/.claude/plugins/installed_plugins.json
-stow/claude/.claude/plugins/known_marketplaces.json
-stow/claude/.claude/plugins/cache/
-stow/claude/.claude/plugins/install-counts-cache.json
-stow/claude/.claude/plugins/plugin-catalog-cache.json
-stow/claude/.claude/plugins/.last_inuse_sweep
 firebase-debug.log
 
 # Claude runtime logs
@@ -71,19 +62,7 @@ stow/herdr/.config/herdr/plugins/
 # per-machine seam files synced via 1Password (dotfiles-local-sync push/pull);
 # tracked *.example templates stand in for them
 stow/agents/Library/Application Support/Claude/claude_desktop_config.json
-# Claude reads one user-level file, ~/.claude/settings.json, so it is rendered
-# by claude-settings-render from tracked settings.shared.json + the ignored
-# per-machine settings.local.json overlay (ADR-011). Claude also writes
-# driver state (model, fastMode, ...) into the rendered file.
-stow/claude/.claude/settings.json
-stow/claude/.claude/settings.local.json
-stow/claude/.claude/hooks/gh-pr-create-ship.sh
-stow/claude/.claude/hooks/workos-billing-guard.sh
 
 # atuin standalone-installer receipt — generated at install time, carries the
 # machine-local install_prefix, so it must never be tracked
 stow/atuin/.config/atuin/atuin-receipt.json
-
-# Claude Code plugin type stubs, generated per Claude Code version by
-# `/plugin-types .claude/types` inside the plugin folder (~400 KB, churns)
-stow/claude/.claude/skills/*/.claude/types/

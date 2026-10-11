@@ -3,7 +3,7 @@
 # Perplexity tooling for agents and the terminal.
 #
 # - pplx: Perplexity's search CLI. The websearch-perplexity Claude plugin
-#   (stow/claude/.claude/skills/websearch-perplexity) calls ~/.local/bin/pplx
+#   (~/claude-harness/home/.claude/skills/websearch-perplexity) calls ~/.local/bin/pplx
 #   for every WebSearch. The installer verifies checksums; `pplx update` owns
 #   upgrades, so install only when missing.
 # - llm + llm-perplexity: backs the `sonar` wrapper (stow/scripts/bin/sonar).
