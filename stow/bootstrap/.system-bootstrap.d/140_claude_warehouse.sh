@@ -2,7 +2,7 @@
 
 # Install a launchd agent that keeps the claude-warehouse DuckDB fresh.
 #
-# claude-warehouse (enabled via enabledPlugins in stow/claude/.claude/settings.json)
+# claude-warehouse (enabled via enabledPlugins in ~/claude-harness/home/.claude/settings.shared.json)
 # syncs every ~/.claude/projects session into ~/.claude/claude.duckdb and embeds
 # it for /claude-warehouse:recall. Its own SessionStart hook only launches the
 # dashboard, not the sync, so without this agent the DB goes stale between manual

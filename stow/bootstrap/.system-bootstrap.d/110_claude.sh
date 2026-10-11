@@ -9,23 +9,19 @@ if ! command -v claude &> /dev/null; then
     curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-# Stow claude configuration. Resolve the repo root physically: $0 may be the
-# stowed ~/.system-bootstrap.d/<script> path, where a logical ../../.. walks
-# out of $HOME instead of into the repo.
+# Resolve the repo root physically: $0 may be the stowed
+# ~/.system-bootstrap.d/<script> path, where a logical ../../.. walks out of
+# $HOME instead of into the repo.
 cd "$(cd "$(dirname "$0")" && pwd -P)/../../.."
 
-# Render settings.json (gitignored) from settings.shared.json + this machine's
-# settings.local.json overlay before stow links it; see ADR-011. If Claude
-# replaced a dangling seam symlink with a real file, adopt it as the overlay.
-live="$HOME/.claude/settings.local.json"
-seam="stow/claude/.claude/settings.local.json"
-if [ -f "$live" ] && [ ! -L "$live" ] && [ ! -f "$seam" ]; then
-    mv "$live" "$seam"
-    echo "claude: adopted existing settings.local.json into the seam"
+# Settings, hooks, status line and output styles live in the private
+# claude-harness repo (ADR-013). Its install.sh renders settings.json, adopts
+# a stray ~/.claude/settings.local.json and stows home/ into $HOME.
+harness="$HOME/claude-harness"
+if [ ! -d "$harness/.git" ]; then
+    git clone git@github.com:riethmayer/claude-harness.git "$harness"
 fi
-stow/scripts/bin/claude-settings-render
-
-stow -d stow -t ~ claude
+"$harness/install.sh"
 
 # The ~/.claude/skills symlink is retired (personal skills load via the
 # enabled jan-* marketplace plugins); drop a dangling leftover from the
