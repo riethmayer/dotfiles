@@ -223,6 +223,14 @@ chmod +x stow/bootstrap/.system-bootstrap.d/120_gws.sh
 ./stow/bootstrap/.system-bootstrap.d/120_gws.sh
 '''
 
+[tasks.claude]
+description = "Install Claude Code, clone + link the private claude-harness (ADR-013), repair plugin runtime state"
+run = '''
+echo "Setting up claude..."
+chmod +x stow/bootstrap/.system-bootstrap.d/110_claude.sh
+./stow/bootstrap/.system-bootstrap.d/110_claude.sh
+'''
+
 [tasks.claude-warehouse]
 description = "Install the launchd agent that keeps the claude-warehouse DuckDB synced + embedded"
 run = '''

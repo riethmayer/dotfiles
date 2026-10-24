@@ -25,6 +25,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run atuin` - Setup Atuin shell history
 - `mise run zsh-xdg` - Setup Zsh XDG directories
 - `mise run gws` - Install the Google Workspace CLI (gws) for the gws-* skills
+- `mise run claude` - Install Claude Code, clone + link the private claude-harness (ADR-013), repair plugin runtime state
 - `mise run obsidian-today` - Install launchd agent: daily Desktop alias to today's Obsidian journal folder
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008) + link local herdr plugins (`stow/herdr/.config/herdr/local-plugins/`, e.g. `space-stamp`: id token + treehouse slot prefix on every new space)
 - `mise run appearance-watch` - Install launchd agent that runs `herdr-theme-sync` on every macOS Light/Dark switch, so Claude Code and Pi panes under herdr re-theme without `/toggle-mode`
