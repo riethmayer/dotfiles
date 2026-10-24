@@ -8,9 +8,34 @@
 #   With no argument, prompts (prefilled with the current name minus any
 #   old ID prefix). An empty name leaves the pane untouched.
 #   Target pane: HERDR_ACTIVE_PANE_ID, else HERDR_PANE_ID (CLI use).
+#
+#        herdr-rename-pane --all
+#   Re-stamps every pane in the session: a pane that already has a name
+#   keeps it under a fresh ID prefix (IDs shift when spaces close); a pane
+#   without one is seeded from its agent's terminal title, or the cwd
+#   basename for a plain shell. Idempotent.
 set -eu
 
 herdr_bin="${HERDR_BIN_PATH:-herdr}"
+strip_prefix='s/^w[[:alnum:]]+:p[[:alnum:]]+[[:space:]]+//'
+
+if [[ "${1:-}" == "--all" ]]; then
+  "$herdr_bin" pane list | /usr/bin/python3 -c '
+import json, os, re, sys
+for p in json.load(sys.stdin)["result"]["panes"]:
+    name = re.sub(r"^w[0-9A-Za-z]+:p[0-9A-Za-z]+\s+", "", p.get("label") or "").strip()
+    if not name:
+        name = (p.get("terminal_title_stripped") or "").strip() if p.get("agent") \
+            else os.path.basename(p.get("cwd") or "")
+    if name:
+        print(p["pane_id"] + "\t" + name)
+' | while IFS=$'\t' read -r pane name; do
+    "$herdr_bin" pane rename "$pane" "$pane $name" >/dev/null
+    print "$pane $name"
+  done
+  exit 0
+fi
+
 pane="${HERDR_ACTIVE_PANE_ID:-${HERDR_PANE_ID:-}}"
 if [[ -z "$pane" ]]; then
   print -u2 "herdr-rename-pane: no HERDR_ACTIVE_PANE_ID/HERDR_PANE_ID in environment"
@@ -19,7 +44,7 @@ fi
 
 label=$("$herdr_bin" pane get "$pane" | /usr/bin/python3 -c \
   'import json,sys; print(json.load(sys.stdin)["result"]["pane"].get("label") or "")')
-name=$(printf '%s' "$label" | sed -E 's/^w[[:alnum:]]+:p[[:alnum:]]+[[:space:]]+//')
+name=$(printf '%s' "$label" | sed -E "$strip_prefix")
 
 if (( $# >= 1 )); then
   name="$1"
