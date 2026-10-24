@@ -88,6 +88,7 @@ Seams currently wired:
 | pi   | `stow/pi/.pi/agent/settings.json.example` (shared defaults) | `stow/pi/.pi/agent/settings.json` | pi rewrites its own settings.json with runtime state (`lastChangelogVersion`) on every update, so the real file is gitignored; `155_pi.sh` seeds it from the example. |
 | Claude Desktop | `claude_desktop_config.json.example` (shared `mcpServers`) | `stow/agents/Library/Application Support/Claude/claude_desktop_config.json` | the app rewrites `preferences` with runtime state and absolute trusted-folder paths, so the real file is gitignored. |
 | atuin | `stow/atuin/.config/atuin/config.toml` (`history_filter` keeps tokens out of recorded history) | `~/.local/share/atuin/key` (not in the repo; synced via `dotfiles-local-sync`) | history is end-to-end encrypted with this key before it reaches api.atuin.sh; the key never leaves the machine, so it must be backed up out of band or synced history is lost with the laptop. |
+| ssh  | `stow/ssh/.ssh/config.shared` + `config.example` | `stow/ssh/.ssh/config` | the boxd client daemon rewrites `~/.ssh/config` with a managed `Host` block (device id, absolute key path) whenever it is missing, so the live file is the seam and only `Include`s the tracked `config.shared`; `mise run install` seeds it from the example. |
 
 Each seam ships a tracked `*.example` template showing what to put in it.
 **Setup on a new machine:** `cp <file>.example <file>` next to it, edit in this
