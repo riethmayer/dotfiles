@@ -14,6 +14,11 @@ public.key
 stow/git/.config/git/local
 stow/zsh/.config/zsh/99_local.zsh
 
+# the boxd client daemon (launchd sh.boxd.client) rewrites ~/.ssh/config with a
+# managed Host block (device id, absolute key path), so the live file is a seam;
+# the tracked config.shared is pulled in via Include, seeded from config.example.
+stow/ssh/.ssh/config
+
 # pi rewrites its own settings.json with runtime state (lastChangelogVersion)
 # on every update; the tracked settings.json.example carries the shared
 # defaults, seeded by stow/bootstrap/.system-bootstrap.d/155_pi.sh.

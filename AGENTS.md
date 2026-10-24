@@ -25,6 +25,7 @@ Personal dotfiles managed with GNU Stow. Strict XDG Base Directory Specification
 - `mise run atuin` - Setup Atuin shell history
 - `mise run zsh-xdg` - Setup Zsh XDG directories
 - `mise run gws` - Install the Google Workspace CLI (gws) for the gws-* skills
+- `mise run claude` - Install Claude Code, clone + link the private claude-harness (ADR-013), repair plugin runtime state
 - `mise run obsidian-today` - Install launchd agent: daily Desktop alias to today's Obsidian journal folder
 - `mise run herdr` - Stow herdr config + install/refresh agent integrations (see ADR-008) + link local herdr plugins (`stow/herdr/.config/herdr/local-plugins/`, e.g. `space-stamp`: id token + treehouse slot prefix on every new space)
 - `mise run appearance-watch` - Install launchd agent that runs `herdr-theme-sync` on every macOS Light/Dark switch, so Claude Code and Pi panes under herdr re-theme without `/toggle-mode`
@@ -87,6 +88,7 @@ Seams currently wired:
 | pi   | `stow/pi/.pi/agent/settings.json.example` (shared defaults) | `stow/pi/.pi/agent/settings.json` | pi rewrites its own settings.json with runtime state (`lastChangelogVersion`) on every update, so the real file is gitignored; `155_pi.sh` seeds it from the example. |
 | Claude Desktop | `claude_desktop_config.json.example` (shared `mcpServers`) | `stow/agents/Library/Application Support/Claude/claude_desktop_config.json` | the app rewrites `preferences` with runtime state and absolute trusted-folder paths, so the real file is gitignored. |
 | atuin | `stow/atuin/.config/atuin/config.toml` (`history_filter` keeps tokens out of recorded history) | `~/.local/share/atuin/key` (not in the repo; synced via `dotfiles-local-sync`) | history is end-to-end encrypted with this key before it reaches api.atuin.sh; the key never leaves the machine, so it must be backed up out of band or synced history is lost with the laptop. |
+| ssh  | `stow/ssh/.ssh/config.shared` + `config.example` | `stow/ssh/.ssh/config` | the boxd client daemon rewrites `~/.ssh/config` with a managed `Host` block (device id, absolute key path) whenever it is missing, so the live file is the seam and only `Include`s the tracked `config.shared`; `mise run install` seeds it from the example. |
 
 Each seam ships a tracked `*.example` template showing what to put in it.
 **Setup on a new machine:** `cp <file>.example <file>` next to it, edit in this

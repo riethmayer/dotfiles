@@ -23,6 +23,12 @@ if [ ! -f stow/pi/.pi/agent/settings.json ]; then
   cp stow/pi/.pi/agent/settings.json.example stow/pi/.pi/agent/settings.json
 fi
 
+# ssh config is a gitignored seam too (the boxd daemon rewrites it); seed it so
+# the ~/.ssh/config symlink has a target that Includes the tracked config.shared.
+if [ ! -f stow/ssh/.ssh/config ]; then
+  cp stow/ssh/.ssh/config.example stow/ssh/.ssh/config
+fi
+
 # Pre-create dirs that stow would otherwise fold into repo-pointing dir
 # symlinks; herdr writes runtime state (logs, sockets) next to its config.
 mkdir -p ~/.config/herdr
@@ -221,6 +227,14 @@ run = '''
 echo "Setting up gws..."
 chmod +x stow/bootstrap/.system-bootstrap.d/120_gws.sh
 ./stow/bootstrap/.system-bootstrap.d/120_gws.sh
+'''
+
+[tasks.claude]
+description = "Install Claude Code, clone + link the private claude-harness (ADR-013), repair plugin runtime state"
+run = '''
+echo "Setting up claude..."
+chmod +x stow/bootstrap/.system-bootstrap.d/110_claude.sh
+./stow/bootstrap/.system-bootstrap.d/110_claude.sh
 '''
 
 [tasks.claude-warehouse]
