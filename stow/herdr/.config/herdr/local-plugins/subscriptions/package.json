@@ -1,0 +1,21 @@
+{
+  "name": "@jan/herdr-subscriptions",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "format": "prettier --write 'src/**/*.ts' package.json tsconfig.json README.md .prettierrc.json",
+    "test": "vitest run src"
+  },
+  "dependencies": {
+    "effect": "4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

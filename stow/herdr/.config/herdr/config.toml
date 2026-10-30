@@ -94,6 +94,14 @@ key = "prefix+i"
 type = "shell"
 command = "$HOME/bin/herdr-open-linear"
 
+# Account-wide Codex, Claude, and Droid limits. The subscriptions plugin opens
+# a transient terminal popup; Ctrl-A Ctrl-L mirrors the `/limits` mnemonic.
+[[keys.command]]
+key = "prefix+ctrl+l"
+type = "plugin_action"
+command = "subscriptions.open"
+description = "open subscription limits"
+
 # New worktree + space on prefix+g (free since goto moved to prefix+o).
 # Unlike the built-in new_worktree (prefix+shift+g), the script resolves the
 # primary checkout from the pane's cwd, so it also works from panes inside

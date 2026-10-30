@@ -63,6 +63,10 @@ stow/herdr/.config/herdr/.plugins.lock
 # written by `herdr plugin link`; the plugin sources live in local-plugins/
 stow/herdr/.config/herdr/plugins.json
 stow/herdr/.config/herdr/plugins/
+# local TypeScript plugin dependencies and compiled output; mise run herdr
+# restores both from each plugin's tracked package manifest and lockfile
+stow/herdr/.config/herdr/local-plugins/*/node_modules/
+stow/herdr/.config/herdr/local-plugins/*/dist/
 
 # per-machine seam files synced via 1Password (dotfiles-local-sync push/pull);
 # tracked *.example templates stand in for them

@@ -55,19 +55,27 @@ done
 mkdir -p "$HOME/.config/herdr"
 stow -d stow -t ~ herdr
 
-# Local herdr plugins (stow/herdr/.config/herdr/local-plugins/<id>). Linking
-# registers them with the running server; the registry (plugins.json) is
-# runtime state and gitignored. Needs a running server, so warn and move on
-# when there is none. Idempotent: already-linked plugins are left alone.
+# Local herdr plugins (stow/herdr/.config/herdr/local-plugins/<id>). TypeScript
+# plugins own their dependencies and build output; install and compile them
+# before linking so a fresh machine never registers a missing entrypoint.
+# Linking registers or refreshes the source manifest; the registry
+# (plugins.json) is runtime state and gitignored. `plugin link` works with or
+# without a running server and is idempotent for an existing local source.
 for plugin_dir in "$HOME/.config/herdr/local-plugins"/*/; do
     [ -f "${plugin_dir}herdr-plugin.toml" ] || continue
     plugin_id="$(basename "$plugin_dir")"
-    if herdr plugin list --plugin "$plugin_id" --json 2>/dev/null | grep -q "\"plugin_id\":\"$plugin_id\""; then
-        echo "herdr: plugin $plugin_id already linked"
-    elif herdr plugin link "${plugin_dir%/}" >/dev/null 2>&1; then
-        echo "herdr: linked plugin $plugin_id"
+    if [ -f "${plugin_dir}package.json" ]; then
+        if ! command -v pnpm &> /dev/null; then
+            echo "herdr: pnpm is required to build plugin $plugin_id" >&2
+            exit 1
+        fi
+        pnpm --dir "${plugin_dir%/}" install --frozen-lockfile
+        pnpm --dir "${plugin_dir%/}" run build
+    fi
+    if herdr plugin link "${plugin_dir%/}" >/dev/null 2>&1; then
+        echo "herdr: linked/refreshed plugin $plugin_id"
     else
-        echo "herdr: could not link plugin $plugin_id (is the herdr server running?)" >&2
+        echo "herdr: could not link plugin $plugin_id" >&2
     fi
 done
 
