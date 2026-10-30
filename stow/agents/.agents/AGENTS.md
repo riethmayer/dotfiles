@@ -46,6 +46,7 @@ End plans with unresolved questions (extremely concise).
 - Always apply brand guidelines (earlybird plugin) for any visual
 - Presentations are single-file HTML decks via the `html-presentation` skill (earlybird plugin); there is no pptx skill
 - Add "strictly confidential" to first slide top-right
+- Every short code in HTML output (A1, C12, D4, G1, T2, V5…) gets an `<abbr title>` tooltip with its meaning; never a bare code
 
 ## CLI & API Values
 
