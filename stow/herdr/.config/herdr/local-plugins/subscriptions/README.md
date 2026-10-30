@@ -6,7 +6,7 @@ Herdr popup for account-wide Codex, Claude, and Droid limits. Every percentage i
 
 - Codex: `~/.codex/auth.json` → ChatGPT's Codex usage endpoint
 - Claude: the `Claude Code-credentials` macOS Keychain item → Anthropic's OAuth usage endpoint
-- Droid: the read-only encrypted `~/.factory/auth.v2.{file,key}` login → Factory's billing limits endpoint
+- Droid: the read-only `~/.factory/auth.v2.loginkeychain` login with its `Factory CLI` Keychain key, falling back to `auth.v2.{file,key}` → Factory's billing limits endpoint
 
 The plugin never stores, logs, refreshes, or writes credentials. These are private APIs used by the corresponding first-party CLIs and may change. If Droid reports HTTP 401, run `droid` once so its CLI refreshes its own login.
 

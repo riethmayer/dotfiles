@@ -2,7 +2,13 @@ import { createDecipheriv } from 'node:crypto'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { Clock, Effect, Schema } from 'effect'
-import { decode, readText, requestJson, SubscriptionError } from './common.js'
+import {
+  decode,
+  readText,
+  requestJson,
+  run,
+  SubscriptionError,
+} from './common.js'
 import {
   clampPercent,
   parseTimestamp,
@@ -88,11 +94,42 @@ export const decryptLogin = (
       }),
   })
 
+const decodeLogin = Effect.fn('decodeLogin')(function* (
+  encrypted: string,
+  key: string,
+): Effect.fn.Return<LoginData, SubscriptionError> {
+  const unknown = yield* decryptLogin(encrypted, key)
+  return yield* decode(Provider, Login, unknown)
+})
+
 const readLogin = Effect.fn('readLogin')(function* (): Effect.fn.Return<
   LoginData,
   SubscriptionError
 > {
   const root = process.env.FACTORY_HOME_OVERRIDE ?? join(homedir(), '.factory')
+
+  if (process.platform === 'darwin') {
+    const keychainLogin = Effect.gen(function* () {
+      const [encrypted, key] = yield* Effect.all(
+        [
+          readText(Provider, join(root, 'auth.v2.loginkeychain')),
+          run(Provider, '/usr/bin/security', [
+            'find-generic-password',
+            '-s',
+            'Factory CLI',
+            '-a',
+            'auth-encryption-key-security-cli',
+            '-w',
+          ]),
+        ],
+        { concurrency: 'unbounded' },
+      )
+      return yield* decodeLogin(encrypted, key)
+    })
+    const preferred = yield* Effect.option(keychainLogin)
+    if (preferred._tag === 'Some') return preferred.value
+  }
+
   const [encrypted, key] = yield* Effect.all(
     [
       readText(Provider, join(root, 'auth.v2.file')),
@@ -100,8 +137,7 @@ const readLogin = Effect.fn('readLogin')(function* (): Effect.fn.Return<
     ],
     { concurrency: 'unbounded' },
   )
-  const unknown = yield* decryptLogin(encrypted, key)
-  return yield* decode(Provider, Login, unknown)
+  return yield* decodeLogin(encrypted, key)
 })
 
 const resetAt = (window: WindowInput, now: number): number | undefined => {
