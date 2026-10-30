@@ -28,13 +28,19 @@ export const readText = Effect.fn('readText')(
 )
 
 export const run = Effect.fn('run')(
-  (provider: string, command: string, args: ReadonlyArray<string>) =>
+  (
+    provider: string,
+    command: string,
+    args: ReadonlyArray<string>,
+    options?: { readonly env?: NodeJS.ProcessEnv; readonly timeout?: number },
+  ) =>
     Effect.tryPromise({
       try: async () => {
         const result = await executeFile(command, [...args], {
           encoding: 'utf8',
-          timeout: 5_000,
+          timeout: options?.timeout ?? 5_000,
           maxBuffer: 1024 * 1024,
+          env: options?.env,
         })
         return result.stdout.trim()
       },

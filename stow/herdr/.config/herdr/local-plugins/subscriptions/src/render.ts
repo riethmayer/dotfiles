@@ -61,7 +61,7 @@ export const renderLines = (
   const lines: Array<string> = [
     '',
     `  ${ansi.bold}Subscriptions${ansi.reset}`,
-    `  ${ansi.dim}Account-wide limits · all percentages show remaining allowance${ansi.reset}`,
+    `  ${ansi.dim}Subscription and API limits · all percentages show remaining allowance${ansi.reset}`,
     `  ${ansi.dim}${pad('Window', labelWidth)}  Remaining   Resets in · local time${ansi.reset}`,
     '',
   ]

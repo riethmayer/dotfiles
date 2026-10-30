@@ -1,8 +1,8 @@
 id = "subscriptions"
 name = "Subscriptions"
-version = "0.1.1"
+version = "0.2.0"
 min_herdr_version = "0.8.2"
-description = "Show Codex, Claude, and Droid subscription limits in one popup"
+description = "Show subscription and API rate limits in one popup"
 platforms = ["macos"]
 
 [[actions]]
