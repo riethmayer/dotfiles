@@ -134,6 +134,13 @@ Current stow packages: agents, atuin, bootstrap, brew, ghostty, git, herdr, mise
 4. For Zsh integration: add `stow/zsh/.config/zsh/XXX_{tool}.zsh`, guarded by `command -v {tool}` (not every machine has every tool)
 5. Completions: hand-written/static files go in `stow/zsh/.zsh/completions/_{tool}` (tracked, already on fpath); generated ones (`{tool} completions zsh`) are cached under `$XDG_CACHE_HOME/zsh/completions/` and regenerated when the binary's mtime is newer — see `074_swamp.zsh`. Never track generated completions.
 
+### Adding Herdr Plugins
+
+- Put local plugin sources under `stow/herdr/.config/herdr/local-plugins/<id>/`.
+- All new Herdr plugins must use strict TypeScript and Effect v4. Follow the scoped `local-plugins/AGENTS.md`; existing non-TypeScript plugins are grandfathered.
+- Each TypeScript plugin owns its package manifest, lockfile, tests, and build. `mise run herdr` installs, builds, and links it.
+- Keep credentials out of plugin sources and state. Read existing CLI credentials in place and never log, copy, refresh, or commit them.
+
 ### Adding Agent Skills
 
 Personal skill content now lives outside dotfiles in `~/skills`

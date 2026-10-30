@@ -1,0 +1,20 @@
+id = "subscriptions"
+name = "Subscriptions"
+version = "0.1.0"
+min_herdr_version = "0.8.2"
+description = "Show Codex, Claude, and Droid subscription limits in one popup"
+platforms = ["macos"]
+
+[[actions]]
+id = "open"
+title = "Open subscription limits"
+contexts = ["workspace"]
+command = ["/bin/sh", "-c", "exec \"$HOME/.local/share/mise/installs/node/latest/bin/node\" \"$HERDR_PLUGIN_ROOT/dist/open.js\""]
+
+[[panes]]
+id = "overview"
+title = "Subscriptions"
+placement = "popup"
+width = "90%"
+height = "90%"
+command = ["/bin/sh", "-c", "exec \"$HOME/.local/share/mise/installs/node/latest/bin/node\" \"$HERDR_PLUGIN_ROOT/dist/index.js\""]
