@@ -1,4 +1,7 @@
 {
   "tui.select.up": ["up", "ctrl+p"],
-  "tui.select.down": ["down", "ctrl+n"]
+  "tui.select.down": ["down", "ctrl+n"],
+  "app.models.save": "ctrl+shift+s",
+  "app.thinking.save": "ctrl+shift+s",
+  "app.session.toggleSort": "ctrl+shift+s"
 }
