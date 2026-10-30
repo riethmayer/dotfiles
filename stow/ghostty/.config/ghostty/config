@@ -23,8 +23,6 @@ mouse-hide-while-typing = true
 # Shell Integration
 shell-integration = zsh
 
-keybind = shift+enter=text:\x1b\r
-
 # Ghostty 1.3's terminal search binds Esc to end_search by default, and that
 # binding swallows Esc before it reaches pane apps (vim, Claude Code, herdr).
 # Unbind so Esc always goes to the terminal; close search with cmd+f instead.
