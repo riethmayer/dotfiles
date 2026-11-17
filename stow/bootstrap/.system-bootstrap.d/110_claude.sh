@@ -20,6 +20,10 @@ cd "$(cd "$(dirname "$0")" && pwd -P)/../../.."
 harness="$HOME/claude-harness"
 if [ ! -d "$harness/.git" ]; then
     git clone git@github.com:riethmayer/claude-harness.git "$harness"
+else
+    # fetch + merge, not pull: pull.rebase refuses to run with local edits.
+    { git -C "$harness" fetch -q && git -C "$harness" merge -q --ff-only '@{u}'; } \
+        || echo "warning: claude-harness update failed; rendering the local checkout"
 fi
 "$harness/install.sh"
 
