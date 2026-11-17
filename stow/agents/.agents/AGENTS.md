@@ -4,6 +4,12 @@ Be extremely concise, sacrifice grammar for concision.
 
 - Do NOT add Claude Code footer or Co-Authored-By to commit messages
 
+## Session Focus
+
+- When a session's goal is set (e.g. "this session is about X, call me out if I drift"), treat it as binding for the whole session.
+- If a message is off-topic: say so in one line, name the topic it belongs to, and offer to park it (a note in today's Obsidian day folder `<topic>/parked.md`, or a separate session). Do not start the off-topic work unless I confirm.
+- Quick meta requests about the session itself (instructions, settings) are not drift.
+
 ## Planning
 
 When a repo has `.planning/` directory:
