@@ -58,6 +58,10 @@ End plans with unresolved questions (extremely concise).
 
 - Before using a flag, subcommand or enum value you have not seen work this session, read `--help` / `<tool> help <cmd>` or list the valid values. After one rejection, look it up; never retry a variation. (retro topic `cli-syntax-guessing`, 2 sessions)
 
+## Herdr
+
+- Start agents with `~/skills/plugins/jan-agents/skills/herdr/scripts/spawn-agent.sh`. Side work: `--lease <name>`, its own workspace nested under the conductor. Never a tab; a hook blocks tab creation.
+
 ## Misc
 
 - `sonar "question"` asks Perplexity Sonar (default `sonar-pro`; `-m sonar-deep-research` for long research). WebSearch already routes to Perplexity via the `websearch-perplexity` plugin
